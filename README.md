@@ -12,7 +12,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 | Név | Választott technológia/programozási nyelv |
 | ------ | ------ |
 | Szerver | Python, Socket, Sqlite |
-| Kliens | Raft, TypeScript |
+| Kliens | React, TypeScript |
 
 ## Beszámolók időpontjai
 | Beszámoló | Mennyi idő van még hátra? |
