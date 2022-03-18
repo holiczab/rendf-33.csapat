@@ -3,18 +3,16 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 ## Csapattagok
 | Név | Neptunkód | Szerver vagy Kliens |
 | ------ | ------ | ------ |
-| Holicza Barnabás | ARIAN2 | ------ |
-| Kretz Zsombor György | EMSCZY | ------ |
-| Altmann Bence | Y19WIL | ------ |
-| Molnár Dániel | OXOOBF | ------ |
+| Holicza Barnabás | ARIAN2 | Szerver |
+| Kretz Zsombor György | EMSCZY | Szerver |
+| Altmann Bence | Y19WIL | Kliens |
+| Molnár Dániel | OXOOBF | Kliens |
 
 ## Szerver-Kliens Architektúra
 | Név | Választott technológia/programozási nyelv |
 | ------ | ------ |
-| Szerver | ------ |
-| Kliens_A | ------ |
-| Kliens_B | ------ |
-| Kliens_C | ------ |
+| Szerver | Python, Socket, Sqlite |
+| Kliens | React, TypeScript |
 
 ## Beszámolók időpontjai
 | Beszámoló | Mennyi idő van még hátra? |
@@ -26,7 +24,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 ## Mérföldkövek
 ### 1. Mérföldkő
 - [ ] A rendszer adatmodelljének megtervezése és előállítása
-- [ ] A rendszer architektúrájának megtervezése
+- [x] A rendszer architektúrájának megtervezése
 - [ ] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
 - [ ] Eszköz kategóriák felvétele, hierarchiába rendezése
 - [ ] Eszközök rögzítése (azonosító, név, helyszín, kategóriába sorolás)
