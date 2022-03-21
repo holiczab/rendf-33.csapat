@@ -23,7 +23,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 
 ## Mérföldkövek
 ### 1. Mérföldkő
-- [ ] A rendszer adatmodelljének megtervezése és előállítása
+- [x] A rendszer adatmodelljének megtervezése és előállítása
 - [x] A rendszer architektúrájának megtervezése
 - [ ] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
 - [ ] Eszköz kategóriák felvétele, hierarchiába rendezése
