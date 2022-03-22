@@ -16,6 +16,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import { Link } from 'react-router-dom';
 
 const drawerWidth = 240;
 
@@ -23,11 +24,12 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+  width: `calc(100% - ${drawerWidth}px)`,
   marginLeft: `-${drawerWidth}px`,
   ...(open && {
     transition: theme.transitions.create('margin', {
@@ -75,6 +77,7 @@ export default function MenuDrawer() {
   const handleDrawer = () => {
     if(open == true) setOpen(false);
     else setOpen(true); 
+    console.log(open);
   };
 
   return (
@@ -91,7 +94,7 @@ export default function MenuDrawer() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, ...(open && { display: 'none' }) }}>
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1/*, ...(open && { display: 'none' })*/ }}>
           Főoldal
           </Typography>
           <Button color="inherit" sx={{ display: 'flex' }}>Belépés</Button>
@@ -111,9 +114,9 @@ export default function MenuDrawer() {
         open={open}
       >
         <DrawerHeader>
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+        {/* <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Főoldal
-          </Typography>
+          </Typography> */}
         <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -126,20 +129,28 @@ export default function MenuDrawer() {
           
         </DrawerHeader>
         <List>
-          {["Kategóriák", "Eszközök", "Végzettségek"].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+            <ListItem button component={Link} to="/home">
+              <ListItemText primary='Kezdőoldal' />
+          </ListItem>
+
+          <ListItem button component={Link} to="/categories">
+              <ListItemText primary='Kategóriák' />
+          </ListItem>
+          
+          <ListItem button component={Link} to="/tools">
+              <ListItemText primary='Eszközök' />
+          </ListItem>
+          
+          <ListItem button component={Link} to="/degrees">
+              <ListItemText primary='Végzettségek' />
+          </ListItem>
         </List>
         <Divider />
         
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
+        <div className="App">Rendszerfejlesztés - 33. csapat</div>
       </Main>
     </Box>
   );
