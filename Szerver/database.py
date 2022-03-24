@@ -1,18 +1,45 @@
+import re
 import sqlite3
+import os
 
 class DataBase:
-    def __init__(self):
+    def __init__(self,message):
+        self.message=message
+        self.ret_msg=""
         self.open_conn()
         self.close_conn()
-    def operation(self,type):
-        pass
+
+    def operation(self,message):
+        type = message.split(";")[0]
+        if type == "pwd": #pwd;név;jelszó
+            length=len(type)
+            username=message.split(";")[1]
+            password=message.split(";")[2]
+            self.ret_msg=self.password_check(username,password)
+
+    def return_message(self):
+        return self.ret_msg
+
     def open_conn(self):
-        self.conn = sqlite3.connect('karbantartas.db')
+        THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+        db_file = os.path.join(THIS_FOLDER, 'karbantartas.db')
+        self.conn = sqlite3.connect(db_file)
         print("Opened karbantartas.db successfully")
+        self.operation(self.message)
+
     def close_conn(self):
         self.conn.close()
         print("Closed karbantartas.db successfully")
 
+    def password_check(self,username,password):
+        #print(username," ",password)
+        cursor = self.conn.execute("SELECT * FROM Specialist WHERE Username='"+username+"' AND Password='"+password+"'")
+        result = cursor.fetchall()
+        print("Password check completed!")
+        if len(result)==1:
+            return "Username-Password correct"
+        else:
+            return "Username-Password incorrect"
 
 
 
