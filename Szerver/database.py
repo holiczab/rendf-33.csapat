@@ -12,10 +12,13 @@ class DataBase:
     def operation(self,message):
         type = message.split(";")[0]
         if type == "pwd": #pwd;név;jelszó
-            length=len(type)
             username=message.split(";")[1]
             password=message.split(";")[2]
             self.ret_msg=self.password_check(username,password)
+        elif type == "dvc":
+            self.ret_msg=self.add_device()
+        elif type == "cat":
+            self.ret_msg=self.add_category()    
 
     def return_message(self):
         return self.ret_msg
@@ -40,7 +43,11 @@ class DataBase:
             return "Username-Password correct"
         else:
             return "Username-Password incorrect"
+    def add_device(self):
+        return ""
 
+    def add_category(self):
+        return ""
 
 
 
