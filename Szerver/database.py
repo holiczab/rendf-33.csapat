@@ -17,8 +17,12 @@ class DataBase:
             self.ret_msg=self.password_check(username,password)
         elif type == "dvc":
             self.ret_msg=self.add_device()
+        elif type == "ddvc":
+            self.ret_msg=self.delete_device()
         elif type == "cat":
-            self.ret_msg=self.add_category()    
+            self.ret_msg=self.add_category()
+        elif type == "dcat":
+            self.ret_msg=self.delete_category()   
 
     def return_message(self):
         return self.ret_msg
@@ -38,15 +42,24 @@ class DataBase:
         #print(username," ",password)
         cursor = self.conn.execute("SELECT * FROM Specialist WHERE Username='"+username+"' AND Password='"+password+"'")
         result = cursor.fetchall()
+        for row in result:
+            position=row[4]
         print("Password check completed!")
         if len(result)==1:
-            return "Username-Password correct"
+            return f"Username-Password correct;{position}"
         else:
             return "Username-Password incorrect"
+
     def add_device(self):
         return ""
 
+    def delete_device(self):
+        return ""
+
     def add_category(self):
+        return ""
+
+    def delete_category(self):
         return ""
 
 
