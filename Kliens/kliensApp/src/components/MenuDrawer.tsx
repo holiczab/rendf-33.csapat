@@ -97,7 +97,7 @@ export default function MenuDrawer() {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1/*, ...(open && { display: 'none' })*/ }}>
           Főoldal
           </Typography>
-          <Button color="inherit" sx={{ display: 'flex' }}>Belépés</Button>
+          <Button color="inherit" sx={{ display: 'flex' }} component={Link} to="/login">Belépés</Button>
         </Toolbar>
       </AppBar>
       <Drawer

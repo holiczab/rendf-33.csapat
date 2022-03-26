@@ -9,6 +9,7 @@ import Categories from "./components/Categories";
 import Degrees from "./components/Degrees";
 import Tools from "./components/Tools";
 import MenuDrawer from "./components/MenuDrawer";
+import Login from "./components/Login"
 
 ReactDOM.render(
   <BrowserRouter>
@@ -19,6 +20,7 @@ ReactDOM.render(
       <Route path="categories" element={<Categories />} />
       <Route path="degrees" element={<Degrees />} />
       <Route path="tools" element={<Tools />} />
+      <Route path="login" element={<Login />} />
     </Routes>
   </BrowserRouter>,
   document.getElementById("root")

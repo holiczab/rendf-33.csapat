@@ -1,4 +1,7 @@
 import React from "react";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
 
 function Categories() {
   return (
