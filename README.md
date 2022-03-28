@@ -24,20 +24,20 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 ## Mérföldkövek
 ### 1. Mérföldkő
 - [x] A rendszer adatmodelljének megtervezése és előállítása
-> * Adatbázis szerkezetének kiépítése sqlite-ban
+> - [x] Adatbázis szerkezetének kiépítése sqlite-ban
 - [x] A rendszer architektúrájának megtervezése
-> * Python Szerver , React Kliens előállítása
+> - [x] Python Szerver , React Kliens előállítása
 - [ ] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
-> * Szerver jelszóellenőrzés kezelése
-> * Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
-> * Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
-- [ ] Eszköz kategóriák felvétele, hierarchiába rendezése
-> * Eszközfelelős tudjon kategóriákat felvenni/törölni
-> * Szerver sql műveletek, klienstől adatok fogadásának kezelése
-- [ ] Eszközök rögzítése (azonosító, név, helyszín, kategóriába sorolás)
-> * Eszközfelelős tudjon eszközt felvenni és törölni
-> * Szerver sql műveletek, klienstől adatok fogadásának kezelése
-- [ ] Végzettségek felvétele és eszköz kategóriákhoz rendelése
+> - [x] Szerver jelszóellenőrzés kezelése
+> - [ ] Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
+> - [ ] Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
+- [x] Eszköz kategóriák felvétele, hierarchiába rendezése
+> - [ ] Eszközfelelős tudjon kategóriákat felvenni/törölni
+> - [ ] Szerver sql műveletek, klienstől adatok fogadásának kezelése
+- [x] Eszközök rögzítése (azonosító, név, helyszín, kategóriába sorolás)
+> - [ ] Eszközfelelős tudjon eszközt felvenni és törölni
+> - [ ] Szerver sql műveletek, klienstől adatok fogadásának kezelése
+- [x] Végzettségek felvétele és eszköz kategóriákhoz rendelése
 ### 2. Mérföldkő
 - [ ] Eszköz kategóriához normaidők és karbantartási periódus rögzítése
 - [ ] Eszköz kategóriához a karbantartásra vonatkozó instrukciók rögzítése
