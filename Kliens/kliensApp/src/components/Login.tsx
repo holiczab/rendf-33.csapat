@@ -3,7 +3,18 @@ import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import isEmail from "validator/lib/isEmail";
+import isEmail, { IsEmailOptions } from "validator/lib/isEmail";
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+
+const client = new W3CWebSocket('ws://127.0.0.1:5050');
+
+function SendLoginToServer(params: any) {   // Elküldi a szervernek az adatokat
+  console.log(params);
+  var mess = "pwd;"+params.email.split("@")[0]+";"+params.password; 
+  client.send(JSON.stringify({type: "message", msg: mess}));
+}
+
+
 
 function Login() {
   const [email, setEmail] = useState<string>("");
@@ -21,6 +32,17 @@ function Login() {
   const onSubmit = (data: any) => {
     console.log(data);
   };
+
+  React.useEffect(             // HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
+    () => {
+      client.onopen = () => {
+        console.log('WebSocket Client Connected');
+      };
+      client.onmessage = (message: any) => {
+        console.log(message);
+      };
+    }, []
+  )
 
   return (
     <div className="Belepes">
@@ -86,7 +108,7 @@ function Login() {
           variant="contained"
           color="primary"
           disabled={!formState.isValid}
-          onClick={() => console.log(getValues())}
+          onClick={() => SendLoginToServer(getValues())}    //A függvény elküldi a szervernek
         >
           Belépés
         </Button>
