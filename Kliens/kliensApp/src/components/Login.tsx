@@ -5,21 +5,24 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import isEmail, { IsEmailOptions } from "validator/lib/isEmail";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { useNavigate } from "react-router-dom";
 
-const client = new W3CWebSocket('ws://127.0.0.1:5050');
+const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
-function SendLoginToServer(params: any) {   // Elküldi a szervernek az adatokat
+function SendLoginToServer(params: any) {
+  // Elküldi a szervernek az adatokat
   console.log(params);
-  var mess = "pwd;"+params.email.split("@")[0]+";"+params.password; 
-  client.send(JSON.stringify({type: "message", msg: mess}));
+  var mess = "pwd;" + params.email.split("@")[0] + ";" + params.password;
+  //client.send(JSON.stringify({ type: "message", msg: mess }));
+  client.send(mess);
+  console.log(mess);
 }
-
-
 
 function Login() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const navigate = useNavigate();
 
   const {
     register,
@@ -33,16 +36,27 @@ function Login() {
     console.log(data);
   };
 
-  React.useEffect(             // HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
+  React.useEffect(
+    // HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
     () => {
       client.onopen = () => {
-        console.log('WebSocket Client Connected');
+        console.log("WebSocket Client Connected");
       };
       client.onmessage = (message: any) => {
-        console.log(message);
+        console.log(message.data);
+        if (message.data.split(";")[0] === "Username-Password correct") {
+          //TODO: belepesi allapot kezelese
+          navigate("/home");
+        } else if (
+          message.data.split(";")[0] === "Username-Password incorrect"
+        ) {
+          //TODO: Felugro ablak helye
+          console.log("Helytelen belepesi adatok!");
+        }
       };
-    }, []
-  )
+    },
+    []
+  );
 
   return (
     <div className="Belepes">
@@ -108,7 +122,7 @@ function Login() {
           variant="contained"
           color="primary"
           disabled={!formState.isValid}
-          onClick={() => SendLoginToServer(getValues())}    //A függvény elküldi a szervernek
+          onClick={() => SendLoginToServer(getValues())} //A függvény elküldi a szervernek
         >
           Belépés
         </Button>
