@@ -56,6 +56,7 @@ function Login() {
           message.data.split(";")[0] === "Username-Password incorrect"
         ) {
           //TODO: Felugro ablak helye
+          setErrorMessage("Helytelen belépési adatok!");
           console.log("Helytelen belepesi adatok!");
         }
       };
