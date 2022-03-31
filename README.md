@@ -27,7 +27,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [x] Adatbázis szerkezetének kiépítése sqlite-ban
 - [x] A rendszer architektúrájának megtervezése
 > - [x] Python Szerver , React Kliens előállítása
-- [ ] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
+- [x] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
 > - [x] Szerver jelszóellenőrzés kezelése
 > - [x] Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
 > - [x] Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
