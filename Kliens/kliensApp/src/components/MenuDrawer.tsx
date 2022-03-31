@@ -1,38 +1,37 @@
-import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+import React, { useContext, useState } from "react";
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { Link } from 'react-router-dom';
+import Drawer from "@mui/material/Drawer";
+import CssBaseline from "@mui/material/CssBaseline";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import { Link, useNavigate } from "react-router-dom";
+import AccountMenu from "./AccountMenu";
+import LoggedInContext from "../contexts/context";
 
 const drawerWidth = 240;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(2),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   width: `calc(100% - ${drawerWidth}px)`,
   marginLeft: `-${drawerWidth}px`,
   ...(open && {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -45,43 +44,44 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
+  transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
     marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
 }));
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+  justifyContent: "flex-end",
 }));
 
 export default function MenuDrawer() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
+  const { isLoggedIn, setLoggedIn } = useContext(LoggedInContext);
 
   const handleDrawer = () => {
-    if(open == true) setOpen(false);
-    else setOpen(true); 
+    if (open == true) setOpen(false);
+    else setOpen(true);
     console.log(open);
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -90,23 +90,39 @@ export default function MenuDrawer() {
             aria-label="open drawer"
             onClick={handleDrawer}
             edge="start"
-            sx={{ mr: 2, ...(open && { display: 'none' }) }}
+            sx={{ mr: 2, ...(open && { display: "none" }) }}
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1/*, ...(open && { display: 'none' })*/ }}>
-          Főoldal
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1 /*, ...(open && { display: 'none' })*/ }}
+          >
+            {/* Főoldal */}
           </Typography>
-          <Button color="inherit" sx={{ display: 'flex' }} component={Link} to="/login">Belépés</Button>
+          {isLoggedIn ? (
+            <AccountMenu />
+          ) : (
+            <Button
+              color="inherit"
+              sx={{ display: "flex" }}
+              component={Link}
+              to="/login"
+            >
+              Belépés
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <Drawer
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
-            boxSizing: 'border-box',
+            boxSizing: "border-box",
           },
         }}
         variant="persistent"
@@ -114,43 +130,44 @@ export default function MenuDrawer() {
         open={open}
       >
         <DrawerHeader>
-        {/* <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+          {/* <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
           Főoldal
           </Typography> */}
-        <IconButton
+          <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawer}
             edge="start"
-            sx={{ mr: 2, /*...(open && { display: 'none' })*/ }}
+            sx={{ mr: 2 /*...(open && { display: 'none' })*/ }}
           >
             <MenuIcon />
           </IconButton>
-          
         </DrawerHeader>
         <List>
-            <ListItem button component={Link} to="/home">
-              <ListItemText primary='Kezdőoldal' />
+          <ListItem button component={Link} to="/">
+            <ListItemText primary="Kezdőoldal" />
           </ListItem>
-
-          <ListItem button component={Link} to="/categories">
-              <ListItemText primary='Kategóriák' />
-          </ListItem>
-          
-          <ListItem button component={Link} to="/tools">
-              <ListItemText primary='Eszközök' />
-          </ListItem>
-          
-          <ListItem button component={Link} to="/degrees">
-              <ListItemText primary='Végzettségek' />
-          </ListItem>
+          {isLoggedIn ? (
+            <>
+              <ListItem button component={Link} to="/categories">
+                <ListItemText primary="Kategóriák" />
+              </ListItem>
+              <ListItem button component={Link} to="/degrees">
+                <ListItemText primary="Végzettségek" />
+              </ListItem>
+              <ListItem button component={Link} to="/tools">
+                <ListItemText primary="Eszközök" />
+              </ListItem>
+            </>
+          ) : (
+            <></>
+          )}
         </List>
         <Divider />
-        
       </Drawer>
       <Main open={open}>
         <DrawerHeader />
-        <div className="App">Rendszerfejlesztés - 33. csapat</div>
+        <div className="App"></div>
       </Main>
     </Box>
   );

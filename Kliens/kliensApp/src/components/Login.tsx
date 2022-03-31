@@ -1,11 +1,12 @@
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import isEmail, { IsEmailOptions } from "validator/lib/isEmail";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useNavigate } from "react-router-dom";
+import LoggedInContext from "../contexts/context";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -23,6 +24,8 @@ function Login() {
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const navigate = useNavigate();
+  const { isLoggedIn, setLoggedIn } = useContext(LoggedInContext);
+  const { username, setUsername } = useContext(LoggedInContext);
 
   const {
     register,
@@ -45,8 +48,10 @@ function Login() {
       client.onmessage = (message: any) => {
         console.log(message.data);
         if (message.data.split(";")[0] === "Username-Password correct") {
-          //TODO: belepesi allapot kezelese
-          navigate("/home");
+          //belepesi allapot kezelese
+          setLoggedIn(true);
+          setUsername(message.data.split(";")[1]);
+          navigate("/");
         } else if (
           message.data.split(";")[0] === "Username-Password incorrect"
         ) {
@@ -70,6 +75,7 @@ function Login() {
         }}
       >
         <h1 className="title">Belépés</h1>
+        <p>belepve: {String(isLoggedIn)}</p>
 
         <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
           <TextField //Email

@@ -9,20 +9,32 @@ import Categories from "./components/Categories";
 import Degrees from "./components/Degrees";
 import Tools from "./components/Tools";
 import Login from "./components/Login";
+import LoggedInContext from "./contexts/context";
 
 function App() {
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [username, setUsername] = useState("");
+
   return (
-    <BrowserRouter>
-      <MenuDrawer />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="home" element={<Home />} />
-        <Route path="categories" element={<Categories />} />
-        <Route path="degrees" element={<Degrees />} />
-        <Route path="tools" element={<Tools />} />
-        <Route path="login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
+    <LoggedInContext.Provider
+      value={{ isLoggedIn, setLoggedIn, username, setUsername }}
+    >
+      <BrowserRouter>
+        <MenuDrawer />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {isLoggedIn ? (
+            <>
+              <Route path="categories" element={<Categories />} />
+              <Route path="degrees" element={<Degrees />} />
+              <Route path="tools" element={<Tools />} />
+            </>
+          ) : (
+            <Route path="login" element={<Login />} />
+          )}
+        </Routes>
+      </BrowserRouter>
+    </LoggedInContext.Provider>
   );
 }
 
