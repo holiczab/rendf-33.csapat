@@ -27,16 +27,16 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [x] Adatbázis szerkezetének kiépítése sqlite-ban
 - [x] A rendszer architektúrájának megtervezése
 > - [x] Python Szerver , React Kliens előállítása
-- [ ] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
+- [x] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
 > - [x] Szerver jelszóellenőrzés kezelése
-> - [ ] Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
-> - [ ] Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
+> - [x] Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
+> - [x] Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
 - [x] Eszköz kategóriák felvétele, hierarchiába rendezése
 > - [ ] Eszközfelelős tudjon kategóriákat felvenni/törölni
-> - [ ] Szerver sql műveletek, klienstől adatok fogadásának kezelése
+> - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
 - [x] Eszközök rögzítése (azonosító, név, helyszín, kategóriába sorolás)
 > - [ ] Eszközfelelős tudjon eszközt felvenni és törölni
-> - [ ] Szerver sql műveletek, klienstől adatok fogadásának kezelése
+> - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
 - [x] Végzettségek felvétele és eszköz kategóriákhoz rendelése
 ### 2. Mérföldkő
 - [ ] Eszköz kategóriához normaidők és karbantartási periódus rögzítése

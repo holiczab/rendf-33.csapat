@@ -15,14 +15,32 @@ class DataBase:
             username=message.split(";")[1]
             password=message.split(";")[2]
             self.ret_msg=self.password_check(username,password)
-        elif type == "dvc":
-            self.ret_msg=self.add_device()
+        elif type == "advc":
+            ID=message.split(";")[1]
+            name=message.split(";")[2]
+            category=message.split(";")[3]
+            description=message.split(";")[4]
+            location=message.split(";")[5]
+            self.ret_msg=self.add_device(ID,name,category,description,location)
+        elif type == "sdvc":
+            self.ret_msg=self.select_devices()
         elif type == "ddvc":
-            self.ret_msg=self.delete_device()
-        elif type == "cat":
-            self.ret_msg=self.add_category()
+            ID=username=message.split(";")[1]
+            self.ret_msg=self.delete_device(ID)
+        elif type == "scat":
+            self.ret_msg=self.select_categories()
+        elif type == "acat":
+            ID =message.split(";")[1]
+            name =message.split(";")[2]
+            parent =message.split(";")[3]
+            interval =message.split(";")[4]
+            spec =message.split(";")[5]
+            standard =message.split(";")[6]
+            req =message.split(";")[7]
+            self.ret_msg=self.add_category(ID,name,parent,interval,spec,standard,req)
         elif type == "dcat":
-            self.ret_msg=self.delete_category()   
+            ID=username=message.split(";")[1]
+            self.ret_msg=self.delete_category(ID)   
 
     def return_message(self):
         return self.ret_msg
@@ -43,24 +61,57 @@ class DataBase:
         cursor = self.conn.execute("SELECT * FROM Specialist WHERE Username='"+username+"' AND Password='"+password+"'")
         result = cursor.fetchall()
         for row in result:
-            position=row[4]
+            name=row[4]
+            position=row[5]
         print("Password check completed!")
         if len(result)==1:
-            return f"Username-Password correct;{position}"
+            return f"Username-Password correct;{position};{name}"
         else:
             return "Username-Password incorrect"
 
-    def add_device(self):
-        return ""
+    def add_device(self,ID,name,category,description,location):
+        self.conn.execute("INSERT INTO Device(ID,Name,Category,Description,Location) VALUES ('"+ID+"','"+name+"','"+category+"','"+description+"','"+location+"')");
+        self.conn.commit()
+        print ("Device Record created successfully")
+        self.conn.close()
+        
+    def delete_device(self,ID):
+        self.conn.execute("DELETE from Device where ID = '"+ID+"'")
+        self.conn.commit()
+        print("Data deleted from Device!")
+        self.conn.close()
 
-    def delete_device(self):
-        return ""
+    def select_devices(self):
+        cursor = self.conn.execute("SELECT * FROM Device")
+        result = cursor.fetchall()
+        print(result)
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+"\n"
+        print("Select_devices completed!")
+        return msg
+        
+    def select_categories(self):
+        cursor = self.conn.execute("SELECT * FROM Category")
+        result = cursor.fetchall()
+        print(result)
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"\n"
+        print("Select_categories completed!")
+        return msg   
+        
+    def add_category(self,ID,name,parent,interval,spec,standard,req):
+        self.conn.execute("INSERT INTO Category(ID,Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+ID+"','"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')");
+        self.conn.commit()
+        print ("Category Record created successfully")
+        self.conn.close()
 
-    def add_category(self):
-        return ""
-
-    def delete_category(self):
-        return ""
+    def delete_category(self,ID):
+        self.conn.execute("DELETE from Category where ID = '"+ID+"'")
+        self.conn.commit()
+        print("Data deleted from Category!")
+        self.conn.close()
 
 
 

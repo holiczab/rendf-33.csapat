@@ -2,6 +2,8 @@ from multiprocessing.dummy import active_children
 import websockets
 import asyncio
 from database import DataBase
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 PORT = 5050
 IP = "localhost"
