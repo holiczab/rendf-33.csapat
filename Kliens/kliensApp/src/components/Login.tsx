@@ -51,8 +51,8 @@ function Login() {
         if (message.data.split(";")[0] === "Username-Password correct") {
           //belepesi allapot kezelese
           setLoggedIn(true);
-          setUsername(message.data.split(";")[1]);
-          setPosition(message.data.split(";")[2] || "Unknown");
+          setUsername(message.data.split(";")[2]);
+          setPosition(message.data.split(";")[1] || "Unknown");
           navigate("/");
         } else if (
           message.data.split(";")[0] === "Username-Password incorrect"
