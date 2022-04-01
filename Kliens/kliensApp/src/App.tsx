@@ -14,10 +14,11 @@ import LoggedInContext from "./contexts/context";
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
+  const [position, setPosition] = useState("");
 
   return (
     <LoggedInContext.Provider
-      value={{ isLoggedIn, setLoggedIn, username, setUsername }}
+      value={{ isLoggedIn, setLoggedIn, username, setUsername, position, setPosition }}
     >
       <BrowserRouter>
         <MenuDrawer />

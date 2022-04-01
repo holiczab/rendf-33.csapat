@@ -73,6 +73,7 @@ export default function MenuDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const { isLoggedIn, setLoggedIn } = useContext(LoggedInContext);
+  const { position, setPosition } = useContext(LoggedInContext);
 
   const handleDrawer = () => {
     if (open == true) setOpen(false);
@@ -100,7 +101,7 @@ export default function MenuDrawer() {
             component="div"
             sx={{ flexGrow: 1 /*, ...(open && { display: 'none' })*/ }}
           >
-            {/* Főoldal */}
+            {"Beosztás: " + (position != "" ? position : "---")}
           </Typography>
           {isLoggedIn ? (
             <AccountMenu />
@@ -130,9 +131,9 @@ export default function MenuDrawer() {
         open={open}
       >
         <DrawerHeader>
-          {/* <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Főoldal
-          </Typography> */}
+          { <Typography variant="h5" noWrap component="div" sx={{ flexGrow: 1 }}>
+          Menü
+          </Typography> }
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -143,6 +144,7 @@ export default function MenuDrawer() {
             <MenuIcon />
           </IconButton>
         </DrawerHeader>
+        <Divider />
         <List>
           <ListItem button component={Link} to="/">
             <ListItemText primary="Kezdőoldal" />
@@ -163,7 +165,7 @@ export default function MenuDrawer() {
             <></>
           )}
         </List>
-        <Divider />
+        {/* <Divider /> */}
       </Drawer>
       <Main open={open}>
         <DrawerHeader />

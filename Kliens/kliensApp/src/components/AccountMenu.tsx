@@ -19,6 +19,7 @@ export default function AccountMenu() {
   const open = Boolean(anchorEl);
   const { isLoggedIn, setLoggedIn } = useContext(LoggedInContext);
   const { username, setUsername } = useContext(LoggedInContext);
+  const { position, setPosition } = useContext(LoggedInContext);
 
   const monogram: string =
     username != ""
@@ -35,6 +36,8 @@ export default function AccountMenu() {
 
   const logout = () => {
     setLoggedIn(false);
+    setUsername("");
+    setPosition("");
     navigate("/");
   };
 

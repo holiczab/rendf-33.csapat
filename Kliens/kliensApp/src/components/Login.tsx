@@ -26,6 +26,7 @@ function Login() {
   const navigate = useNavigate();
   const { isLoggedIn, setLoggedIn } = useContext(LoggedInContext);
   const { username, setUsername } = useContext(LoggedInContext);
+  const { position, setPosition } = useContext(LoggedInContext);
 
   const {
     register,
@@ -51,6 +52,7 @@ function Login() {
           //belepesi allapot kezelese
           setLoggedIn(true);
           setUsername(message.data.split(";")[1]);
+          setPosition(message.data.split(";")[2] || "Unknown");
           navigate("/");
         } else if (
           message.data.split(";")[0] === "Username-Password incorrect"
