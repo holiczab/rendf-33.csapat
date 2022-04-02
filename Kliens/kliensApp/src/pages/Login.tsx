@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import isEmail, { IsEmailOptions } from "validator/lib/isEmail";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useNavigate } from "react-router-dom";
-import LoggedInContext from "../contexts/context";
+import LoggedInContext from "../utils/context";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -53,7 +53,7 @@ function Login() {
           setLoggedIn(true);
           setUsername(message.data.split(";")[2]);
           setPosition(message.data.split(";")[1] || "Unknown");
-          navigate("/");
+          navigate("/home");
         } else if (
           message.data.split(";")[0] === "Username-Password incorrect"
         ) {

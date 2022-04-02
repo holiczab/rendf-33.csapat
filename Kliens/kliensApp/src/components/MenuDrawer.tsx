@@ -15,7 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { Link, useNavigate } from "react-router-dom";
 import AccountMenu from "./AccountMenu";
-import LoggedInContext from "../contexts/context";
+import LoggedInContext from "../utils/context";
 
 const drawerWidth = 240;
 
@@ -81,6 +81,7 @@ export default function MenuDrawer() {
     console.log(open);
   };
 
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -131,9 +132,16 @@ export default function MenuDrawer() {
         open={open}
       >
         <DrawerHeader>
-          { <Typography variant="h5" noWrap component="div" sx={{ flexGrow: 1 }}>
-          Menü
-          </Typography> }
+          {
+            <Typography
+              variant="h5"
+              noWrap
+              component="div"
+              sx={{ flexGrow: 1 }}
+            >
+              Menü
+            </Typography>
+          }
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -145,26 +153,57 @@ export default function MenuDrawer() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
-          <ListItem button component={Link} to="/">
-            <ListItemText primary="Kezdőoldal" />
-          </ListItem>
-          {isLoggedIn ? (
-            <>
-              <ListItem button component={Link} to="/categories">
-                <ListItemText primary="Kategóriák" />
-              </ListItem>
-              <ListItem button component={Link} to="/degrees">
-                <ListItemText primary="Végzettségek" />
-              </ListItem>
-              <ListItem button component={Link} to="/tools">
-                <ListItemText primary="Eszközök" />
-              </ListItem>
-            </>
-          ) : (
-            <></>
-          )}
-        </List>
+
+          { //Beosztastol fuggoen jeleniti meg az egyes oldalakra vezeto linkeket
+            {
+              Operator: (
+                <>
+                  <ListItem button component={Link} to="/home">
+                    <ListItemText primary="Kezdőoldal" />
+                  </ListItem>
+
+                  <ListItem button component={Link} to="/degrees">
+                    <ListItemText primary="Végzettségek" />
+                  </ListItem>
+
+                  <ListItem button component={Link} to="/tasks">
+                    <ListItemText primary="Feladatok" />
+                  </ListItem>
+                </>
+              ),
+              Repairer: (
+                <>
+                  <List>
+                    <ListItem button component={Link} to="/home">
+                      <ListItemText primary="Kezdőoldal" />
+                    </ListItem>
+
+                    <ListItem button component={Link} to="/tasks">
+                      <ListItemText primary="Feladatok" />
+                    </ListItem>
+                  </List>
+                </>
+              ),
+              DeviceCorrespondent: (
+                <>
+                  <List>
+                    <ListItem button component={Link} to="/home">
+                      <ListItemText primary="Kezdőoldal" />
+                    </ListItem>
+
+                    <ListItem button component={Link} to="/categories">
+                      <ListItemText primary="Kategóriák" />
+                    </ListItem>
+
+                    <ListItem button component={Link} to="/tools">
+                      <ListItemText primary="Eszközök" />
+                    </ListItem>
+                  </List>
+                </>
+              ),
+            }[position!]
+          }
+
         {/* <Divider /> */}
       </Drawer>
       <Main open={open}>

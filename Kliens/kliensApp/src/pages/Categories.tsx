@@ -111,7 +111,8 @@ function Categories() {
   };
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <main style={{paddingLeft: 280}}>
+      <Paper sx={{ width: '95%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -150,6 +151,7 @@ function Categories() {
         </Table>
       </TableContainer>
     </Paper>
+    </main>
   );
 }
 

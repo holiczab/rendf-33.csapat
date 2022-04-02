@@ -9,7 +9,6 @@ interface ILoggedInContext {
     setPosition: React.Dispatch<React.SetStateAction<string>>;
 }
   
-
 const defaultState = {
     isLoggedIn: false
 };
