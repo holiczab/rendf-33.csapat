@@ -33,7 +33,6 @@ function FetchDataFromDB(){
   //await sleep(2000);
 };
 
-FetchDataFromDB();
 
 interface Column {
   id: 'ID' | 'Name' | 'ParentID' | 'Interval' | 'Specification' | 'StandardTime' | 'RequredQualification';
@@ -109,6 +108,7 @@ function createData(
 
 
 function Categories() {
+  FetchDataFromDB();
   React.useEffect(
     // HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
     () => {
@@ -116,26 +116,26 @@ function Categories() {
         console.log("WebSocket Client Connected");
       };
       client.onmessage = (message: any) => {
-        //console.log(message.data);
-        
-        rows = [];
-        var SplittedMessage = message.data.split("\n");
-        for (let Row in SplittedMessage){
-          console.log(SplittedMessage[Row]);
-          var SplittedRow = SplittedMessage[Row].split(";");
-          for (let str in SplittedRow){
-            if (SplittedRow[str] === "None"){
-              str = "";
-            }
-          }  
-          rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4], SplittedRow[5], SplittedRow[6]));
-        }
-        
-        for (let entry of rows) {
-          console.log(entry); 
-        }
-        
-        TableReturn();
+          //console.log(message.data);
+          
+          rows = [];
+          var SplittedMessage = message.data.split("\n");
+          for (let Row in SplittedMessage){
+            console.log(SplittedMessage[Row]);
+            var SplittedRow = SplittedMessage[Row].split(";");
+            for (let str in SplittedRow){
+              if (SplittedRow[str] === "None"){
+                SplittedRow[str] = "";
+              }
+            }  
+            rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4], SplittedRow[5], SplittedRow[6]));
+          }
+          
+          for (let entry of rows) {
+            console.log(entry); 
+          }
+          
+          TableReturn();
       };
     },
     []
@@ -185,7 +185,7 @@ function Categories() {
   }
 
   return (
-    TableReturn()
+    TableReturn()    
   );
 }
 
