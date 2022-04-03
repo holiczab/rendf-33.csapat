@@ -14,6 +14,7 @@ import { Button } from '@mui/material';
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import ReactDOM from 'react-dom';
+import { useState } from 'react';
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -71,6 +72,58 @@ function createData(
   return { ID, Name, Category, Description, Location};
 }
 
+function TableReturn(){
+  return <Styles><div>
+    <h2 style={{paddingLeft: 280}}>Eszközök</h2>
+  <div style={{paddingLeft: 280}}>
+  <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
+  <TableContainer sx={{ maxHeight: 440 }}>
+    <Table stickyHeader aria-label="sticky table">
+      <TableHead>
+        <TableRow>
+          {columns.map((column) => (
+            <TableCell
+              key={column.id}
+              align={column.align}
+              style={{ minWidth: column.minWidth }}
+            >
+              {column.label}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows
+          .map((row) => {
+            return (
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.ID}>
+                {columns.map((column) => {
+                  const value = row[column.id];
+                  return (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format && typeof value === 'number'
+                        ? column.format(value)
+                        : value}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
+      </TableBody>
+    </Table>
+  </TableContainer>
+</Paper>
+</div >
+  <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
+    <Button style={{float: 'right'}} /*onClick={} */>Eszköz törlése</Button> 
+  </div>
+    <div style={{paddingTop: 20, paddingLeft: 500}}>
+      <Form />
+    </div>
+</div>
+</Styles>
+}
 
 const Styles = styled.div`
   form {
@@ -118,10 +171,12 @@ const Styles = styled.div`
  
 
 function Form() {
+
   
   const {
     register,
     handleSubmit,
+    reset,
     getValues,
     formState: { errors },
     formState,
@@ -130,10 +185,12 @@ function Form() {
   const onSubmit = (data: any) => {
     //console.log(data);
     client.send("advc;"+data.ID+";"+data.Name+";"+data.Category+";"+data.Description+";"+data.Location+";");
+    reset();
+    FetchDataFromDB();
   };
  
   return (
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form id="input-form" onSubmit={handleSubmit(onSubmit)}>
         <h3>Eszköz hozzáadása</h3>
         <label>
           Azonosító:
@@ -143,8 +200,9 @@ function Form() {
         </label>
         <label>
           Név:
-          <input type="text" {...register("Name", {
-              required: true
+          <input id="NameInput" type="text" {...register("Name", {
+              required: true,
+              value: ''
             })}/>
         </label>
         <label>
@@ -209,58 +267,7 @@ function Tools() {
     []
   );
 
-  function TableReturn(){
-    return <Styles><div>
-      <h2 style={{paddingLeft: 280}}>Eszközök</h2>
-    <div style={{paddingLeft: 280}}>
-    <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
-    <TableContainer sx={{ maxHeight: 440 }}>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell
-                key={column.id}
-                align={column.align}
-                style={{ minWidth: column.minWidth }}
-              >
-                {column.label}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows
-            .map((row) => {
-              return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.ID}>
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number'
-                          ? column.format(value)
-                          : value}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </Paper>
-  </div >
-    <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
-      <Button style={{float: 'right'}} /*onClick={} */>Eszköz törlése</Button> 
-    </div>
-      <div style={{paddingTop: 20, paddingLeft: 500}}>
-        <Form />
-      </div>
-  </div>
-  </Styles>
-  }
+  
 
   return (
     <div id='rrrrr'></div>
