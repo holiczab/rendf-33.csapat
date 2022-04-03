@@ -11,6 +11,8 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { SelectAllSharp } from '@mui/icons-material';
 import { StyledEngineProvider } from '@mui/styled-engine-sc';
 import { Button } from '@mui/material';
+import { useForm } from "react-hook-form";
+import styled from "styled-components";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -30,8 +32,8 @@ async function FetchDataFromDB(){
   //rows = [];
   var mess = "scat";
   client.send(mess);
-  console.log(mess);
-  await sleep(1000);
+  //console.log(mess);
+  //await sleep(1000);
 };
 
 
@@ -90,7 +92,120 @@ function createData(
   return { ID, Name, ParentID, Interval, Specification, StandardTime, RequredQualification };
 }
 
+const Styles = styled.div`
+  form {
+   background: white;
+   border: 1px solid #dedede;
+   display: flex;
+   flex-direction: column;
+   justify-content: space-around;
+   margin: 0 auto;
+   max-width: 500px;
+   padding: 25px 50px 25px;
+   
+   input {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 10px;
+    width: 100%;
+  }
+ 
+  label {
+    color: #3d3d3d;
+    display: block;
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+ 
+  .error {
+    color: red;
+    font-family: sans-serif;
+    font-size: 12px;
+    height: 30px;
+  }
+ 
+  .submitButton {
+    background-color: #6976d9;
+    color: white;
+    font-family: sans-serif;
+    font-size: 14px;
+    margin: 20px 0px;
+ `;
 
+ 
+
+function Form() {
+  
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+    formState,
+  } = useForm({ mode: "onChange" });
+
+  const onSubmit = (data: any) => {
+    //console.log(data);
+    client.send("acat;"+data.ID+";"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
+  };
+ 
+  return (
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <h3>Kategória hozzáadása</h3>
+        <label>
+          Azonosító:
+          <input type="text" {...register("ID", {
+              required: true
+            })}/>
+        </label>
+        <label>
+          Név:
+          <input type="text" {...register("Name", {
+              required: true
+            })}/>
+        </label>
+        <label>
+          ParentID:
+          <input type="text" {...register("ParentID", {
+              required: true
+            })}/>
+        </label>
+        <label>
+          Interval:
+          <input type="text" {...register("Interval", {
+              required: true
+            })}/>
+        </label>
+        <label>
+          Specification:
+          <input type="text" {...register("Specification", {
+              required: true
+            })}/>
+        </label>
+        <label>
+          StandardTime:
+          <input type="text" {...register("StandardTime", {
+              required: true
+            })}/>
+        </label>
+        <label>
+          RequredQualification:
+          <input type="text" {...register("RequredQualification", {
+              required: true
+            })}/>
+        </label>
+        <input type="submit" 
+          value="Kategória felvétele"
+          color="primary"
+          disabled={!formState.isValid}/>
+      </form>
+  );
+
+  //  onClick={() => onSubmit(getValues())}
+ }
 
 
 function Categories() {
@@ -107,7 +222,7 @@ function Categories() {
           rows = [];
           var SplittedMessage = message.data.split("\n");
           for (let Row in SplittedMessage){
-            console.log(SplittedMessage[Row]);
+            //console.log(SplittedMessage[Row]);
             var SplittedRow = SplittedMessage[Row].split(";");
             for (let str in SplittedRow){
               if (SplittedRow[str] === "None"){
@@ -117,9 +232,9 @@ function Categories() {
             rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4], SplittedRow[5], SplittedRow[6]));
           }
           
-          for (let entry of rows) {
+          /*for (let entry of rows) {
             console.log(entry); 
-          }
+          } */
           
           return TableReturn();
       };
@@ -128,7 +243,8 @@ function Categories() {
   );
 
   function TableReturn(){
-    return <div>
+    return <Styles><div>
+      <h2 style={{paddingLeft: 280}}>Kategóriák</h2>
     <div style={{paddingLeft: 280}}>
     <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
     <TableContainer sx={{ maxHeight: 440 }}>
@@ -169,11 +285,14 @@ function Categories() {
     </TableContainer>
   </Paper>
   </div >
-    <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
-      <Button  style={{float: 'right'}} /*onClick={} */>Kategória felvétel</Button> 
+  <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
       <Button style={{float: 'right'}} /*onClick={} */>Kategória törlése</Button> 
     </div>
+      <div style={{paddingTop: 20, paddingLeft: 500}}>
+        <Form />
+      </div>
   </div>
+  </Styles>
   }
 
   return (
