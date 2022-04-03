@@ -21,16 +21,16 @@ rows = [
   createData('', '', '', '', '', '', '')
 ];
 
-/*function sleep(ms: number | undefined) {
+function sleep(ms: number | undefined) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}*/
+}
 
-function FetchDataFromDB(){
+async function FetchDataFromDB(){
   //rows = [];
   var mess = "scat";
   client.send(mess);
   console.log(mess);
-  //await sleep(2000);
+  await sleep(2000);
 };
 
 
