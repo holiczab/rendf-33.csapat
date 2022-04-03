@@ -13,6 +13,8 @@ import { StyledEngineProvider } from '@mui/styled-engine-sc';
 import { Button } from '@mui/material';
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
+import { render } from '@testing-library/react';
+import ReactDOM from 'react-dom';
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -207,6 +209,58 @@ function Form() {
   //  onClick={() => onSubmit(getValues())}
  }
 
+ function TableReturn(){
+  return <Styles><div>
+    <h2 style={{paddingLeft: 280}}>Kategóriák</h2>
+  <div style={{paddingLeft: 280}}>
+  <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
+  <TableContainer sx={{ maxHeight: 440 }}>
+    <Table stickyHeader aria-label="sticky table">
+      <TableHead>
+        <TableRow>
+          {columns.map((column) => (
+            <TableCell
+              key={column.id}
+              align={column.align}
+              style={{ minWidth: column.minWidth }}
+            >
+              {column.label}
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows
+          .map((row) => {
+            return (
+              <TableRow hover role="checkbox" tabIndex={-1} key={row.ID}>
+                {columns.map((column) => {
+                  const value = row[column.id];
+                  return (
+                    <TableCell key={column.id} align={column.align}>
+                      {column.format && typeof value === 'number'
+                        ? column.format(value)
+                        : value}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            );
+          })}
+      </TableBody>
+    </Table>
+  </TableContainer>
+</Paper>
+</div >
+<div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
+    <Button style={{float: 'right'}} /*onClick={} */>Kategória törlése</Button> 
+  </div>
+    <div style={{paddingTop: 20, paddingLeft: 500}}>
+      <Form />
+    </div>
+</div>
+</Styles>
+}
 
 function Categories() {
   FetchDataFromDB();
@@ -235,68 +289,16 @@ function Categories() {
           /*for (let entry of rows) {
             console.log(entry); 
           } */
-          
-          return TableReturn();
+          ReactDOM.render(TableReturn(), document.getElementById('rrrrr'));
       };
     },
     []
   );
 
-  function TableReturn(){
-    return <Styles><div>
-      <h2 style={{paddingLeft: 280}}>Kategóriák</h2>
-    <div style={{paddingLeft: 280}}>
-    <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
-    <TableContainer sx={{ maxHeight: 440 }}>
-      <Table stickyHeader aria-label="sticky table">
-        <TableHead>
-          <TableRow>
-            {columns.map((column) => (
-              <TableCell
-                key={column.id}
-                align={column.align}
-                style={{ minWidth: column.minWidth }}
-              >
-                {column.label}
-              </TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows
-            .map((row) => {
-              return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.ID}>
-                  {columns.map((column) => {
-                    const value = row[column.id];
-                    return (
-                      <TableCell key={column.id} align={column.align}>
-                        {column.format && typeof value === 'number'
-                          ? column.format(value)
-                          : value}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              );
-            })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </Paper>
-  </div >
-  <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
-      <Button style={{float: 'right'}} /*onClick={} */>Kategória törlése</Button> 
-    </div>
-      <div style={{paddingTop: 20, paddingLeft: 500}}>
-        <Form />
-      </div>
-  </div>
-  </Styles>
-  }
+  
 
   return (
-    TableReturn()    
+    <div id='rrrrr'></div>
   );
 }
 
@@ -307,6 +309,7 @@ function AddCategory(){
 function DeleteCategory(){
 
 }
+
 
 
 export default Categories;
