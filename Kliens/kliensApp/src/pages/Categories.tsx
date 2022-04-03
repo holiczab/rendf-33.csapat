@@ -31,7 +31,7 @@ async function FetchDataFromDB(){
   var mess = "scat";
   client.send(mess);
   console.log(mess);
-  await sleep(2000);
+  await sleep(1000);
 };
 
 
@@ -121,7 +121,7 @@ function Categories() {
             console.log(entry); 
           }
           
-          TableReturn();
+          return TableReturn();
       };
     },
     []
