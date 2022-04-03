@@ -31,7 +31,7 @@ async function FetchDataFromDB(){
   var mess = "sdvc";
   client.send(mess);
   console.log(mess);
-  await sleep(2000);
+  await sleep(1000);
 };
 
 
@@ -100,7 +100,7 @@ function Tools() {
             console.log(entry); 
           }
           
-          TableReturn();
+          return TableReturn();
       };
     },
     []
