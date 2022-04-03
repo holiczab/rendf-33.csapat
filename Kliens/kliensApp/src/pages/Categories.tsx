@@ -144,6 +144,7 @@ function Form() {
   const {
     register,
     handleSubmit,
+    reset,
     getValues,
     formState: { errors },
     formState,
@@ -152,6 +153,8 @@ function Form() {
   const onSubmit = (data: any) => {
     //console.log(data);
     client.send("acat;"+data.ID+";"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
+    reset();
+    FetchDataFromDB();
   };
  
   return (
