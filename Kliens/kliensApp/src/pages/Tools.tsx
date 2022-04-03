@@ -13,6 +13,7 @@ import { StyledEngineProvider } from '@mui/styled-engine-sc';
 import { Button } from '@mui/material';
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
+import ReactDOM from 'react-dom';
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -202,7 +203,7 @@ function Tools() {
             console.log(entry); 
           } */
           
-          return TableReturn();
+          ReactDOM.render(TableReturn(), document.getElementById('rrrrr'));
       };
     },
     []
@@ -262,7 +263,7 @@ function Tools() {
   }
 
   return (
-    TableReturn()    
+    <div id='rrrrr'></div>
   );
 }
 
