@@ -10,6 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { SelectAllSharp } from '@mui/icons-material';
 import { StyledEngineProvider } from '@mui/styled-engine-sc';
+import { Button } from '@mui/material';
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -47,38 +48,23 @@ const columns: readonly Column[] = [
   { id: 'Name', label: 'Name', minWidth: 100 },
   {
     id: 'ParentID',
-    label: 'ParentID',
-    minWidth: 90,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    label: 'ParentID'
   },
   {
     id: 'Interval',
-    label: 'Interval',
-    minWidth: 90,
-    align: 'right',
-    format: (value: number) => value.toLocaleString('en-US'),
+    label: 'Interval'
   },
   {
     id: 'Specification',
-    label: 'Specification',
-    minWidth: 90,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
+    label: 'Specification'
   },
   {
     id: 'StandardTime',
-    label: 'StandardTime',
-    minWidth: 90,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
+    label: 'StandardTime'
   },
   {
     id: 'RequredQualification',
-    label: 'RequredQualification',
-    minWidth: 90,
-    align: 'right',
-    format: (value: number) => value.toFixed(2),
+    label: 'RequredQualification'
   },
 ];
 
@@ -142,8 +128,9 @@ function Categories() {
   );
 
   function TableReturn(){
-    return <main style={{paddingLeft: 280}}>
-    <Paper sx={{ width: '95%', overflow: 'hidden' }}>
+    return <div>
+    <div style={{paddingLeft: 280}}>
+    <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
     <TableContainer sx={{ maxHeight: 440 }}>
       <Table stickyHeader aria-label="sticky table">
         <TableHead>
@@ -181,12 +168,25 @@ function Categories() {
       </Table>
     </TableContainer>
   </Paper>
-  </main>
+  </div >
+    <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
+      <Button  style={{float: 'right'}} /*onClick={} */>Kategória felvétel</Button> 
+      <Button style={{float: 'right'}} /*onClick={} */>Kategória törlése</Button> 
+    </div>
+  </div>
   }
 
   return (
     TableReturn()    
   );
+}
+
+function AddCategory(){
+
+}
+
+function DeleteCategory(){
+
 }
 
 
