@@ -115,15 +115,50 @@ function TableReturn(){
   </TableContainer>
 </Paper>
 </div >
-  <div style={{ width: '95%' /*, overflow: 'hidden' */ }}> 
-    <Button style={{float: 'right'}} /*onClick={} */>Eszköz törlése</Button> 
-  </div>
-    <div style={{paddingTop: 20, paddingLeft: 500}}>
+    <div style={{paddingTop: 20, width: '95%' /*, overflow: 'hidden' */ }}> 
+      <DeleteForm />
+    </div>
+    <div style={{paddingLeft: 500}}>
       <Form />
     </div>
 </div>
 </Styles>
 }
+
+function DeleteForm() {
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { errors },
+    formState,
+  } = useForm({ mode: "onChange" });
+
+  const onSubmit = (data: any) => {
+    //console.log(data);
+    client.send("ddvc;"+data.ID);
+    reset();
+    FetchDataFromDB();
+  };
+ 
+  return (
+      <form style={{float: 'right'}} id="delete-form" onSubmit={handleSubmit(onSubmit)}>
+        <h3>Eszköz Törlése</h3>
+        <label>
+          ID:
+          <input type="text" {...register("ID", {
+              required: true
+            })}/>
+        </label>
+        <input type="submit" 
+          value="Eszköz eltávolítása"
+          color="primary"
+          disabled={!formState.isValid}/>
+      </form>
+  );
+ }
 
 const Styles = styled.div`
   form {
@@ -134,7 +169,7 @@ const Styles = styled.div`
    justify-content: space-around;
    margin: 0 auto;
    max-width: 500px;
-   padding: 25px 50px 25px;
+   padding: 0px 50px 25px;
    
    input {
     border: 1px solid #d9d9d9;
