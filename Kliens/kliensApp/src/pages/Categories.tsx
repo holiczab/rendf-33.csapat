@@ -19,11 +19,9 @@ import ReactDOM from 'react-dom';
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
 var rows: Data[];
-  
-  //createData('India', 'IN', '1324171354', '3287263', 'China', 'CN', 'Italy')
 
 rows = [
-  createData('', '', '', '', '', '', '')
+  //createData('', '', '', '', '', '')
 ];
 
 function sleep(ms: number | undefined) {
@@ -40,7 +38,7 @@ async function FetchDataFromDB(){
 
 
 interface Column {
-  id: 'ID' | 'Name' | 'ParentID' | 'Interval' | 'Specification' | 'StandardTime' | 'RequredQualification';
+  id: 'ID' | 'Name' |/* 'ParentID' |*/ 'Interval' | 'Specification' | 'StandardTime' | 'RequredQualification';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -50,10 +48,10 @@ interface Column {
 const columns: readonly Column[] = [
   { id: 'ID', label: 'ID', minWidth: 90 },
   { id: 'Name', label: 'Name', minWidth: 100 },
-  {
+  /* {
     id: 'ParentID',
     label: 'ParentID'
-  },
+  }, */
   {
     id: 'Interval',
     label: 'Interval'
@@ -75,7 +73,7 @@ const columns: readonly Column[] = [
 interface Data {
   ID: string;
   Name: string;
-  ParentID: string;
+  //ParentID: string;
   Interval: string;
   Specification: string;
   StandardTime: string;
@@ -85,13 +83,13 @@ interface Data {
 function createData(
   ID: string,
   Name: string,
-  ParentID: string,
+  //ParentID: string,
   Interval: string,
   Specification: string,
   StandardTime: string,
   RequredQualification: string,
 ): Data {
-  return { ID, Name, ParentID, Interval, Specification, StandardTime, RequredQualification };
+  return { ID, Name, /* ParentID, */ Interval, Specification, StandardTime, RequredQualification };
 }
 
 const Styles = styled.div`
@@ -320,8 +318,21 @@ function Categories() {
               if (SplittedRow[str] === "None"){
                 SplittedRow[str] = "";
               }
-            }  
-            rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4], SplittedRow[5], SplittedRow[6]));
+            }
+            if (SplittedRow[2] != undefined){
+              let ParentID: string = SplittedRow[2].toString().slice(0, -3);
+              //console.log(ParentID);
+              if (ParentID == "catm"){
+                SplittedRow[1] = "---" + SplittedRow[1];
+                //console.log(SplittedRow[1]);
+              } 
+              else if (ParentID == "cats"){
+                SplittedRow[1] = "------" + SplittedRow[1];
+                //console.log(SplittedRow[1]);
+              }
+            }
+            
+            rows.push(createData(SplittedRow[0], SplittedRow[1], /* SplittedRow[2], */ SplittedRow[3], SplittedRow[4], SplittedRow[5], SplittedRow[6]));
           }
           
           /*for (let entry of rows) {
