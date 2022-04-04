@@ -32,10 +32,10 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [x] Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
 > - [x] Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
 - [x] Eszköz kategóriák felvétele, hierarchiába rendezése [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/kat-veg.jpg)
-> - [ ] Eszközfelelős tudjon kategóriákat felvenni/törölni
+> - [x] Eszközfelelős tudjon kategóriákat felvenni/törölni
 > - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
 - [x] Eszközök rögzítése (azonosító, név, helyszín, kategóriába sorolás)
-> - [ ] Eszközfelelős tudjon eszközt felvenni és törölni
+> - [x] Eszközfelelős tudjon eszközt felvenni és törölni
 > - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
 - [x] Végzettségek felvétele és eszköz kategóriákhoz rendelése [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/kat-veg.jpg)
 ### 2. Mérföldkő
