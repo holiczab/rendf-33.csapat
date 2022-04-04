@@ -23,21 +23,21 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 
 ## Mérföldkövek
 ### 1. Mérföldkő
-- [x] A rendszer adatmodelljének megtervezése és előállítása
+- [x] A rendszer adatmodelljének megtervezése és előállítása [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/adatmodell.PNG)
 > - [x] Adatbázis szerkezetének kiépítése sqlite-ban
-- [x] A rendszer architektúrájának megtervezése
+- [x] A rendszer architektúrájának megtervezése [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/architektura.PNG)
 > - [x] Python Szerver , React Kliens előállítása
 - [x] Felhasználók beléptetése (regisztráció nincs, adminisztrátor adja hozzá az embereket)
 > - [x] Szerver jelszóellenőrzés kezelése
 > - [x] Kliens-Szerver felhasználó név-jelszó ellenőrzés kezelése socket kommunikációval
 > - [x] Kliens- 3 felhasználó típus (Eszközfelelős, Operátor, Karbantartó) külön oldalának kiépítése
-- [x] Eszköz kategóriák felvétele, hierarchiába rendezése
+- [x] Eszköz kategóriák felvétele, hierarchiába rendezése [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/kat-veg.jpg)
 > - [ ] Eszközfelelős tudjon kategóriákat felvenni/törölni
 > - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
 - [x] Eszközök rögzítése (azonosító, név, helyszín, kategóriába sorolás)
 > - [ ] Eszközfelelős tudjon eszközt felvenni és törölni
 > - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
-- [x] Végzettségek felvétele és eszköz kategóriákhoz rendelése
+- [x] Végzettségek felvétele és eszköz kategóriákhoz rendelése [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/kat-veg.jpg)
 ### 2. Mérföldkő
 - [ ] Eszköz kategóriához normaidők és karbantartási periódus rögzítése
 - [ ] Eszköz kategóriához a karbantartásra vonatkozó instrukciók rögzítése
