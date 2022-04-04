@@ -78,7 +78,6 @@ function Login() {
         }}
       >
         <h1 className="title">Belépés</h1>
-        <p>belepve: {String(isLoggedIn)}</p>
 
         <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
           <TextField //Email
