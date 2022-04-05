@@ -20,8 +20,7 @@ export const ProtectedRoute: React.FC<Props> = ({ component: RouteComponent, rol
   }
 
   if (isLoggedIn && !userHasAccess) {
-    //return <AccessDenied />
-    return <Navigate to="/accessdenied" />
+    return <AccessDenied />
   }
 
   //return <Navigate to="/login" />
