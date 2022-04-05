@@ -12,6 +12,7 @@ import PageNotFound from "./pages/PageNotFound";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Tasks from "./pages/Tasks";
 import { routePermissions } from "./utils/routePermissions";
+import AccessDenied from "./pages/AccessDenied";
 
 function App() {
   const [isLoggedIn, setLoggedIn] = useState(false);
@@ -34,6 +35,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="login" element={<Login />} />
+          <Route path="accessdenied" element={<AccessDenied />} />
 
           <Route
             path="home"
