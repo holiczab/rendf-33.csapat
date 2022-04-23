@@ -49,7 +49,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] Karbantartók felvétele a rendszerbe (adatbázis)
 - [x] Végzettségek karbantartóhoz rendelése (adatbázis)
 - [ ] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
-- [ ] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján) (Ha lezárul a karbantartás, akkor már akkor kiszámítája a következő időpontot a periódus alapján, és felveszi az adatbázisba)
+- [ ] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján) (Ha lezárul a karbantartás, akkor már kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba)
 - [ ] Feladatok listázása, állapotok megjelenítése
 - [ ] Operátor -> boszthatja a karbantartókat a feladatokhoz, súlyosság alapján történik a rendezés, ütközések kezelése, minden állípotot lát, mindet tudja módosítani (elutasít, újra ütemez)
 - [x] *ID-k átírása Auto Incrementre*
