@@ -51,6 +51,8 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [ ] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
 - [ ] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján) (Ha lezárul a karbantartás, akkor már kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba)
 - [ ] Feladatok listázása, állapotok megjelenítése
+> - [ ] SQL utasítás
+> - [ ] Kliens
 - [ ] Operátor -> boszthatja a karbantartókat a feladatokhoz, súlyosság alapján történik a rendezés, ütközések kezelése, minden állípotot lát, mindet tudja módosítani (elutasít, újra ütemez)
 - [x] *ID-k átírása Auto Incrementre*
 - [ ] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
