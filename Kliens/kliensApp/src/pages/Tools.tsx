@@ -423,6 +423,7 @@ function Form() {
           <EnhancedTableToolbar numSelected={selected.length} />
           <TableContainer sx={{ maxHeight: 440, overflow: "auto" }}>
             <Table
+              stickyHeader
               aria-labelledby="tableTitle"
             >
               <EnhancedTableHead
