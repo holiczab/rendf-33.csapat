@@ -536,10 +536,12 @@ export default function Categories() {
       
       client.onmessage = (message: any) => {
           //console.log(message.data);
+
           rows = [];    
           console.log("MSG from server: "+message);     
           var SplittedMessage = message.data.split("|\n");
           SplittedMessage.splice(-1,1);
+
           for (let Row in SplittedMessage){
             //console.log(SplittedMessage[Row]);
             var SplittedRow = SplittedMessage[Row].split(";");
