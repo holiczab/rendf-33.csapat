@@ -1,6 +1,7 @@
 import re
 import sqlite3
 import os
+from xml.etree.ElementTree import tostring
 
 class DataBase:
     def __init__(self,message):
@@ -30,14 +31,13 @@ class DataBase:
         elif type == "scat":
             self.ret_msg=self.select_categories()
         elif type == "acat":
-            ID =message.split(";")[1]
-            name =message.split(";")[2]
-            parent =message.split(";")[3]
-            interval =message.split(";")[4]
-            spec =message.split(";")[5]
-            standard =message.split(";")[6]
-            req =message.split(";")[7]
-            self.ret_msg=self.add_category(ID,name,parent,interval,spec,standard,req)
+            name =message.split(";")[1]
+            parent =message.split(";")[2]
+            interval =message.split(";")[3]
+            spec =message.split(";")[4]
+            standard =message.split(";")[5]
+            req =message.split(";")[6]
+            self.ret_msg=self.add_category(name,parent,interval,spec,standard,req)
         elif type == "dcat":
             ID=username=message.split(";")[1]
             self.ret_msg=self.delete_category(ID)   
@@ -84,7 +84,7 @@ class DataBase:
     def select_devices(self):
         cursor = self.conn.execute("SELECT * FROM Device")
         result = cursor.fetchall()
-        print(result)
+        'print(result)'
         msg=""
         for row in result:
             msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+"END_OF_ROW"
@@ -94,21 +94,26 @@ class DataBase:
     def select_categories(self):
         cursor = self.conn.execute("SELECT * FROM Category")
         result = cursor.fetchall()
-        print(result)
+        'print(result)'
         msg=""
         for row in result:
             msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
         print("Select_categories completed!")
         return msg   
         
-    def add_category(self,ID,name,parent,interval,spec,standard,req):
-        self.conn.execute("INSERT INTO Category(ID,Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+ID+"','"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')");
-        self.conn.commit()
+    def add_category(self,name,parent,interval,spec,standard,req):
+        try:
+            print("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
+            self.conn.execute("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')");
+            self.conn.commit()  
+        except Exception:
+            print(tostring(Exception)) 
         print ("Category Record created successfully")
         self.conn.close()
 
-    def delete_category(self,ID):
-        self.conn.execute("DELETE from Category where ID = '"+ID+"'")
+    def delete_category(self,IDs):
+        print("DELETE from Category where ID IN ("+IDs+")")
+        self.conn.execute("DELETE from Category where ID IN ("+IDs+")")
         self.conn.commit()
         print("Data deleted from Category!")
         self.conn.close()

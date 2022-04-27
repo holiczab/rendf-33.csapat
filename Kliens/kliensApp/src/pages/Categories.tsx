@@ -539,7 +539,7 @@ export default function Categories() {
 
           rows = [];    
           console.log("MSG from server: "+message);     
-          var SplittedMessage = message.data.split("|\n");
+          var SplittedMessage = message.data.split("END_OF_ROW");
           SplittedMessage.splice(-1,1);
 
           for (let Row in SplittedMessage){
