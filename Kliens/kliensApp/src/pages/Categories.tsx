@@ -310,7 +310,7 @@ function Categories() {
           //console.log(message.data);
           
           rows = [];
-          var SplittedMessage = message.data.split("\n");
+          var SplittedMessage = message.data.split("END_OF_ROW");
           for (let Row in SplittedMessage){
             //console.log(SplittedMessage[Row]);
             var SplittedRow = SplittedMessage[Row].split(";");
