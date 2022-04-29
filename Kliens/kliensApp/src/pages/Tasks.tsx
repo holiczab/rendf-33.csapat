@@ -1,23 +1,32 @@
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import ReactDOM from 'react-dom';
-import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import { alpha } from '@mui/material/styles';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { visuallyHidden } from '@mui/utils';
-
+import ReactDOM from "react-dom";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import { alpha } from "@mui/material/styles";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { visuallyHidden } from "@mui/utils";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Button from "@mui/material/Button";
+import PopupDialog from "../components/PopupDialog";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -26,39 +35,45 @@ let SelectedIndexes: string[] = [];
 
 rows = [];
 
-rows.push(createData(
-  '001',
-  'TestDevice1',
-  'Cannot switch ON',
-  'ACCEPTED',
-  new Date('2022-04-29T10:30:35').toLocaleString("hu-HU"),
-  new Date('2022-04-30T10:30:35').toLocaleString("hu-HU")
-))
+rows.push(
+  createData(
+    "001",
+    "TestDevice1",
+    "Cannot switch ON",
+    "ACCEPTED",
+    new Date("2022-04-29T10:30:35").toLocaleString("hu-HU"),
+    new Date("2022-04-30T10:30:35").toLocaleString("hu-HU")
+  )
+);
 
-rows.push(createData(
-  '001',
-  'TestDevice2',
-  'Cannot switch ON',
-  'ACCEPTED',
-  new Date('2022-04-24T10:30:35').toLocaleString("hu-HU"),
-  new Date('2022-04-27T10:30:35').toLocaleString("hu-HU")
-))
+rows.push(
+  createData(
+    "001",
+    "TestDevice2",
+    "Cannot switch ON",
+    "ACCEPTED",
+    new Date("2022-04-24T10:30:35").toLocaleString("hu-HU"),
+    new Date("2022-04-27T10:30:35").toLocaleString("hu-HU")
+  )
+);
 
-rows.push(createData(
-  '001',
-  'TestDevice3',
-  'Cannot switch ON',
-  'ACCEPTED',
-  new Date('2022-04-15T10:30:35').toLocaleString("hu-HU"),
-  new Date('2022-04-27T10:30:35').toLocaleString("hu-HU")
-))
+rows.push(
+  createData(
+    "001",
+    "TestDevice3",
+    "Cannot switch ON",
+    "ACCEPTED",
+    new Date("2022-04-15T10:30:35").toLocaleString("hu-HU"),
+    new Date("2022-04-27T10:30:35").toLocaleString("hu-HU")
+  )
+);
 
-async function FetchDataFromDB(){
+async function FetchDataFromDB() {
   rows = [];
   var mess = "scat";
   client.send(mess);
   //console.log(mess);
-};
+}
 
 interface Data {
   ID: string;
@@ -75,7 +90,7 @@ function createData(
   Failure: string,
   Status: string,
   Created: string,
-  Modified: string,
+  Modified: string
 ): Data {
   return { ID, Device, Failure, Status, Created, Modified };
 }
@@ -91,23 +106,26 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-type Order = 'asc' | 'desc';
+type Order = "asc" | "desc";
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key,
+  orderBy: Key
 ): (
   a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  b: { [key in Key]: number | string }
 ) => number {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
+function stableSort<T>(
+  array: readonly T[],
+  comparator: (a: T, b: T) => number
+) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -127,43 +145,44 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  
   {
-    id: 'Device',
+    id: "Device",
     numeric: false,
     disablePadding: false,
-    label: 'Device',
+    label: "Device",
   },
   {
-    id: 'Failure',
+    id: "Failure",
     numeric: false,
     disablePadding: false,
-    label: 'Failure',
+    label: "Failure",
   },
   {
-    id: 'Status',
+    id: "Status",
     numeric: false,
     disablePadding: false,
-    label: 'Status',
+    label: "Status",
   },
   {
-    id: 'Created',
+    id: "Created",
     numeric: false,
     disablePadding: false,
-    label: 'Created',
+    label: "Created",
   },
   {
-    id: 'Modified',
+    id: "Modified",
     numeric: false,
     disablePadding: false,
-    label: 'Modified',
-  }
+    label: "Modified",
+  },
 ];
-
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -171,8 +190,14 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -195,19 +220,19 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? "right" : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -226,28 +251,33 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const { numSelected } = props;
 
   return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-          alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
+    <>
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+          ...(numSelected > 0 && {
+            bgcolor: (theme) =>
+              alpha(
+                theme.palette.primary.main,
+                theme.palette.action.activatedOpacity
+              ),
+          }),
+        }}
+      >
         <Typography
-          sx={{ flex: '1 1 100%' }}
+          sx={{ flex: "1 1 100%" }}
           variant="h6"
           id="tableTitle"
           component="div"
         >
           Karbantartási feladatok
         </Typography>
-    </Toolbar>
+        <PopupDialog />
+      </Toolbar>
+    </>
   );
 };
-
 
 const Styles = styled.div`
   form {
@@ -292,22 +322,19 @@ const Styles = styled.div`
     margin: 20px 0px;
  `;
 
-
-
 export default function Tasks() {
-
   /*FetchDataFromDB();*/
 
-  const [order, setOrder] = React.useState<Order>('asc');
-      const [orderBy, setOrderBy] = React.useState<keyof Data>('Created');
-      const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [order, setOrder] = React.useState<Order>("asc");
+  const [orderBy, setOrderBy] = React.useState<keyof Data>("Created");
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Data
   ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -324,7 +351,6 @@ export default function Tasks() {
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    
     const selectedIndex = selected.indexOf(name);
     let newSelected: string[] = [];
 
@@ -337,7 +363,7 @@ export default function Tasks() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     SelectedIndexes = newSelected;
@@ -348,50 +374,46 @@ export default function Tasks() {
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  
 
   /* let SelectedIndexes: readonly string[] = ['1'];  
   setSelected(SelectedIndexes);   */
 
-  function TableReturn(){
-    
+  function TableReturn() {
     return (
-      <div id='DataTable'>
-      <Box style={{paddingLeft: 280}}>
-        <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
-          <EnhancedTableToolbar numSelected={selected.length} />
-          <TableContainer sx={{ maxHeight: 440, overflow: "auto" }}>
-            <Table
-              stickyHeader
-              aria-labelledby="tableTitle"
-            >
-              <EnhancedTableHead
-                numSelected={selected.length}
-                order={order}
-                orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
-                onRequestSort={handleRequestSort}
-                rowCount={rows.length}
-              />
-              <TableBody>
-                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+      <div id="DataTable">
+        <Box style={{ paddingLeft: 280 }}>
+          <Paper sx={{ width: "95%" /*, overflow: 'hidden' */ }}>
+            
+            <EnhancedTableToolbar numSelected={selected.length} />
+            <TableContainer sx={{ maxHeight: 440, overflow: "auto" }}>
+              <Table stickyHeader aria-labelledby="tableTitle">
+                <EnhancedTableHead
+                  numSelected={selected.length}
+                  order={order}
+                  orderBy={orderBy}
+                  onSelectAllClick={handleSelectAllClick}
+                  onRequestSort={handleRequestSort}
+                  rowCount={rows.length}
+                />
+                <TableBody>
+                  {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                 rows.slice().sort(getComparator(order, orderBy)) */}
-                {stableSort(rows, getComparator(order, orderBy))
-                  .map((row, index) => {
-                    const isItemSelected = isSelected(row.ID);
-                    const labelId = `enhanced-table-checkbox-${index}`;
-  
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.ID)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.ID}
-                        selected={isItemSelected}
-                      >
-                        {/* <TableCell padding="checkbox">
+                  {stableSort(rows, getComparator(order, orderBy)).map(
+                    (row, index) => {
+                      const isItemSelected = isSelected(row.ID);
+                      const labelId = `enhanced-table-checkbox-${index}`;
+
+                      return (
+                        <TableRow
+                          hover
+                          onClick={(event) => handleClick(event, row.ID)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={row.ID}
+                          selected={isItemSelected}
+                        >
+                          {/* <TableCell padding="checkbox">
                           <Checkbox
                             color="primary"
                             checked={isItemSelected}
@@ -400,44 +422,43 @@ export default function Tasks() {
                             }}
                           />
                         </TableCell> */}
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          padding="none"
-                        >
-                          {row.Device}
-                        </TableCell>
-                        <TableCell align="left">{row.Failure}</TableCell>
-                        <TableCell align="left">{row.Status}</TableCell>
-                        <TableCell align="left">{row.Created}</TableCell>
-                        <TableCell align="left">{row.Modified}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                          >
+                            {row.Device}
+                          </TableCell>
+                          <TableCell align="left">{row.Failure}</TableCell>
+                          <TableCell align="left">{row.Status}</TableCell>
+                          <TableCell align="left">{row.Created}</TableCell>
+                          <TableCell align="left">{row.Modified}</TableCell>
+                        </TableRow>
+                      );
+                    }
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Box>
       </div>
     );
   }
 
-
-  
   // React.useEffect(
   //   // HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
   //   () => {
   //     client.onopen = () => {
   //       console.log("WebSocket Client Connected");
   //     };
-      
+
   //     client.onmessage = (message: any) => {
   //         //console.log(message.data);
 
-  //         rows = [];    
-  //         console.log("MSG from server: "+message);     
+  //         rows = [];
+  //         console.log("MSG from server: "+message);
   //         var SplittedMessage = message.data.split("END_OF_ROW");
   //         SplittedMessage.splice(-1,1);
 
@@ -455,18 +476,18 @@ export default function Tasks() {
   //             if (ParentID == "catm"){
   //               SplittedRow[1] = "---" + SplittedRow[1];
   //               //console.log(SplittedRow[1]);
-  //             } 
+  //             }
   //             else if (ParentID == "cats"){
   //               SplittedRow[1] = "------" + SplittedRow[1];
   //               //console.log(SplittedRow[1]);
   //             }
   //           } */
-            
+
   //           rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4], SplittedRow[5]));
   //         }
-          
+
   //         /* for (let entry of rows) {
-  //           console.log(entry); 
+  //           console.log(entry);
   //           console.log("__________");
   //         } */
   //         ReactDOM.render(TableReturn(), document.getElementById('DataTable'));
@@ -474,5 +495,5 @@ export default function Tasks() {
   //   }
   // );
 
-  return(TableReturn());
+  return TableReturn();
 }

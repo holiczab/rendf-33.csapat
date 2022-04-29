@@ -503,11 +503,11 @@ export default function Categories() {
                         >
                           {row.Name}
                         </TableCell>
-                        <TableCell align="right">{row.ParentID}</TableCell>
-                        <TableCell align="right">{row.Interval}</TableCell>
-                        <TableCell align="right">{row.Specification}</TableCell>
-                        <TableCell align="right">{row.StandardTime}</TableCell>
-                        <TableCell align="right">{row.RequredQualification}</TableCell>
+                        <TableCell align="center">{row.ParentID}</TableCell>
+                        <TableCell align="center">{row.Interval}</TableCell>
+                        <TableCell align="left">{row.Specification}</TableCell>
+                        <TableCell align="center">{row.StandardTime}</TableCell>
+                        <TableCell align="center">{row.RequredQualification}</TableCell>
                       </TableRow>
                     );
                   })}

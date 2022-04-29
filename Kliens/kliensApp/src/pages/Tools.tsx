@@ -469,9 +469,9 @@ function Form() {
                         >
                           {row.Name}
                         </TableCell>
-                        <TableCell align="right">{row.Category}</TableCell>
-                        <TableCell align="right">{row.Description}</TableCell>
-                        <TableCell align="right">{row.Location}</TableCell>
+                        <TableCell align="center">{row.Category}</TableCell>
+                        <TableCell align="left">{row.Description}</TableCell>
+                        <TableCell align="center">{row.Location}</TableCell>
                       </TableRow>
                     );
                   })}
