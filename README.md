@@ -41,18 +41,20 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 ### 2. Mérföldkő
 - [ ] Eszköz kategóriához normaidők és karbantartási periódus rögzítése
 > - [x] Meglévőkhöz normaidők és karbantartási periódus rendelés 
-> - [ ] Legyen lehetőség a kliensben felvenni ezeket (akár módosítani)
+> - [x] Legyen lehetőség a kliensben felvenni ezeket
+> > - [ ] Módosítani, törölni
 > - [ ] Ha valami nincs megadva a kategóriánál, a hierarchia miatt meg kell kapja a felette lévő kategória értékeit (pl.: normaidők és karbantartási periódus)
 - [ ] Eszköz kategóriához a karbantartásra vonatkozó instrukciók rögzítése
 > - [x] Meglévőkhöz instrukciók rendelés 
-> - [ ] Legyen lehetőség a kliensben felvenni ezeket (akár módosítani)
+> - [x] Legyen lehetőség a kliensben felvenni ezeket
+> >- [ ] Módosítani, törölni
 - [x] Karbantartók felvétele a rendszerbe (adatbázis)
 - [x] Végzettségek karbantartóhoz rendelése (adatbázis)
-- [ ] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
+- [x] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
 - [ ] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján) (Ha lezárul a karbantartás, akkor már kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba)
 - [ ] Feladatok listázása, állapotok megjelenítése
 > - [ ] SQL utasítás
-> - [ ] Kliens
+> - [x] Kliens
 - [ ] Operátor -> boszthatja a karbantartókat a feladatokhoz, súlyosság alapján történik a rendezés, ütközések kezelése, minden állípotot lát, mindet tudja módosítani (elutasít, újra ütemez)
 - [x] *ID-k átírása Auto Incrementre*
 - [ ] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
