@@ -442,7 +442,7 @@ export default function Devices() {
     return (
       <div id="DataTable">
         <Box style={{ paddingLeft: 280 }}>
-          <Paper sx={{ width: "95%", height: "90%" /*, overflow: 'hidden' */ }}>
+          <Paper sx={{ width: "95%" /*, overflow: 'hidden' */ }}>
             <EnhancedTableToolbar numSelected={selected.length} />
             <TableContainer sx={{ height: "80vh", overflow: "auto" }}>
               <Table stickyHeader aria-labelledby="tableTitle">

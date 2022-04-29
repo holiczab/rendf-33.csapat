@@ -17,6 +17,10 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { visuallyHidden } from '@mui/utils';
+import CategoryPopupDialog from '../components/CategoryPopupDialog';
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
@@ -203,31 +207,7 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
 }
 
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected } = props;
 
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Kategóriák
-        </Typography>
-    </Toolbar>
-  );
-};
 
 
 const Styles = styled.div`
@@ -274,115 +254,80 @@ const Styles = styled.div`
  `;
 
 
-function Form() {
+// function Form() {
   
-  const {
-    register,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-    formState,
-  } = useForm({ mode: "onChange" });
+//   const {
+//     register,
+//     handleSubmit,
+//     reset,
+//     getValues,
+//     formState: { errors },
+//     formState,
+//   } = useForm({ mode: "onChange" });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-    client.send("acat;"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
-    reset();
-    FetchDataFromDB();
-  };
+//   const onSubmit = (data: any) => {
+//     console.log(data);
+//     client.send("acat;"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
+//     reset();
+//     FetchDataFromDB();
+//   };
  
-  return (
-    <Styles>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <h3>Kategória hozzáadása</h3>        
-        <label>
-          Név:
-          <input type="text" {...register("Name", {
-              required: true
-            })}/>
-        </label>
-        <label>
-          ParentID:
-          <input type="text" {...register("ParentID", {
-              required: true
-            })}/>
-        </label>
-        <label>
-          Interval: 
-          <select {...register("Interval", {
-              required: true
-            })}>
-            <option value="1w">1 week</option>
-            <option value="1m">1 month</option>
-            <option value="3m">3 month</option>
-            <option value="6m">6 month</option>
-            <option value="12m">12 month</option>
-          </select>
-        </label>
-        <label>
-          Specification:
-          <input type="text" {...register("Specification", {
-              required: true
-            })}/>
-        </label>
-        <label>
-          StandardTime:
-          <input type="text" {...register("StandardTime", {
-              required: true
-            })}/>
-        </label>
-        <label>
-          RequredQualification:
-          <input type="text" {...register("RequredQualification", {
-              required: true
-            })}/>
-        </label>
-        <input type="submit" 
-          value="Kategória felvétele"
-          color="primary"
-          disabled={!formState.isValid}/>
-      </form>
-      </Styles>
-  );
+//   return (
+//     <Styles>
+//       <form onSubmit={handleSubmit(onSubmit)}>
+//         <h3>Kategória hozzáadása</h3>        
+//         <label>
+//           Név:
+//           <input type="text" {...register("Name", {
+//               required: true
+//             })}/>
+//         </label>
+//         <label>
+//           ParentID:
+//           <input type="text" {...register("ParentID", {
+//               required: true
+//             })}/>
+//         </label>
+//         <label>
+//           Interval: 
+//           <select {...register("Interval", {
+//               required: true
+//             })}>
+//             <option value="1w">1 week</option>
+//             <option value="1m">1 month</option>
+//             <option value="3m">3 month</option>
+//             <option value="6m">6 month</option>
+//             <option value="12m">12 month</option>
+//           </select>
+//         </label>
+//         <label>
+//           Specification:
+//           <input type="text" {...register("Specification", {
+//               required: true
+//             })}/>
+//         </label>
+//         <label>
+//           StandardTime:
+//           <input type="text" {...register("StandardTime", {
+//               required: true
+//             })}/>
+//         </label>
+//         <label>
+//           RequredQualification:
+//           <input type="text" {...register("RequredQualification", {
+//               required: true
+//             })}/>
+//         </label>
+//         <input type="submit" 
+//           value="Kategória felvétele"
+//           color="primary"
+//           disabled={!formState.isValid}/>
+//       </form>
+//       </Styles>
+//   );
 
-  //  onClick={() => onSubmit(getValues())}
- }
-
-function DeleteForm() {
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-    formState,
-  } = useForm({ mode: "onChange" });
-
-  const onSubmit = (data: any) => {
-    //console.log(data);
-    let msg = "";
-    msg=SelectedIndexes.join();
-    console.log("Client message: "+"dcat;"+msg);
-    client.send("dcat;"+msg);
-    SelectedIndexes = [];
-    reset();
-    FetchDataFromDB();
-  };
- 
-  return (
-    <Styles>
-      <form style={{float: 'right'}} id="delete-form" onSubmit={handleSubmit(onSubmit)}>
-        <h3>Kategória Törlése</h3>
-        <input type="submit" 
-          value="Kategória eltávolítása"
-          color="primary"></input>
-      </form>
-      </Styles>
-  );
- }
-
+//   //  onClick={() => onSubmit(getValues())}
+//  }
 
 
 
@@ -392,7 +337,17 @@ export default function Categories() {
 
   const [order, setOrder] = React.useState<Order>('asc');
       const [orderBy, setOrderBy] = React.useState<keyof Data>('Name');
-      const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
+  
+  const deleteCategory = () => {
+    //console.log(data);
+    let msg = "";
+    msg=SelectedIndexes.join();
+    console.log("Client message: "+"dcat;"+msg);
+    //client.send("dcat;"+msg);
+    setSelected([]);
+    FetchDataFromDB();
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -442,8 +397,51 @@ export default function Categories() {
   // Avoid a layout jump when reaching the last page with empty rows.
   
 
-  /* let SelectedIndexes: readonly string[] = ['1'];  
+  /* let SelectedIndexes: readonly string[] = ['1'];
   setSelected(SelectedIndexes);   */
+
+  
+  const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
+    const { numSelected } = props;
+  
+    return (
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+          ...(numSelected > 0 && {
+            bgcolor: (theme) =>
+              alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+          }),
+        }}
+      >
+          <Typography
+            sx={{ flex: '1 1 100%' }}
+            variant="h6"
+            id="tableTitle"
+            component="div"
+          >
+            Kategóriák
+        </Typography>
+        {selected.length === 1 ? (
+            <Fab
+              variant="extended"
+              color="error"
+              aria-label="add"
+              onClick={deleteCategory}
+              sx={{ m: 1 }}
+            >
+              <DeleteIcon sx={{ mr: 1 }} />
+              Törlés
+            </Fab>
+          ) : (
+            <></>
+          )}
+        <CategoryPopupDialog />
+      </Toolbar>
+    );
+  };
+
 
   function TableReturn(){
     /* console.log("Tömb SelectedIndexes: "+SelectedIndexes);
@@ -455,7 +453,7 @@ export default function Categories() {
       <Box style={{paddingLeft: 280}}>
         <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
           <EnhancedTableToolbar numSelected={selected.length} />
-          <TableContainer sx={{ maxHeight: 440, overflow: "auto" }}>
+          <TableContainer sx={{ height: "80vh", overflow: "auto" }}>
             <Table
               stickyHeader
               aria-labelledby="tableTitle"
@@ -516,12 +514,9 @@ export default function Categories() {
           </TableContainer>
         </Paper>
       </Box>
-      <div style={{paddingTop: 20, width: '95%' /*, overflow: 'hidden' */ }}> 
-      <DeleteForm />
-      </div>
-      <div style={{paddingLeft: 500}}>
-        <Form />
-      </div>
+      {/* <div style={{paddingLeft: 500}}> */}
+        {/* <Form /> */}
+      {/* </div> */}
       </div>
     );
   }

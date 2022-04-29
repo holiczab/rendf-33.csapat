@@ -18,6 +18,82 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
 let devicesOptions: { value: string; label: string }[] = [];
 
+
+//function Form() {
+  
+  //   const {
+  //     register,
+  //     handleSubmit,
+  //     reset,
+  //     getValues,
+  //     formState: { errors },
+  //     formState,
+  //   } = useForm({ mode: "onChange" });
+  
+  //   const onSubmit = (data: any) => {
+  //     console.log(data);
+  //     client.send("acat;"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
+  //     reset();
+  //     FetchDataFromDB();
+  //   };
+   
+  //   return (
+  //     <Styles>
+  //       <form onSubmit={handleSubmit(onSubmit)}>
+  //         <h3>Kategória hozzáadása</h3>        
+  //         <label>
+  //           Név:
+  //           <input type="text" {...register("Name", {
+  //               required: true
+  //             })}/>
+  //         </label>
+  //         <label>
+  //           ParentID:
+  //           <input type="text" {...register("ParentID", {
+  //               required: true
+  //             })}/>
+  //         </label>
+  //         <label>
+  //           Interval: 
+  //           <select {...register("Interval", {
+  //               required: true
+  //             })}>
+  //             <option value="1w">1 week</option>
+  //             <option value="1m">1 month</option>
+  //             <option value="3m">3 month</option>
+  //             <option value="6m">6 month</option>
+  //             <option value="12m">12 month</option>
+  //           </select>
+  //         </label>
+  //         <label>
+  //           Specification:
+  //           <input type="text" {...register("Specification", {
+  //               required: true
+  //             })}/>
+  //         </label>
+  //         <label>
+  //           StandardTime:
+  //           <input type="text" {...register("StandardTime", {
+  //               required: true
+  //             })}/>
+  //         </label>
+  //         <label>
+  //           RequredQualification:
+  //           <input type="text" {...register("RequredQualification", {
+  //               required: true
+  //             })}/>
+  //         </label>
+  //         <input type="submit" 
+  //           value="Kategória felvétele"
+  //           color="primary"
+  //           disabled={!formState.isValid}/>
+  //       </form>
+  //       </Styles>
+  //   );
+  
+  //   //  onClick={() => onSubmit(getValues())}
+  //  }
+
 async function FetchDataFromDB() {
   var mess = "sdvc";
   client.send(mess);
@@ -39,89 +115,7 @@ async function FetchDataFromDB() {
   };
 }
 
-// function Form() {
-//   const {
-//     register,
-//     handleSubmit,
-//     reset,
-//     getValues,
-//     formState: { errors },
-//     formState,
-//   } = useForm({ mode: "onChange" });
-
-//   const onSubmit = (data: any) => {
-//     console.log(data);
-//     client.send(
-//       "advc;" +
-//         data.Name +
-//         ";" +
-//         data.Category +
-//         ";" +
-//         data.Description +
-//         ";" +
-//         data.Location +
-//         ";"
-//     );
-//     reset();
-//     FetchDataFromDB();
-//   };
-
-//   return (
-//     <Styles>
-//       <form id="input-form" onSubmit={handleSubmit(onSubmit)}>
-//         <h3>Eszköz hozzáadása</h3>
-
-//         <label>
-//           Név:
-//           <input
-//             id="NameInput"
-//             type="text"
-//             {...register("Name", {
-//               required: true,
-//               value: "",
-//             })}
-//           />
-//         </label>
-//         <label>
-//           Kategória:
-//           <input
-//             type="text"
-//             {...register("Category", {
-//               required: true,
-//             })}
-//           />
-//         </label>
-//         <label>
-//           Leírás:
-//           <input
-//             type="text"
-//             {...register("Description", {
-//               required: true,
-//             })}
-//           />
-//         </label>
-//         <label>
-//           Helyszín:
-//           <input
-//             type="text"
-//             {...register("Location", {
-//               required: true,
-//             })}
-//           />
-//         </label>
-//         <input
-//           type="submit"
-//           value="Eszköz felvétele"
-//           color="primary"
-//           disabled={!formState.isValid}
-//         />
-//       </form>
-//     </Styles>
-//   );
-
-// }
-
-export default function DevicePopupDialog() {
+export default function CategoryPopupDialog() {
   const [open, setOpen] = React.useState(false);
   const [description, setDescription] = React.useState("");
   const [selectedDevice, setSelectedDevice] = React.useState("");
