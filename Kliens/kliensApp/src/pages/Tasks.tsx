@@ -26,7 +26,7 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
-import PopupDialog from "../components/PopupDialog";
+import TaskPopupDialog from "../components/TaskPopupDialog";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -273,7 +273,7 @@ const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
         >
           Karbantartási feladatok
         </Typography>
-        <PopupDialog />
+        <TaskPopupDialog />
       </Toolbar>
     </>
   );

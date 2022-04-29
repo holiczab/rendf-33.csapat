@@ -39,7 +39,7 @@ async function FetchDataFromDB() {
   };
 }
 
-export default function PopupDialog() {
+export default function TaskPopupDialog() {
   const [open, setOpen] = React.useState(false);
   const [description, setDescription] = React.useState("");
   const [selectedDevice, setSelectedDevice] = React.useState("");
