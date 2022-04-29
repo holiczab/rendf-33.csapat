@@ -43,7 +43,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [x] Meglévőkhöz normaidők és karbantartási periódus rendelés 
 > - [x] Legyen lehetőség a kliensben felvenni ezeket
 > > - [ ] Módosítani, törölni
-> - [ ] Ha valami nincs megadva a kategóriánál, a hierarchia miatt meg kell kapja a felette lévő kategória értékeit (pl.: normaidők és karbantartási periódus)
+> - [x] Ha valami nincs megadva a kategóriánál, a hierarchia miatt meg kell kapja a felette lévő kategória értékeit (pl.: normaidők és karbantartási periódus)
 - [ ] Eszköz kategóriához a karbantartásra vonatkozó instrukciók rögzítése
 > - [x] Meglévőkhöz instrukciók rendelés 
 > - [x] Legyen lehetőség a kliensben felvenni ezeket
