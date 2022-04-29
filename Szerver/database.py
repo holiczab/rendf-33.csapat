@@ -2,7 +2,20 @@ import re
 import sqlite3
 import os
 from xml.etree.ElementTree import tostring
+"""
+-------- Feladatok: --------
+B:
+- Updatek 
 
+ZS:
+- Feladat törlés
+- Feladat lekérdezés
+- Feladat módosítás
+- Feladat beszúrás --> Log táblába is adott értékek beszúrása
+- Időszakos karbantartás automatán-> Ha a feladat kész, akkor beszúrja újra más időpontokkal
+
+----------------------------
+"""
 class DataBase:
     def __init__(self,message):
         self.message=message
@@ -40,7 +53,15 @@ class DataBase:
             self.ret_msg=self.add_category(name,parent,interval,spec,standard,req)
         elif type == "dcat":
             ID=username=message.split(";")[1]
-            self.ret_msg=self.delete_category(ID)   
+            self.ret_msg=self.delete_category(ID)
+        elif type == "sloc":
+            self.ret_msg=self.select_location()
+        elif type=="sdname":
+            self.ret_msg=self.select_devices_name()
+        elif type == "serqqual":
+            self.ret_msg=self.select_requiredQualifications()
+        elif type == "sparent":
+            self.ret_msg=self.select_parent_category_data()
 
     def return_message(self):
         return self.ret_msg
@@ -103,11 +124,20 @@ class DataBase:
             msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
         print("Select_categories completed!")
         return msg   
-        
+
+    def select_if_cat_empty(self,ID,em):
+        cursor = self.conn.execute("SELECT "+em+" FROM Category WHERE ID = '"+ID+"'")
+        result = cursor.fetchall()
+        return str(result[0][0])
+
     def add_category(self,name,parent,interval,spec,standard,req):
         try:
+            if interval=="Null": interval=self.select_if_cat_empty(parent,"Interval")
+            if spec=="Null": spec=self.select_if_cat_empty(parent,"Specification")
+            if standard=="Null": standard=self.select_if_cat_empty(parent,"StandardTime")
+            if req=="Null": req=self.select_if_cat_empty(parent,"RequiredQualification")
             print("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
-            self.conn.execute("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')");
+            self.conn.execute("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
             self.conn.commit()  
         except Exception:
             print(tostring(Exception)) 
@@ -121,6 +151,41 @@ class DataBase:
         print("Data deleted from Category!")
         self.conn.close()
 
+    def select_location(self):
+        cursor = self.conn.execute("SELECT DISTINCT Location FROM Device ORDER BY Location")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[1])+"END_OF_ROW"
+        print("Select_location completed!")
+        return msg
+
+    def select_requiredQualifications(self):
+        cursor = self.conn.execute("SELECT DISTINCT RequiredQualification FROM Category ORDER BY RequiredQualification")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+"END_OF_ROW"
+        print("Select_requiredQualifications completed!")
+        return msg
+
+    def select_devices_name(self):
+        cursor = self.conn.execute("SELECT Name FROM Device ORDER BY Name")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+"END_OF_ROW"
+        print("Select_location completed!")
+        return msg
+
+    def select_parent_category_data(self):
+        cursor = self.conn.execute("SELECT ID,Name,StandardTime FROM Category ORDER BY Name")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+"END_OF_ROW"
+        print("Select_parent_category_data completed!")
+        return msg
 
 
 
