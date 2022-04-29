@@ -27,6 +27,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import TaskPopupDialog from "../components/TaskPopupDialog";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -206,7 +207,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead>
       <TableRow>
-        {/* <TableCell padding="checkbox">
+        <TableCell padding="checkbox">
           <Checkbox
             color="primary"
             indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -216,7 +217,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               'aria-label': 'select all',
             }}
           />
-        </TableCell> */}
+        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -247,37 +248,7 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
 }
 
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected } = props;
 
-  return (
-    <>
-      <Toolbar
-        sx={{
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-          ...(numSelected > 0 && {
-            bgcolor: (theme) =>
-              alpha(
-                theme.palette.primary.main,
-                theme.palette.action.activatedOpacity
-              ),
-          }),
-        }}
-      >
-        <Typography
-          sx={{ flex: "1 1 100%" }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Karbantartási feladatok
-        </Typography>
-        <TaskPopupDialog />
-      </Toolbar>
-    </>
-  );
-};
 
 const Styles = styled.div`
   form {
@@ -329,6 +300,15 @@ export default function Tasks() {
   const [orderBy, setOrderBy] = React.useState<keyof Data>("Created");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
 
+  const deleteTask = () => {
+    let msg = "";
+    msg = SelectedIndexes.join();
+    // console.log("Client message: " + "ddvc;" + msg);
+    // client.send("ddvc;" + msg);
+    setSelected([]);
+    //FetchDataFromDB();
+  };
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof Data
@@ -375,8 +355,55 @@ export default function Tasks() {
 
   // Avoid a layout jump when reaching the last page with empty rows.
 
-  /* let SelectedIndexes: readonly string[] = ['1'];  
+  /* let SelectedIndexes: readonly string[] = ['1'];
   setSelected(SelectedIndexes);   */
+  
+
+  const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
+    const { numSelected } = props;
+  
+    return (
+      <>
+        <Toolbar
+          sx={{
+            pl: { sm: 2 },
+            pr: { xs: 1, sm: 1 },
+            ...(numSelected > 0 && {
+              bgcolor: (theme) =>
+                alpha(
+                  theme.palette.primary.main,
+                  theme.palette.action.activatedOpacity
+                ),
+            }),
+          }}
+        >
+          <Typography
+            sx={{ flex: "1 1 100%" }}
+            variant="h6"
+            id="tableTitle"
+            component="div"
+          >
+            Karbantartási feladatok
+          </Typography>
+          {selected.length === 1 ? (
+            <Fab
+              variant="extended"
+              color="error"
+              aria-label="add"
+              onClick={deleteTask}
+              sx={{ m: 1 }}
+            >
+              <DeleteIcon sx={{ mr: 1 }} />
+              Törlés
+            </Fab>
+          ) : (
+            <></>
+          )}
+          <TaskPopupDialog />
+        </Toolbar>
+      </>
+    );
+  };
 
   function TableReturn() {
     return (
@@ -413,7 +440,7 @@ export default function Tasks() {
                           key={row.ID}
                           selected={isItemSelected}
                         >
-                          {/* <TableCell padding="checkbox">
+                          <TableCell padding="checkbox">
                           <Checkbox
                             color="primary"
                             checked={isItemSelected}
@@ -421,7 +448,7 @@ export default function Tasks() {
                               'aria-labelledby': labelId,
                             }}
                           />
-                        </TableCell> */}
+                        </TableCell>
                           <TableCell
                             component="th"
                             id={labelId}
