@@ -1,23 +1,26 @@
-import * as React from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import * as React from "react";
+import Paper from "@mui/material/Paper";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
-import ReactDOM from 'react-dom';
-import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
-import { alpha } from '@mui/material/styles';
-import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { visuallyHidden } from '@mui/utils';
-
+import ReactDOM from "react-dom";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import { alpha } from "@mui/material/styles";
+import TableSortLabel from "@mui/material/TableSortLabel";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import { visuallyHidden } from "@mui/utils";
+import DevicePopupDialog from "../components/DevicePopupDialog";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -25,15 +28,13 @@ var rows: Data[];
 let SelectedIndexes: string[] = [];
 
 rows = [];
-  
 
-async function FetchDataFromDB(){
+async function FetchDataFromDB() {
   //rows = [];
   var mess = "sdvc";
   client.send(mess);
   //console.log(mess);
-};
-
+}
 
 interface Data {
   ID: string;
@@ -48,11 +49,10 @@ function createData(
   Name: string,
   Category: string,
   Description: string,
-  Location: string,
+  Location: string
 ): Data {
-  return { ID, Name, Category, Description, Location};
+  return { ID, Name, Category, Description, Location };
 }
-
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -64,23 +64,26 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   return 0;
 }
 
-type Order = 'asc' | 'desc';
+type Order = "asc" | "desc";
 
 function getComparator<Key extends keyof any>(
   order: Order,
-  orderBy: Key,
+  orderBy: Key
 ): (
   a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string },
+  b: { [key in Key]: number | string }
 ) => number {
-  return order === 'desc'
+  return order === "desc"
     ? (a, b) => descendingComparator(a, b, orderBy)
     : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
 // This method is created for cross-browser compatibility, if you don't
 // need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) {
+function stableSort<T>(
+  array: readonly T[],
+  comparator: (a: T, b: T) => number
+) {
   const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -100,37 +103,38 @@ interface HeadCell {
 }
 
 const headCells: readonly HeadCell[] = [
-  
   {
-    id: 'Name',
+    id: "Name",
     numeric: false,
     disablePadding: false,
-    label: 'Name',
+    label: "Name",
   },
   {
-    id: 'Category',
+    id: "Category",
     numeric: false,
     disablePadding: false,
-    label: 'Category',
+    label: "Category",
   },
   {
-    id: 'Description',
+    id: "Description",
     numeric: false,
     disablePadding: false,
-    label: 'Description',
+    label: "Description",
   },
   {
-    id: 'Location',
+    id: "Location",
     numeric: false,
     disablePadding: false,
-    label: 'Location',
+    label: "Location",
   },
-  ];
-
+];
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -138,8 +142,14 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-    props;
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
@@ -155,26 +165,26 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
-              'aria-label': 'select all',
+              "aria-label": "select all",
             }}
           />
         </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
-            padding={headCell.disablePadding ? 'none' : 'normal'}
+            align={headCell.numeric ? "right" : "left"}
+            padding={headCell.disablePadding ? "none" : "normal"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : 'asc'}
+              direction={orderBy === headCell.id ? order : "asc"}
               onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
                 <Box component="span" sx={visuallyHidden}>
-                  {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
                 </Box>
               ) : null}
             </TableSortLabel>
@@ -188,66 +198,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
 }
-
-const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
-  const { numSelected } = props;
-
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 },
-        ...(numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        }),
-      }}
-    >
-        <Typography
-          sx={{ flex: '1 1 100%' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
-        >
-          Eszközök
-        </Typography>
-    </Toolbar>
-  );
-};
-
-
-function DeleteForm() {
-
-  const {
-    register,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-    formState,
-  } = useForm({ mode: "onChange" });
-
-  const onSubmit = (data: any) => {
-    //console.log(data);
-    let msg = "";
-    msg=SelectedIndexes.join();
-    console.log("Client message: "+"ddvc;"+msg);
-    client.send("ddvc;"+msg);
-    reset();
-    FetchDataFromDB();
-  };
- 
-  return (
-    <Styles>
-    <form style={{float: 'right'}} id="delete-form" onSubmit={handleSubmit(onSubmit)}>
-      <h3>Kategória Törlése</h3>
-      <input type="submit" 
-        value="Kategória eltávolítása"
-        color="primary"></input>
-    </form>
-    </Styles>
-  );
- }
 
 const Styles = styled.div`
   form {
@@ -292,80 +242,150 @@ const Styles = styled.div`
     margin: 20px 0px;
  `;
 
- 
+// function Form() {
+//   const {
+//     register,
+//     handleSubmit,
+//     reset,
+//     getValues,
+//     formState: { errors },
+//     formState,
+//   } = useForm({ mode: "onChange" });
 
-function Form() {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    getValues,
-    formState: { errors },
-    formState,
-  } = useForm({ mode: "onChange" });
+//   const onSubmit = (data: any) => {
+//     console.log(data);
+//     client.send(
+//       "advc;" +
+//         data.Name +
+//         ";" +
+//         data.Category +
+//         ";" +
+//         data.Description +
+//         ";" +
+//         data.Location +
+//         ";"
+//     );
+//     reset();
+//     FetchDataFromDB();
+//   };
 
-  const onSubmit = (data: any) => {
-    //console.log(data);
-    client.send("advc;"+data.Name+";"+data.Category+";"+data.Description+";"+data.Location+";");
-    reset();
-    FetchDataFromDB();
-  };
- 
-  return (
-    <Styles>
-      <form id="input-form" onSubmit={handleSubmit(onSubmit)}>
-        <h3>Eszköz hozzáadása</h3>
-        
-        <label>
-          Név:
-          <input id="NameInput" type="text" {...register("Name", {
-              required: true,
-              value: ''
-            })}/>
-        </label>
-        <label>
-          Kategória:
-          <input type="text" {...register("Category", {
-              required: true
-            })}/>
-        </label>
-        <label>
-          Leírás:
-          <input type="text" {...register("Description", {
-              required: true
-            })}/>
-        </label>
-        <label>
-          Helyszín:
-          <input type="text" {...register("Location", {
-              required: true
-            })}/>
-        </label>
-        <input type="submit" 
-          value="Eszköz felvétele"
-          color="primary"
-          disabled={!formState.isValid}/>
-      </form>
-      </Styles>
-  );
+//   return (
+//     <Styles>
+//       <form id="input-form" onSubmit={handleSubmit(onSubmit)}>
+//         <h3>Eszköz hozzáadása</h3>
 
-  //  onClick={() => onSubmit(getValues())}
- }
+//         <label>
+//           Név:
+//           <input
+//             id="NameInput"
+//             type="text"
+//             {...register("Name", {
+//               required: true,
+//               value: "",
+//             })}
+//           />
+//         </label>
+//         <label>
+//           Kategória:
+//           <input
+//             type="text"
+//             {...register("Category", {
+//               required: true,
+//             })}
+//           />
+//         </label>
+//         <label>
+//           Leírás:
+//           <input
+//             type="text"
+//             {...register("Description", {
+//               required: true,
+//             })}
+//           />
+//         </label>
+//         <label>
+//           Helyszín:
+//           <input
+//             type="text"
+//             {...register("Location", {
+//               required: true,
+//             })}
+//           />
+//         </label>
+//         <input
+//           type="submit"
+//           value="Eszköz felvétele"
+//           color="primary"
+//           disabled={!formState.isValid}
+//         />
+//       </form>
+//     </Styles>
+//   );
 
- export default function Devices() {
-  
+// }
+
+export default function Devices() {
   FetchDataFromDB();
 
-  const [order, setOrder] = React.useState<Order>('asc');
-      const [orderBy, setOrderBy] = React.useState<keyof Data>('Name');
-      const [selected, setSelected] = React.useState<readonly string[]>([]);
+  const [order, setOrder] = React.useState<Order>("asc");
+  const [orderBy, setOrderBy] = React.useState<keyof Data>("Name");
+  const [selected, setSelected] = React.useState<readonly string[]>([]);
+
+  const deleteDevice = () => {
+    let msg = "";
+    msg = SelectedIndexes.join();
+    console.log("Client message: " + "ddvc;" + msg);
+    client.send("ddvc;" + msg);
+    setSelected([]);
+    FetchDataFromDB();
+  };
+
+  const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
+    const { numSelected } = props;
+
+    return (
+      <Toolbar
+        sx={{
+          pl: { sm: 2 },
+          pr: { xs: 1, sm: 1 },
+          ...(numSelected > 0 && {
+            bgcolor: (theme) =>
+              alpha(
+                theme.palette.primary.main,
+                theme.palette.action.activatedOpacity
+              ),
+          }),
+        }}
+      >
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          Eszközök
+        </Typography>
+        <Fab
+          variant="extended"
+          color="error"
+          aria-label="add"
+          onClick={deleteDevice}
+          sx={{ m: 1 }}
+        >
+          <DeleteIcon sx={{ mr: 1 }} />
+          Törlés
+        </Fab>
+        <DevicePopupDialog />
+      </Toolbar>
+    );
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Data
   ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
 
@@ -382,7 +402,6 @@ function Form() {
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, name: string) => {
-    
     const selectedIndex = selected.indexOf(name);
     let newSelected: string[] = [];
 
@@ -395,7 +414,7 @@ function Form() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     SelectedIndexes = newSelected;
@@ -406,92 +425,86 @@ function Form() {
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
   // Avoid a layout jump when reaching the last page with empty rows.
-  
 
   /* let SelectedIndexes: readonly string[] = ['1'];  
   setSelected(SelectedIndexes);   */
 
-  function TableReturn(){
+  function TableReturn() {
     /* console.log("Tömb SelectedIndexes: "+SelectedIndexes);
     SelectedIndexes = [];
     console.log("Tömb törölve: "+SelectedIndexes); */
 
     return (
-      <div id='DataTable'>
-      <Box style={{paddingLeft: 280}}>
-        <Paper sx={{ width: '95%' /*, overflow: 'hidden' */ }}>
-          <EnhancedTableToolbar numSelected={selected.length} />
-          <TableContainer sx={{ maxHeight: 440, overflow: "auto" }}>
-            <Table
-              stickyHeader
-              aria-labelledby="tableTitle"
-            >
-              <EnhancedTableHead
-                numSelected={selected.length}
-                order={order}
-                orderBy={orderBy}
-                onSelectAllClick={handleSelectAllClick}
-                onRequestSort={handleRequestSort}
-                rowCount={rows.length}
-              />
-              <TableBody>
-                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
+      <div id="DataTable">
+        <Box style={{ paddingLeft: 280}}>
+          <Paper sx={{ width: "95%", height: '90%' /*, overflow: 'hidden' */ }}>
+            <EnhancedTableToolbar numSelected={selected.length} />
+            <TableContainer sx={{ height: '80vh', overflow: "auto" }}>
+              <Table stickyHeader aria-labelledby="tableTitle">
+                <EnhancedTableHead
+                  numSelected={selected.length}
+                  order={order}
+                  orderBy={orderBy}
+                  onSelectAllClick={handleSelectAllClick}
+                  onRequestSort={handleRequestSort}
+                  rowCount={rows.length}
+                />
+                <TableBody>
+                  {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                 rows.slice().sort(getComparator(order, orderBy)) */}
-                {stableSort(rows, getComparator(order, orderBy))
-                  .map((row, index) => {
-                    const isItemSelected = isSelected(row.ID);
-                    const labelId = `enhanced-table-checkbox-${index}`;
-  
-                    return (
-                      <TableRow
-                        hover
-                        onClick={(event) => handleClick(event, row.ID)}
-                        role="checkbox"
-                        aria-checked={isItemSelected}
-                        tabIndex={-1}
-                        key={row.ID}
-                        selected={isItemSelected}
-                      >
-                        <TableCell padding="checkbox">
-                          <Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell
-                          component="th"
-                          id={labelId}
-                          scope="row"
-                          padding="none"
+                  {stableSort(rows, getComparator(order, orderBy)).map(
+                    (row, index) => {
+                      const isItemSelected = isSelected(row.ID);
+                      const labelId = `enhanced-table-checkbox-${index}`;
+
+                      return (
+                        <TableRow
+                          hover
+                          onClick={(event) => handleClick(event, row.ID)}
+                          role="checkbox"
+                          aria-checked={isItemSelected}
+                          tabIndex={-1}
+                          key={row.ID}
+                          selected={isItemSelected}
                         >
-                          {row.Name}
-                        </TableCell>
-                        <TableCell align="center">{row.Category}</TableCell>
-                        <TableCell align="left">{row.Description}</TableCell>
-                        <TableCell align="center">{row.Location}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
-      <div style={{paddingTop: 20, width: '95%' /*, overflow: 'hidden' */ }}> 
-      <DeleteForm />
-      </div>
-      <div style={{paddingLeft: 500}}>
-        <Form />
-      </div>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              color="primary"
+                              checked={isItemSelected}
+                              inputProps={{
+                                "aria-labelledby": labelId,
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell
+                            component="th"
+                            id={labelId}
+                            scope="row"
+                            padding="none"
+                          >
+                            {row.Name}
+                          </TableCell>
+                          <TableCell align="center">{row.Category}</TableCell>
+                          <TableCell align="left">{row.Description}</TableCell>
+                          <TableCell align="center">{row.Location}</TableCell>
+                        </TableRow>
+                      );
+                    }
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Box>
+        {/* <div style={{ paddingTop: 20, width: "95%" , overflow: 'hidden'  }}> */}
+          {/* <DeleteForm /> */}
+        {/* </div> */}
+        {/* <div style={{ paddingLeft: 500 }}> */}
+          {/* <Form /> */}
+        {/* </div> */}
       </div>
     );
   }
-
-
-
 
   React.useEffect(
     // HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
@@ -500,27 +513,35 @@ function Form() {
         console.log("WebSocket Client Connected");
       };
       client.onmessage = (message: any) => {
-          //console.log(message.data);
-          rows = [];
+        //console.log(message.data);
+        rows = [];
 
-          var SplittedMessage = message.data.split("END_OF_ROW");
-          SplittedMessage.splice(-1,1);
+        var SplittedMessage = message.data.split("END_OF_ROW");
+        SplittedMessage.splice(-1, 1);
 
-          for (let Row in SplittedMessage){
-            //console.log(SplittedMessage[Row]);
-            var SplittedRow = SplittedMessage[Row].split(";");
-            
-            rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4]));
-          }
-          
-          /* for (let entry of rows) {
+        for (let Row in SplittedMessage) {
+          //console.log(SplittedMessage[Row]);
+          var SplittedRow = SplittedMessage[Row].split(";");
+
+          rows.push(
+            createData(
+              SplittedRow[0],
+              SplittedRow[1],
+              SplittedRow[2],
+              SplittedRow[3],
+              SplittedRow[4]
+            )
+          );
+        }
+
+        /* for (let entry of rows) {
             console.log(entry); 
           } */
-          
-          ReactDOM.render(TableReturn(), document.getElementById('DataTable'));
+
+        ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
       };
     }
   );
 
-  return(TableReturn());
+  return TableReturn();
 }

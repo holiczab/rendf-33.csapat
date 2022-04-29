@@ -17,12 +17,12 @@ class DataBase:
             password=message.split(";")[2]
             self.ret_msg=self.password_check(username,password)
         elif type == "advc":
-            ID=message.split(";")[1]
-            name=message.split(";")[2]
-            category=message.split(";")[3]
-            description=message.split(";")[4]
-            location=message.split(";")[5]
-            self.ret_msg=self.add_device(ID,name,category,description,location)
+            #ID=message.split(";")[1]   <---Auto increment miatt nem kell a klienstol fogadni ID-t (SZERK: Bence)
+            name=message.split(";")[1]
+            category=message.split(";")[2]
+            description=message.split(";")[3]
+            location=message.split(";")[4]
+            self.ret_msg=self.add_device(name,category,description,location)
         elif type == "sdvc":
             self.ret_msg=self.select_devices()
         elif type == "ddvc":
@@ -69,8 +69,11 @@ class DataBase:
         else:
             return "Username-Password incorrect"
 
-    def add_device(self,ID,name,category,description,location):
-        self.conn.execute("INSERT INTO Device(ID,Name,Category,Description,Location) VALUES ('"+ID+"','"+name+"','"+category+"','"+description+"','"+location+"')");
+    def add_device(self,name,category,description,location):
+        ### Auto increment miatt nem kell a klienstol fogadni ID-t (SZERK: Bence)
+        
+        #self.conn.execute("INSERT INTO Device(ID,Name,Category,Description,Location) VALUES ('"+ID+"','"+name+"','"+category+"','"+description+"','"+location+"')");
+        self.conn.execute("INSERT INTO Device(Name,Category,Description,Location) VALUES ('"+name+"','"+category+"','"+description+"','"+location+"')");
         self.conn.commit()
         print ("Device Record created successfully")
         self.conn.close()
