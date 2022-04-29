@@ -352,7 +352,7 @@ function Form() {
   //  onClick={() => onSubmit(getValues())}
  }
 
- export default function Tools() {
+ export default function Devices() {
   
   FetchDataFromDB();
 

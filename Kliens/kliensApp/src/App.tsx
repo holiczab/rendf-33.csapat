@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./pages/Home";
 import Categories from "./pages/Categories";
 import Degrees from "./pages/Degrees";
-import Tools from "./pages/Tools";
+import Devices from "./pages/Devices";
 import Login from "./pages/Login";
 import LoggedInContext from "./utils/context";
 import PageNotFound from "./pages/PageNotFound";
@@ -65,11 +65,11 @@ function App() {
             }
           />
           <Route
-            path="tools"
+            path="devices"
             element={
               <ProtectedRoute
-                roles={ routePermissions.find(e => e.path === "tools")!.roles }
-                component={Tools}
+                roles={ routePermissions.find(e => e.path === "devices")!.roles }
+                component={Devices}
               />
             }
           />

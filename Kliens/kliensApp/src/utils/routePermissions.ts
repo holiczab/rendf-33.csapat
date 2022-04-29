@@ -17,7 +17,7 @@ const routePermissions: PagePermission[] = [
     roles: ["Operator"],
   },
   {
-    path: "tools",
+    path: "devices",
     roles: ["DeviceCorrespondent"],
   },
   {

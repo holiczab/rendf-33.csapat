@@ -195,7 +195,7 @@ export default function MenuDrawer() {
                       <ListItemText primary="Kategóriák" />
                     </ListItem>
 
-                    <ListItem button component={Link} to="/tools">
+                    <ListItem button component={Link} to="/devices">
                       <ListItemText primary="Eszközök" />
                     </ListItem>
                   </List>
