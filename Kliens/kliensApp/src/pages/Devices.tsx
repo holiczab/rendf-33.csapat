@@ -365,16 +365,21 @@ export default function Devices() {
         >
           Eszközök
         </Typography>
-        <Fab
-          variant="extended"
-          color="error"
-          aria-label="add"
-          onClick={deleteDevice}
-          sx={{ m: 1 }}
-        >
-          <DeleteIcon sx={{ mr: 1 }} />
-          Törlés
-        </Fab>
+        {selected.length === 1 ? (
+          <Fab
+            variant="extended"
+            color="error"
+            aria-label="add"
+            onClick={deleteDevice}
+            sx={{ m: 1 }}
+          >
+            <DeleteIcon sx={{ mr: 1 }} />
+            Törlés
+          </Fab>
+        ) : (
+          <></>
+        )}
+
         <DevicePopupDialog />
       </Toolbar>
     );
@@ -436,10 +441,10 @@ export default function Devices() {
 
     return (
       <div id="DataTable">
-        <Box style={{ paddingLeft: 280}}>
-          <Paper sx={{ width: "95%", height: '90%' /*, overflow: 'hidden' */ }}>
+        <Box style={{ paddingLeft: 280 }}>
+          <Paper sx={{ width: "95%", height: "90%" /*, overflow: 'hidden' */ }}>
             <EnhancedTableToolbar numSelected={selected.length} />
-            <TableContainer sx={{ height: '80vh', overflow: "auto" }}>
+            <TableContainer sx={{ height: "80vh", overflow: "auto" }}>
               <Table stickyHeader aria-labelledby="tableTitle">
                 <EnhancedTableHead
                   numSelected={selected.length}
@@ -497,10 +502,10 @@ export default function Devices() {
           </Paper>
         </Box>
         {/* <div style={{ paddingTop: 20, width: "95%" , overflow: 'hidden'  }}> */}
-          {/* <DeleteForm /> */}
+        {/* <DeleteForm /> */}
         {/* </div> */}
         {/* <div style={{ paddingLeft: 500 }}> */}
-          {/* <Form /> */}
+        {/* <Form /> */}
         {/* </div> */}
       </div>
     );
