@@ -18,6 +18,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
 import DevicePopupDialog from "../components/DevicePopupDialog";
+import DeviceEditDialog from "../components/DeviceEditDialog";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -26,6 +27,10 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
 var rows: Data[];
 let SelectedIndexes: string[] = [];
+let CategoryList: string[] = [];
+let LocationList: string[] = [];
+let EditParams : EditDialogInput;
+let DevCategoryList: { ID: string, Name: string }[] = [];
 
 rows = [];
 
@@ -33,7 +38,12 @@ async function FetchDataFromDB() {
   //rows = [];
   var mess = "sdvc";
   client.send(mess);
-  //console.log(mess);
+}
+
+async function GetCategoriesFromDB() {
+  //rows = [];
+  var mess = "scat";
+  client.send(mess);
 }
 
 interface Data {
@@ -53,6 +63,29 @@ function createData(
 ): Data {
   return { ID, Name, Category, Description, Location };
 }
+
+interface EditDialogInput {
+  ID: string;
+  Name: string;
+  Category: string;
+  Description: string;
+  Location: string;
+  DevCategoryList: { ID: string, Name: string }[];
+  LocationList: string[];
+}
+
+function createEditDialogInput(
+  ID: string,
+  Name: string,
+  Category: string,
+  Description: string,
+  Location: string,
+  DevCategoryList: { ID: string, Name: string }[],
+  LocationList: string[]
+): EditDialogInput {
+  return { ID, Name,  Category, Description, Location, DevCategoryList, LocationList };
+}
+
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -326,6 +359,7 @@ const Styles = styled.div`
 
 export default function Devices() {
   FetchDataFromDB();
+  GetCategoriesFromDB();
 
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("Name");
@@ -334,10 +368,11 @@ export default function Devices() {
   const deleteDevice = () => {
     let msg = "";
     msg = SelectedIndexes.join();
-    console.log("Client message: " + "ddvc;" + msg);
+    //console.log("Delete message: " + "ddvc;" + msg);
     client.send("ddvc;" + msg);
     setSelected([]);
     FetchDataFromDB();
+    GetCategoriesFromDB();
   };
 
   const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
@@ -379,7 +414,11 @@ export default function Devices() {
         ) : (
           <></>
         )}
-
+        {selected.length === 1 ? (
+            <DeviceEditDialog{...EditParams} />
+          ) : (
+            <></>
+          )}
         <DevicePopupDialog />
       </Toolbar>
     );
@@ -398,7 +437,7 @@ export default function Devices() {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.ID);
       SelectedIndexes = newSelecteds;
-      console.log(SelectedIndexes);
+      //console.log(SelectedIndexes);
 
       setSelected(newSelecteds);
       return;
@@ -423,7 +462,16 @@ export default function Devices() {
       );
     }
     SelectedIndexes = newSelected;
-    console.log(SelectedIndexes);
+    //console.log("SelectedIndexes: "+SelectedIndexes);
+    if (SelectedIndexes.length === 1){
+      for (let r in rows){
+        if (rows[r].ID === SelectedIndexes[0]){
+          EditParams = createEditDialogInput(rows[r].ID, rows[r].Name, rows[r].Category, rows[r].Description, 
+            rows[r].Location, DevCategoryList, LocationList);  
+        }
+      }
+    }
+    console.log("EditParams: "+EditParams);
     setSelected(newSelected);
   };
 
@@ -519,31 +567,56 @@ export default function Devices() {
       };
       client.onmessage = (message: any) => {
         //console.log(message.data);
-        rows = [];
+        
+        
 
-        var SplittedMessage = message.data.split("END_OF_ROW");
+        let SplittedMessage = message.data.split("END_OF_ROW");
         SplittedMessage.splice(-1, 1);
 
-        for (let Row in SplittedMessage) {
-          //console.log(SplittedMessage[Row]);
-          var SplittedRow = SplittedMessage[Row].split(";");
+        if(SplittedMessage[0].split(";").length === 5){
+          rows = [];
+          LocationList = [];
 
-          rows.push(
-            createData(
-              SplittedRow[0],
-              SplittedRow[1],
-              SplittedRow[2],
-              SplittedRow[3],
-              SplittedRow[4]
-            )
-          );
+          for (let Row in SplittedMessage) {
+            let SplittedRow = SplittedMessage[Row].split(";");
+            
+            rows.push(
+              createData(
+                SplittedRow[0],
+                SplittedRow[1],
+                SplittedRow[2],
+                SplittedRow[3],
+                SplittedRow[4]
+              )
+            );
+            LocationList.push(SplittedRow[4]);
+          }
+        }
+        else{
+          DevCategoryList = [];
+
+          for (let Row in SplittedMessage) {
+            //console.log(SplittedMessage[Row]);
+            let SplittedRow = SplittedMessage[Row].split(";");
+            
+            DevCategoryList.push({
+              ID: SplittedRow[0],
+              Name: SplittedRow[1]
+            });
+            
+          }
+          
+          for(let r in rows){
+            for(let i in DevCategoryList){
+              if(DevCategoryList[i].ID === rows[r].Category){
+                rows[r].Category = DevCategoryList[i].Name;
+              }
+            }
+
+          }
+          ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
         }
 
-        /* for (let entry of rows) {
-            console.log(entry); 
-          } */
-
-        ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
       };
     }
   );

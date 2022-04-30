@@ -19,47 +19,29 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 let devicesOptions: { value: string; label: string }[] = [];
 
 
-let ParentCategoryOptions: { value: string; label: string }[] = [];
-let IntervalOptions: { value: string; label: string }[] = [];
-let QualificationOptions: { value: string; label: string }[] = [];
-
 async function FetchDataFromDB() {
   var mess = "scat";
-  console.log(mess);
+  //console.log(mess);
   client.send(mess);
 }
 
 
-export default function CategoryEditDialog(Data : any) {
+export default function DeviceEditDialog(Data : any) {
     FetchDataFromDB();
     console.log(Data);
-    ParentCategoryOptions = [];
-    IntervalOptions = [];
-    QualificationOptions = [];
 
     let idInput = Data.ID;
     let nameInput = Data.Name; 
-    let parentInput = Data.ParentID;  
-    let intervalInput = Data.Interval; 
-    let specificationInput = Data.Specification; 
-    let standardTInput = Data.StandardTime; 
-    let qualificationInput = Data.RequredQualification; 
-    for(let c in Data.CategoryList){
-      ParentCategoryOptions.push({
-        value: Data.CategoryList[c],
-        label: Data.CategoryList[c] });
-    };
-    for(let i in Data.IntervalList){
-      console.log("IntervalsIndex: "+i);
-      IntervalOptions.push({
-        value: Data.IntervalList[i],
-        label: Data.IntervalList[i] });
-    };
-    for(let q in Data.QualificationList){
-      QualificationOptions.push({
-        value: Data.QualificationList[q],
-        label: Data.QualificationList[q] });
-    };
+    let categoryInput = -1;     
+    let descriptionInput = Data.Description; 
+    let locationInput = Data.Location; 
+    for(let c in Data.DevCategoryList){
+      if(Data.DevCategoryList[c].Name === Data.Category){
+        categoryInput = parseInt(c);
+      }
+    }
+    console.log("cat input: "+categoryInput);
+    
     
     
     /* for(let i in ParentCategoryOptions){
@@ -174,71 +156,45 @@ export default function CategoryEditDialog(Data : any) {
               select
               required
               margin="normal"
-              label="Parent Category"
+              label="Category"
               fullWidth
-              value={parentInput}
-              defaultValue={{ label: parentInput, value: parentInput }}
+              value={Data.DevCategoryList[categoryInput].ID}
+              defaultValue={{ label: Data.DevCategoryList[categoryInput].Name, value: Data.DevCategoryList[categoryInput].ID }}
               onChange={handleSelectedDeviceChange}
             >
-              {ParentCategoryOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              id="outlined-select-currency"
-              select
-              required
-              margin="normal"
-              label="Interval"
-              fullWidth
-              value={intervalInput}
-              defaultValue={{ label: intervalInput, value: intervalInput }}
-              onChange={handleSelectedDeviceChange}
-            >
-              {IntervalOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {Data.DevCategoryList.map((option: { ID: string, Name: string }) => (
+                <MenuItem key={option.ID} value={option.ID}>
+                  {option.Name}
                 </MenuItem>
               ))}
             </TextField>
             <TextField
               id="outlined-multiline-flexible"
-              label="Specification"
               required
               margin="normal"
+              label="Description"
+              minRows={7}
               fullWidth
-              value={specificationInput}
+              value={descriptionInput}
               onChange={handleFailureDescChange}
             />
             <TextField
-              id="outlined-multiline-flexible"
-              label="StandardTime"
-              required
-              margin="normal"
-              fullWidth
-              maxRows={1}
-              value={standardTInput}
-              onChange={handleFailureDescChange}
-            />    
-            <TextField
               id="outlined-select-currency"
               select
               required
               margin="normal"
-              label="Required Qualification"
+              label="Location"
               fullWidth
-              value={qualificationInput}
-              defaultValue={{ label: qualificationInput, value: qualificationInput }}
+              value={locationInput}
+              defaultValue={{ label: locationInput, value: locationInput }}
               onChange={handleSelectedDeviceChange}
             >
-              {QualificationOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {Data.LocationList.map((option: string) => (
+                <MenuItem key={option} value={option}>
+                  {option}
                 </MenuItem>
               ))}
-            </TextField>
+            </TextField>            
           </div>
         </DialogContent>
         <DialogActions>
