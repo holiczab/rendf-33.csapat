@@ -18,6 +18,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { visuallyHidden } from '@mui/utils';
 import CategoryPopupDialog from '../components/CategoryPopupDialog';
+import CategoryEditDialog from '../components/CategoryEditDialog';
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -27,6 +28,10 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
 let rows: Data[];
 let SelectedIndexes: string[] = [];
+let CategoryList: string[] = [];
+let IntervalList: string[] = [];
+let QualificationList: string[]= [];
+
 
 rows = [];
 
@@ -57,6 +62,34 @@ function createData(
   RequredQualification: string,
 ): Data {
   return { ID, Name,  ParentID, Interval, Specification, StandardTime, RequredQualification };
+}
+
+interface EditDialogInput {
+  ID: string;
+  Name: string;
+  ParentID: string;
+  Interval: string;
+  Specification: string;
+  StandardTime: string;
+  RequredQualification: string;
+  CategoryList: string[];
+  IntervalList: string[];
+  QualificationList: string[]
+}
+
+function createEditDialogInput(
+  ID: string,
+  Name: string,
+  ParentID: string,
+  Interval: string,
+  Specification: string,
+  StandardTime: string,
+  RequredQualification: string,
+  CategoryList: string[],
+  IntervalList: string[],
+  QualificationList: string[]
+): EditDialogInput {
+  return { ID, Name,  ParentID, Interval, Specification, StandardTime, RequredQualification, CategoryList, IntervalList, QualificationList };
 }
 
 
@@ -329,6 +362,7 @@ const Styles = styled.div`
 //   //  onClick={() => onSubmit(getValues())}
 //  }
 
+let EditParams : Data;
 
 
 export default function Categories() {
@@ -387,8 +421,18 @@ export default function Categories() {
         selected.slice(selectedIndex + 1),
       );
     }
+    console.log(selected);
     SelectedIndexes = newSelected;
-    console.log(SelectedIndexes);
+    console.log("SelectedIndexes: "+SelectedIndexes);
+    if (SelectedIndexes.length === 1){
+      for (let r in rows){
+        if (rows[r].ID === SelectedIndexes[0]){
+          EditParams = createEditDialogInput(rows[r].ID, rows[r].Name, rows[r].ParentID, rows[r].Interval, 
+            rows[r].Specification, rows[r].StandardTime, rows[r].RequredQualification, CategoryList, IntervalList, QualificationList);  
+        }
+      }
+    }
+    console.log("EditParams: "+EditParams);
     setSelected(newSelected);
   };
 
@@ -434,6 +478,11 @@ export default function Categories() {
               <DeleteIcon sx={{ mr: 1 }} />
               Törlés
             </Fab>
+          ) : (
+            <></>
+          )}
+        {selected.length === 1 ? (
+            <CategoryEditDialog{...EditParams} />
           ) : (
             <></>
           )}
@@ -533,7 +582,11 @@ export default function Categories() {
       client.onmessage = (message: any) => {
           //console.log(message.data);
 
-          rows = [];    
+          rows = [];  
+          CategoryList = [];  
+          IntervalList = [];
+          QualificationList = [];
+          let ParentCategoryList: { ID: string; Name: string }[] = [];
           console.log("MSG from server: "+message);     
           var SplittedMessage = message.data.split("END_OF_ROW");
           SplittedMessage.splice(-1,1);
@@ -558,14 +611,38 @@ export default function Categories() {
                 //console.log(SplittedRow[1]);
               }
             } */
+
+            if(CategoryList.indexOf(SplittedRow[1]) === -1){
+              CategoryList.push(SplittedRow[1]);
+            }
+            if(IntervalList.indexOf(SplittedRow[3]) === -1){
+              IntervalList.push(SplittedRow[3]);
+            }
+            if(QualificationList.indexOf(SplittedRow[6]) === -1){
+              QualificationList.push(SplittedRow[6]);
+            }
             
             rows.push(createData(SplittedRow[0], SplittedRow[1], SplittedRow[2], SplittedRow[3], SplittedRow[4], SplittedRow[5], SplittedRow[6]));
+            ParentCategoryList.push({
+              ID: SplittedRow[0],
+              Name: SplittedRow[1]
+            });
           }
           
           /* for (let entry of rows) {
             console.log(entry); 
             console.log("__________");
           } */
+
+          for(let r in rows){
+            for(let i in ParentCategoryList){
+              if(ParentCategoryList[i].ID === rows[r].ParentID){
+                rows[r].ParentID = ParentCategoryList[i].Name;
+                console.log(rows[r].ParentID);
+              }
+            }
+            
+          }
           ReactDOM.render(TableReturn(), document.getElementById('DataTable'));
       };
     }
