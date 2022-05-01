@@ -30,6 +30,7 @@ let SelectedIndexes: string[] = [];
 let CategoryList: string[] = [];
 let IntervalList: string[] = [];
 let QualificationList: string[] = [];
+let ParentCategoryList: { ID: string; Name: string }[] = [];
 
 rows = [];
 
@@ -78,7 +79,7 @@ interface EditDialogInput {
   Specification: string;
   StandardTime: string;
   RequredQualification: string;
-  CategoryList: string[];
+  ParentCategoryList: { ID: string; Name: string }[];
   IntervalList: string[];
   QualificationList: string[];
 }
@@ -91,7 +92,7 @@ function createEditDialogInput(
   Specification: string,
   StandardTime: string,
   RequredQualification: string,
-  CategoryList: string[],
+  ParentCategoryList: { ID: string; Name: string }[],
   IntervalList: string[],
   QualificationList: string[]
 ): EditDialogInput {
@@ -103,7 +104,7 @@ function createEditDialogInput(
     Specification,
     StandardTime,
     RequredQualification,
-    CategoryList,
+    ParentCategoryList,
     IntervalList,
     QualificationList,
   };
@@ -473,14 +474,14 @@ export default function Categories() {
             rows[r].Specification,
             rows[r].StandardTime,
             rows[r].RequredQualification,
-            CategoryList,
+            ParentCategoryList,
             IntervalList,
             QualificationList
           );
         }
       }
     }
-    console.log("EditParams: " + EditParams);
+    console.log("EditParams: " + EditParams.ParentID);
     setSelected(newSelected);
   };
 
@@ -529,6 +530,7 @@ export default function Categories() {
               Törlés
             </Fab>
             <CategoryEditDialog {...EditParams} />
+            {/* <CategoryEditDialog onUpdate= {console.log("MEGJOTT A VALASZ")} {...EditParams}/> */}
           </>
         ) : selected.length === 0 ? (
           <CategoryPopupDialog {...AddParams} />
@@ -642,9 +644,10 @@ export default function Categories() {
 
         rows = [];
         CategoryList = [];
+        ParentCategoryList = [];
         IntervalList = [];
         QualificationList = [];
-        let ParentCategoryList: { ID: string; Name: string }[] = [];
+        
         console.log("MSG from server: " + message);
         var SplittedMessage = message.data.split("END_OF_ROW");
         SplittedMessage.splice(-1, 1);
@@ -702,14 +705,14 @@ export default function Categories() {
             console.log("__________");
           } */
 
-        for (let r in rows) {
-          for (let i in ParentCategoryList) {
-            if (ParentCategoryList[i].ID === rows[r].ParentID) {
-              rows[r].ParentID = ParentCategoryList[i].Name;
-              console.log(rows[r].ParentID);
-            }
-          }
-        }
+        // for (let r in rows) {
+        //   for (let i in ParentCategoryList) {
+        //     if (ParentCategoryList[i].ID === rows[r].ParentID) {
+        //       rows[r].ParentID = ParentCategoryList[i].Name;
+        //       console.log(rows[r].ParentID);
+        //     }
+        //   }
+        // }
 
         AddParams = createAddDialogInput(
           ParentCategoryList,

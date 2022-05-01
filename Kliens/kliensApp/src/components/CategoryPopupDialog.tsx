@@ -52,7 +52,7 @@ export default function CategoryPopupDialog(Data : any) {
         label: Data.ParentCategoryList[c].Name });
     };
     for(let i in Data.IntervalList){
-      console.log("IntervalsIndex: "+i);
+      //console.log("IntervalsIndex: "+i);
       IntervalOptions.push({
         value: Data.IntervalList[i],
         label: Data.IntervalList[i] });

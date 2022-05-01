@@ -55,7 +55,6 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [ ] Feladatok listázása, állapotok megjelenítése
 > - [ ] SQL utasítás
 > - [x] Kliens
-- [ ] Operátor -> boszthatja a karbantartókat a feladatokhoz, súlyosság alapján történik a rendezés, ütközések kezelése, minden állípotot lát, mindet tudja módosítani (elutasít, újra ütemez)
 - [x] *ID-k átírása Auto Incrementre*
 - [ ] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
 ### 3. Mérföldkő
