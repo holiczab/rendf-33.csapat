@@ -7,8 +7,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-import { useForm } from "react-hook-form";
-import styled from "styled-components";
 import ReactDOM from "react-dom";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
@@ -20,7 +18,6 @@ import { visuallyHidden } from "@mui/utils";
 import CategoryAddDialog from "../components/CategoryAddDialog";
 import CategoryEditDialog from "../components/CategoryEditDialog";
 import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
@@ -218,14 +215,12 @@ export default function Categories() {
   const deleteCategory = () => {
     let msg = "";
     msg = SelectedIndexes.join();
-    //console.log("Client message: " + "dcat;" + msg);
     client.send("dcat;"+msg);
     setSelected([]);
     FetchDataFromDB();
   };
 
   const updateFunction = () => {
-    //console.log("UPDATE SUCCESSFULLY");
     FetchDataFromDB();
     setSelected([]);
   }
@@ -599,13 +594,12 @@ export default function Categories() {
     }, []
   );
 
-  React.useLayoutEffect(
+  React.useEffect(
     // HA kijeloles valtozas van
     () => {
       ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
     }, [selected]
   );
-
 
   return TableReturn();
 }
