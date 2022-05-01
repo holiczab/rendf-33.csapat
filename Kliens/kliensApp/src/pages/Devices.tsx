@@ -7,8 +7,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
-import { useForm } from "react-hook-form";
-import styled from "styled-components";
 import ReactDOM from "react-dom";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
@@ -17,20 +15,19 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
-import DevicePopupDialog from "../components/DevicePopupDialog";
+import DeviceAddDialog from "../components/DeviceAddDialog";
 import DeviceEditDialog from "../components/DeviceEditDialog";
 import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
 var rows: Data[];
 let SelectedIndexes: string[] = [];
-let CategoryList: string[] = [];
 let LocationList: string[] = [];
-let EditParams : EditDialogInput;
-let DevCategoryList: { ID: string, Name: string }[] = [];
+let EditParams: EditDialogInput;
+let AddParams: AddDialogInput;
+let DevCategoryList: { ID: string; Name: string }[] = [];
 
 rows = [];
 
@@ -38,94 +35,91 @@ async function FetchDataFromDB() {
   //rows = [];
   var mess = "sdvc";
   client.send(mess);
+  console.log("Device SELECT query executed");
 }
 
 async function GetCategoriesFromDB() {
   //rows = [];
   var mess = "scat";
   client.send(mess);
+  console.log("Category SELECT query executed");
+}
+
+async function GetLocationsFromDB() {
+  var mess = "sloc";
+  client.send(mess);
+  console.log("Location SELECT query executed");
 }
 
 interface Data {
   ID: string;
   Name: string;
-  Category: string;
+  CategoryID: string;
   Description: string;
   Location: string;
+  CategoryName: string;
 }
 
 function createData(
   ID: string,
   Name: string,
-  Category: string,
+  CategoryID: string,
   Description: string,
-  Location: string
+  Location: string,
+  CategoryName: string
 ): Data {
-  return { ID, Name, Category, Description, Location };
+  return { ID, Name, CategoryID, Description, Location, CategoryName };
 }
 
 interface EditDialogInput {
   ID: string;
   Name: string;
-  Category: string;
+  CategoryID: string;
   Description: string;
   Location: string;
-  DevCategoryList: { ID: string, Name: string }[];
+  DevCategoryList: { ID: string; Name: string }[];
   LocationList: string[];
+  updateFunction: () => any;
 }
 
 function createEditDialogInput(
   ID: string,
   Name: string,
-  Category: string,
+  CategoryID: string,
   Description: string,
   Location: string,
-  DevCategoryList: { ID: string, Name: string }[],
-  LocationList: string[]
+  DevCategoryList: { ID: string; Name: string }[],
+  LocationList: string[],
+  updateFunction: () => any
 ): EditDialogInput {
-  return { ID, Name,  Category, Description, Location, DevCategoryList, LocationList };
+  return {
+    ID,
+    Name,
+    CategoryID,
+    Description,
+    Location,
+    DevCategoryList,
+    LocationList,
+    updateFunction,
+  };
 }
 
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
+interface AddDialogInput {
+  DevCategoryList: { ID: string; Name: string }[];
+  LocationList: string[];
+  updateFunction: () => any;
 }
 
-type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(
-  array: readonly T[],
-  comparator: (a: T, b: T) => number
-) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
+function createAddDialogInput(
+  DevCategoryList: { ID: string; Name: string }[],
+  LocationList: string[],
+  updateFunction: () => any
+): AddDialogInput {
+  return {
+    DevCategoryList,
+    LocationList,
+    updateFunction,
+  };
 }
 
 interface HeadCell {
@@ -133,6 +127,22 @@ interface HeadCell {
   id: keyof Data;
   label: string;
   numeric: boolean;
+}
+
+interface EnhancedTableProps {
+  numSelected: number;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+}
+
+interface EnhancedTableToolbarProps {
+  numSelected: number;
 }
 
 const headCells: readonly HeadCell[] = [
@@ -143,7 +153,7 @@ const headCells: readonly HeadCell[] = [
     label: "Name",
   },
   {
-    id: "Category",
+    id: "CategoryID",
     numeric: false,
     disablePadding: false,
     label: "Category",
@@ -162,205 +172,9 @@ const headCells: readonly HeadCell[] = [
   },
 ];
 
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
-  const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all",
-            }}
-          />
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-}
-
-const Styles = styled.div`
-  form {
-   background: white;
-   border: 1px solid #dedede;
-   display: flex;
-   flex-direction: column;
-   justify-content: space-around;
-   margin: 0 auto;
-   max-width: 500px;
-   padding: 0px 50px 25px;
-   
-   input {
-    border: 1px solid #d9d9d9;
-    border-radius: 4px;
-    box-sizing: border-box;
-    padding: 10px;
-    width: 100%;
-  }
- 
-  label {
-    color: #3d3d3d;
-    display: block;
-    font-family: sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 5px;
-  }
- 
-  .error {
-    color: red;
-    font-family: sans-serif;
-    font-size: 12px;
-    height: 30px;
-  }
- 
-  .submitButton {
-    background-color: #6976d9;
-    color: white;
-    font-family: sans-serif;
-    font-size: 14px;
-    margin: 20px 0px;
- `;
-
-// function Form() {
-//   const {
-//     register,
-//     handleSubmit,
-//     reset,
-//     getValues,
-//     formState: { errors },
-//     formState,
-//   } = useForm({ mode: "onChange" });
-
-//   const onSubmit = (data: any) => {
-//     console.log(data);
-//     client.send(
-//       "advc;" +
-//         data.Name +
-//         ";" +
-//         data.Category +
-//         ";" +
-//         data.Description +
-//         ";" +
-//         data.Location +
-//         ";"
-//     );
-//     reset();
-//     FetchDataFromDB();
-//   };
-
-//   return (
-//     <Styles>
-//       <form id="input-form" onSubmit={handleSubmit(onSubmit)}>
-//         <h3>Eszköz hozzáadása</h3>
-
-//         <label>
-//           Név:
-//           <input
-//             id="NameInput"
-//             type="text"
-//             {...register("Name", {
-//               required: true,
-//               value: "",
-//             })}
-//           />
-//         </label>
-//         <label>
-//           Kategória:
-//           <input
-//             type="text"
-//             {...register("Category", {
-//               required: true,
-//             })}
-//           />
-//         </label>
-//         <label>
-//           Leírás:
-//           <input
-//             type="text"
-//             {...register("Description", {
-//               required: true,
-//             })}
-//           />
-//         </label>
-//         <label>
-//           Helyszín:
-//           <input
-//             type="text"
-//             {...register("Location", {
-//               required: true,
-//             })}
-//           />
-//         </label>
-//         <input
-//           type="submit"
-//           value="Eszköz felvétele"
-//           color="primary"
-//           disabled={!formState.isValid}
-//         />
-//       </form>
-//     </Styles>
-//   );
-
-// }
+type Order = "asc" | "desc";
 
 export default function Devices() {
-  FetchDataFromDB();
-  GetCategoriesFromDB();
-
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("Name");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -368,12 +182,111 @@ export default function Devices() {
   const deleteDevice = () => {
     let msg = "";
     msg = SelectedIndexes.join();
-    //console.log("Delete message: " + "ddvc;" + msg);
     client.send("ddvc;" + msg);
     setSelected([]);
     FetchDataFromDB();
     GetCategoriesFromDB();
   };
+
+  const updateFunction = () => {
+    FetchDataFromDB();
+    setSelected([]);
+  };
+
+  function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+
+  function getComparator<Key extends keyof any>(
+    order: Order,
+    orderBy: Key
+  ): (
+    a: { [key in Key]: number | string },
+    b: { [key in Key]: number | string }
+  ) => number {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+
+  // This method is created for cross-browser compatibility, if you don't
+  // need to support IE11, you can use Array.prototype.sort() directly
+  function stableSort<T>(
+    array: readonly T[],
+    comparator: (a: T, b: T) => number
+  ) {
+    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) {
+        return order;
+      }
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+
+  function EnhancedTableHead(props: EnhancedTableProps) {
+    const {
+      onSelectAllClick,
+      order,
+      orderBy,
+      numSelected,
+      rowCount,
+      onRequestSort,
+    } = props;
+    const createSortHandler =
+      (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+        onRequestSort(event, property);
+      };
+
+    return (
+      <TableHead>
+        <TableRow>
+          <TableCell padding="checkbox">
+            <Checkbox
+              color="primary"
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{
+                "aria-label": "select all",
+              }}
+            />
+          </TableCell>
+          {headCells.map((headCell) => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? "right" : "left"}
+              padding={headCell.disablePadding ? "none" : "normal"}
+              sortDirection={orderBy === headCell.id ? order : false}
+            >
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <Box component="span" sx={visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+    );
+  }
 
   const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     const { numSelected } = props;
@@ -401,6 +314,22 @@ export default function Devices() {
           Eszközök
         </Typography>
         {selected.length === 1 ? (
+          <>
+            <Fab
+              variant="extended"
+              color="error"
+              aria-label="add"
+              onClick={deleteDevice}
+              sx={{ m: 1 }}
+            >
+              <DeleteIcon sx={{ mr: 1 }} />
+              Törlés
+            </Fab>
+            <DeviceEditDialog {...EditParams} />
+          </>
+        ) : selected.length === 0 ? (
+          <DeviceAddDialog {...AddParams} />
+        ) : (
           <Fab
             variant="extended"
             color="error"
@@ -411,15 +340,7 @@ export default function Devices() {
             <DeleteIcon sx={{ mr: 1 }} />
             Törlés
           </Fab>
-        ) : (
-          <></>
         )}
-        {selected.length === 1 ? (
-            <DeviceEditDialog{...EditParams} />
-          ) : (
-            <></>
-          )}
-        <DevicePopupDialog />
       </Toolbar>
     );
   };
@@ -437,7 +358,6 @@ export default function Devices() {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.ID);
       SelectedIndexes = newSelecteds;
-      //console.log(SelectedIndexes);
 
       setSelected(newSelecteds);
       return;
@@ -462,31 +382,29 @@ export default function Devices() {
       );
     }
     SelectedIndexes = newSelected;
-    //console.log("SelectedIndexes: "+SelectedIndexes);
-    if (SelectedIndexes.length === 1){
-      for (let r in rows){
-        if (rows[r].ID === SelectedIndexes[0]){
-          EditParams = createEditDialogInput(rows[r].ID, rows[r].Name, rows[r].Category, rows[r].Description, 
-            rows[r].Location, DevCategoryList, LocationList);  
+
+    if (SelectedIndexes.length === 1) {
+      for (let r in rows) {
+        if (rows[r].ID === SelectedIndexes[0]) {
+          EditParams = createEditDialogInput(
+            rows[r].ID,
+            rows[r].Name,
+            rows[r].CategoryID,
+            rows[r].Description,
+            rows[r].Location,
+            DevCategoryList,
+            LocationList,
+            updateFunction
+          );
         }
       }
     }
-    console.log("EditParams: "+EditParams);
     setSelected(newSelected);
   };
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-
-  /* let SelectedIndexes: readonly string[] = ['1'];  
-  setSelected(SelectedIndexes);   */
-
   function TableReturn() {
-    /* console.log("Tömb SelectedIndexes: "+SelectedIndexes);
-    SelectedIndexes = [];
-    console.log("Tömb törölve: "+SelectedIndexes); */
-
     return (
       <div id="DataTable">
         <Box style={{ paddingLeft: 280 }}>
@@ -503,8 +421,6 @@ export default function Devices() {
                   rowCount={rows.length}
                 />
                 <TableBody>
-                  {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                rows.slice().sort(getComparator(order, orderBy)) */}
                   {stableSort(rows, getComparator(order, orderBy)).map(
                     (row, index) => {
                       const isItemSelected = isSelected(row.ID);
@@ -537,7 +453,9 @@ export default function Devices() {
                           >
                             {row.Name}
                           </TableCell>
-                          <TableCell align="center">{row.Category}</TableCell>
+                          <TableCell align="center">
+                            {row.CategoryName}
+                          </TableCell>
                           <TableCell align="left">{row.Description}</TableCell>
                           <TableCell align="center">{row.Location}</TableCell>
                         </TableRow>
@@ -549,12 +467,6 @@ export default function Devices() {
             </TableContainer>
           </Paper>
         </Box>
-        {/* <div style={{ paddingTop: 20, width: "95%" , overflow: 'hidden'  }}> */}
-        {/* <DeleteForm /> */}
-        {/* </div> */}
-        {/* <div style={{ paddingLeft: 500 }}> */}
-        {/* <Form /> */}
-        {/* </div> */}
       </div>
     );
   }
@@ -567,58 +479,82 @@ export default function Devices() {
       };
       client.onmessage = (message: any) => {
         //console.log(message.data);
-        
-        
 
         let SplittedMessage = message.data.split("END_OF_ROW");
         SplittedMessage.splice(-1, 1);
 
-        if(SplittedMessage[0].split(";").length === 5){
+        if (SplittedMessage[0].split(";").length === 5) {
           rows = [];
-          LocationList = [];
 
           for (let Row in SplittedMessage) {
             let SplittedRow = SplittedMessage[Row].split(";");
-            
+
             rows.push(
               createData(
                 SplittedRow[0],
                 SplittedRow[1],
                 SplittedRow[2],
                 SplittedRow[3],
-                SplittedRow[4]
+                SplittedRow[4],
+                ""
               )
             );
-            LocationList.push(SplittedRow[4]);
           }
-        }
-        else{
+        } else if (SplittedMessage[0].split(";").length === 1) {
+          LocationList = [];
+
+          for (let Row in SplittedMessage) {
+            let SplittedRow = SplittedMessage[Row].split(";");
+            LocationList.push(SplittedRow[0]);
+          }
+        } else {
           DevCategoryList = [];
 
           for (let Row in SplittedMessage) {
             //console.log(SplittedMessage[Row]);
             let SplittedRow = SplittedMessage[Row].split(";");
-            
+
             DevCategoryList.push({
               ID: SplittedRow[0],
-              Name: SplittedRow[1]
+              Name: SplittedRow[1],
             });
-            
           }
-          
-          for(let r in rows){
-            for(let i in DevCategoryList){
-              if(DevCategoryList[i].ID === rows[r].Category){
-                rows[r].Category = DevCategoryList[i].Name;
-              }
-            }
 
-          }
-          ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
         }
 
+        for (let r in rows) {
+          for (let i in DevCategoryList) {
+            if (DevCategoryList[i].ID === rows[r].CategoryID) {
+              rows[r].CategoryName = DevCategoryList[i].Name;
+            }
+          }
+        }
+
+        AddParams = createAddDialogInput(
+          DevCategoryList,
+          LocationList,
+          updateFunction
+        );
+
+        ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
       };
     }
+  );
+
+  React.useEffect(
+    // HA elso betoltes
+    () => {
+      FetchDataFromDB();
+      GetCategoriesFromDB();
+      GetLocationsFromDB()
+    },[]
+  );
+
+  React.useEffect(
+    // HA kijeloles valtozas van
+    () => {
+      ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
+    }, [selected]
   );
 
   return TableReturn();

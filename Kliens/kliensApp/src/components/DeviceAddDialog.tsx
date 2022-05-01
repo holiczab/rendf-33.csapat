@@ -17,17 +17,14 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 let CategoryOptions: { value: string; label: string }[] = [];
 let LocationOptions: { value: string; label: string }[] = [];
 
-export default function DeviceEditDialog(Data: any) {
+export default function DeviceAddDialog(Data: any) {
   CategoryOptions = [];
   LocationOptions = [];
-
-  const [open, setOpen] = React.useState(false);
-  let ID = Data.ID;
 
   for (let c in Data.DevCategoryList) {
     CategoryOptions.push({
       value: Data.DevCategoryList[c].ID,
-      label: Data.DevCategoryList[c].Name,
+      label: Data.DevCategoryList[c].Name
     });
   }
 
@@ -38,21 +35,15 @@ export default function DeviceEditDialog(Data: any) {
     });
   }
 
+  const [open, setOpen] = React.useState(false);
+
   const {
     register,
     getValues,
     reset,
     formState: { errors },
     formState,
-  } = useForm({
-    mode: "onChange",
-    defaultValues: {
-      name: Data.Name,
-      categoryID: Data.CategoryID,
-      description: Data.Description,
-      location: Data.Location,
-    },
-  });
+  } = useForm({ mode: "onChange" });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -60,23 +51,18 @@ export default function DeviceEditDialog(Data: any) {
 
   const handleClose = () => {
     setOpen(false);
+    //console.log("cancelPopupDialog");
     reset();
   };
 
   const saveDataToDB = (params: any) => {
     //console.log("savePopupDialog");
-    var mess =
-      "udvc;" +
-      ID +
-      ";" +
-      params.name +
-      ";" +
-      params.categoryID +
-      ";" +
-      params.description +
-      ";" +
+    var mess = "advc;" +
+      params.name + ";" +
+      params.categoryID + ";" +
+      params.description + ";" +
       params.location;
-
+    
     client.send(mess);
     reset();
     Data.updateFunction();
@@ -100,10 +86,10 @@ export default function DeviceEditDialog(Data: any) {
         sx={{ m: 1 }}
       >
         <AddIcon sx={{ mr: 1 }} />
-        Módosítás
+        Hozzáadás
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Eszköz módosítása</DialogTitle>
+        <DialogTitle>Új eszköz hozzáadása</DialogTitle>
         <DialogContent>
           <form noValidate autoComplete="off">
             <TextField
@@ -126,7 +112,6 @@ export default function DeviceEditDialog(Data: any) {
               margin="normal"
               label="Category"
               fullWidth
-              defaultValue={Data.CategoryID}
               {...register("categoryID", {
                 required: true,
               })}
@@ -159,7 +144,6 @@ export default function DeviceEditDialog(Data: any) {
               label="Location"
               required
               fullWidth
-              defaultValue={Data.Location}
               {...register("location", {
                 required: true,
               })}
