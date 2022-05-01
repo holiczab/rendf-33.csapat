@@ -149,7 +149,7 @@ class DataBase:
         result = cursor.fetchall()
         return str(result[0][0])
 		
-	def select_maintanancetask(self):
+    def select_maintanancetask(self):
         cursor=self.conn.execute("SELECT * FROM MaintenanceTasks")
         result=cursor.fetchall()
         print (result)
