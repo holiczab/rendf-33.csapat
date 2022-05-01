@@ -17,7 +17,7 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { visuallyHidden } from "@mui/utils";
-import CategoryPopupDialog from "../components/CategoryPopupDialog";
+import CategoryAddDialog from "../components/CategoryAddDialog";
 import CategoryEditDialog from "../components/CategoryEditDialog";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
@@ -31,6 +31,8 @@ let CategoryList: string[] = [];
 let IntervalList: string[] = [];
 let QualificationList: string[] = [];
 let ParentCategoryList: { ID: string; Name: string }[] = [];
+let EditParams: Data;
+let AddParams: AddDialogInput;
 
 rows = [];
 
@@ -39,6 +41,7 @@ async function FetchDataFromDB() {
   var mess = "scat";
   client.send(mess);
   //console.log(mess);
+  console.log("Category SELECT query executed")
 }
 
 interface Data {
@@ -49,6 +52,7 @@ interface Data {
   Specification: string;
   StandardTime: string;
   RequredQualification: string;
+  ParentName: string;
 }
 
 function createData(
@@ -58,7 +62,8 @@ function createData(
   Interval: string,
   Specification: string,
   StandardTime: string,
-  RequredQualification: string
+  RequredQualification: string,
+  ParentName: string
 ): Data {
   return {
     ID,
@@ -68,6 +73,7 @@ function createData(
     Specification,
     StandardTime,
     RequredQualification,
+    ParentName
   };
 }
 
@@ -79,9 +85,11 @@ interface EditDialogInput {
   Specification: string;
   StandardTime: string;
   RequredQualification: string;
+  ParentName: string;
   ParentCategoryList: { ID: string; Name: string }[];
   IntervalList: string[];
   QualificationList: string[];
+  updateFunction: ()=> any;
 }
 
 function createEditDialogInput(
@@ -92,9 +100,11 @@ function createEditDialogInput(
   Specification: string,
   StandardTime: string,
   RequredQualification: string,
+  ParentName: string,
   ParentCategoryList: { ID: string; Name: string }[],
   IntervalList: string[],
-  QualificationList: string[]
+  QualificationList: string[],
+  updateFunction: ()=> any
 ): EditDialogInput {
   return {
     ID,
@@ -104,9 +114,11 @@ function createEditDialogInput(
     Specification,
     StandardTime,
     RequredQualification,
+    ParentName,
     ParentCategoryList,
     IntervalList,
     QualificationList,
+    updateFunction
   };
 }
 
@@ -114,59 +126,21 @@ interface AddDialogInput {
   ParentCategoryList: { ID: string; Name: string }[];
   IntervalList: string[];
   QualificationList: string[];
+  updateFunction: ()=> any;
 }
 
 function createAddDialogInput(
   ParentCategoryList: { ID: string; Name: string }[],
   IntervalList: string[],
-  QualificationList: string[]
+  QualificationList: string[],
+  updateFunction: ()=> any
 ): AddDialogInput {
   return {
     ParentCategoryList,
     IntervalList,
     QualificationList,
+    updateFunction
   };
-}
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
-
-type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
-// This method is created for cross-browser compatibility, if you don't
-// need to support IE11, you can use Array.prototype.sort() directly
-function stableSort<T>(
-  array: readonly T[],
-  comparator: (a: T, b: T) => number
-) {
-  const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) {
-      return order;
-    }
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
 }
 
 interface HeadCell {
@@ -175,6 +149,24 @@ interface HeadCell {
   label: string;
   numeric: boolean;
 }
+
+interface EnhancedTableProps {
+  numSelected: number;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof Data
+  ) => void;
+  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  order: Order;
+  orderBy: string;
+  rowCount: number;
+}
+
+interface EnhancedTableToolbarProps {
+  numSelected: number;
+}
+
+type Order = "asc" | "desc";
 
 const headCells: readonly HeadCell[] = [
   {
@@ -215,213 +207,28 @@ const headCells: readonly HeadCell[] = [
   },
 ];
 
-interface EnhancedTableProps {
-  numSelected: number;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Data
-  ) => void;
-  onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  order: Order;
-  orderBy: string;
-  rowCount: number;
-}
-
-function EnhancedTableHead(props: EnhancedTableProps) {
-  const {
-    onSelectAllClick,
-    order,
-    orderBy,
-    numSelected,
-    rowCount,
-    onRequestSort,
-  } = props;
-  const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
-
-  return (
-    <TableHead>
-      <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-            inputProps={{
-              "aria-label": "select all",
-            }}
-          />
-        </TableCell>
-        {headCells.map((headCell) => (
-          <TableCell
-            key={headCell.id}
-            align={headCell.numeric ? "right" : "left"}
-            padding={headCell.disablePadding ? "none" : "normal"}
-            sortDirection={orderBy === headCell.id ? order : false}
-          >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <Box component="span" sx={visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </Box>
-              ) : null}
-            </TableSortLabel>
-          </TableCell>
-        ))}
-      </TableRow>
-    </TableHead>
-  );
-}
-
-interface EnhancedTableToolbarProps {
-  numSelected: number;
-}
-
-const Styles = styled.div`
-  form {
-   background: white;
-   border: 1px solid #dedede;
-   display: flex;
-   flex-direction: column;
-   justify-content: space-around;
-   margin: 0 auto;
-   max-width: 500px;
-   padding: 0px 50px 25px;
-   
-   input {
-    border: 1px solid #d9d9d9;
-    border-radius: 4px;
-    box-sizing: border-box;
-    padding: 10px;
-    width: 100%;
-  }
- 
-  label {
-    color: #3d3d3d;
-    display: block;
-    font-family: sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 5px;
-  }
- 
-  .error {
-    color: red;
-    font-family: sans-serif;
-    font-size: 12px;
-    height: 30px;
-  }
- 
-  .submitButton {
-    background-color: #6976d9;
-    color: white;
-    font-family: sans-serif;
-    font-size: 14px;
-    margin: 20px 0px;
- `;
-
-// function Form() {
-
-//   const {
-//     register,
-//     handleSubmit,
-//     reset,
-//     getValues,
-//     formState: { errors },
-//     formState,
-//   } = useForm({ mode: "onChange" });
-
-//   const onSubmit = (data: any) => {
-//     console.log(data);
-//     client.send("acat;"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
-//     reset();
-//     FetchDataFromDB();
-//   };
-
-//   return (
-//     <Styles>
-//       <form onSubmit={handleSubmit(onSubmit)}>
-//         <h3>Kategória hozzáadása</h3>
-//         <label>
-//           Név:
-//           <input type="text" {...register("Name", {
-//               required: true
-//             })}/>
-//         </label>
-//         <label>
-//           ParentID:
-//           <input type="text" {...register("ParentID", {
-//               required: true
-//             })}/>
-//         </label>
-//         <label>
-//           Interval:
-//           <select {...register("Interval", {
-//               required: true
-//             })}>
-//             <option value="1w">1 week</option>
-//             <option value="1m">1 month</option>
-//             <option value="3m">3 month</option>
-//             <option value="6m">6 month</option>
-//             <option value="12m">12 month</option>
-//           </select>
-//         </label>
-//         <label>
-//           Specification:
-//           <input type="text" {...register("Specification", {
-//               required: true
-//             })}/>
-//         </label>
-//         <label>
-//           StandardTime:
-//           <input type="text" {...register("StandardTime", {
-//               required: true
-//             })}/>
-//         </label>
-//         <label>
-//           RequredQualification:
-//           <input type="text" {...register("RequredQualification", {
-//               required: true
-//             })}/>
-//         </label>
-//         <input type="submit"
-//           value="Kategória felvétele"
-//           color="primary"
-//           disabled={!formState.isValid}/>
-//       </form>
-//       </Styles>
-//   );
-
-//   //  onClick={() => onSubmit(getValues())}
-//  }
-
-let EditParams: Data;
-let AddParams: AddDialogInput;
 
 export default function Categories() {
-  FetchDataFromDB();
+  
 
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("Name");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
 
   const deleteCategory = () => {
-    //console.log(data);
     let msg = "";
     msg = SelectedIndexes.join();
-    console.log("Client message: " + "dcat;" + msg);
+    //console.log("Client message: " + "dcat;" + msg);
     client.send("dcat;"+msg);
     setSelected([]);
     FetchDataFromDB();
   };
+
+  const updateFunction = () => {
+    //console.log("UPDATE SUCCESSFULLY");
+    FetchDataFromDB();
+    setSelected([]);
+  }
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -436,7 +243,7 @@ export default function Categories() {
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.ID);
       SelectedIndexes = newSelecteds;
-      console.log(SelectedIndexes);
+      //console.log(SelectedIndexes);
 
       setSelected(newSelecteds);
       return;
@@ -460,9 +267,8 @@ export default function Categories() {
         selected.slice(selectedIndex + 1)
       );
     }
-    console.log(selected);
+
     SelectedIndexes = newSelected;
-    console.log("SelectedIndexes: " + SelectedIndexes);
     if (SelectedIndexes.length === 1) {
       for (let r in rows) {
         if (rows[r].ID === SelectedIndexes[0]) {
@@ -474,23 +280,19 @@ export default function Categories() {
             rows[r].Specification,
             rows[r].StandardTime,
             rows[r].RequredQualification,
+            rows[r].ParentName,
             ParentCategoryList,
             IntervalList,
-            QualificationList
+            QualificationList,
+            updateFunction
           );
         }
       }
     }
-    console.log("EditParams: " + EditParams.ParentID);
     setSelected(newSelected);
   };
 
   const isSelected = (name: string) => selected.indexOf(name) !== -1;
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-
-  /* let SelectedIndexes: readonly string[] = ['1'];
-  setSelected(SelectedIndexes);   */
 
   const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
     const { numSelected } = props;
@@ -530,10 +332,9 @@ export default function Categories() {
               Törlés
             </Fab>
             <CategoryEditDialog {...EditParams} />
-            {/* <CategoryEditDialog onUpdate= {console.log("MEGJOTT A VALASZ")} {...EditParams}/> */}
           </>
         ) : selected.length === 0 ? (
-          <CategoryPopupDialog {...AddParams} />
+          <CategoryAddDialog {...AddParams} />
         ) : (
           <Fab
               variant="extended"
@@ -550,11 +351,101 @@ export default function Categories() {
     );
   };
 
-  function TableReturn() {
-    /* console.log("Tömb SelectedIndexes: "+SelectedIndexes);
-    SelectedIndexes = [];
-    console.log("Tömb törölve: "+SelectedIndexes); */
+  function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
+    if (b[orderBy] < a[orderBy]) {
+      return -1;
+    }
+    if (b[orderBy] > a[orderBy]) {
+      return 1;
+    }
+    return 0;
+  }
+  
+  function getComparator<Key extends keyof any>(
+    order: Order,
+    orderBy: Key
+  ): (
+    a: { [key in Key]: number | string },
+    b: { [key in Key]: number | string }
+  ) => number {
+    return order === "desc"
+      ? (a, b) => descendingComparator(a, b, orderBy)
+      : (a, b) => -descendingComparator(a, b, orderBy);
+  }
+  
+  // This method is created for cross-browser compatibility, if you don't
+  // need to support IE11, you can use Array.prototype.sort() directly
+  function stableSort<T>(
+    array: readonly T[],
+    comparator: (a: T, b: T) => number
+  ) {
+    const stabilizedThis = array.map((el, index) => [el, index] as [T, number]);
+    stabilizedThis.sort((a, b) => {
+      const order = comparator(a[0], b[0]);
+      if (order !== 0) {
+        return order;
+      }
+      return a[1] - b[1];
+    });
+    return stabilizedThis.map((el) => el[0]);
+  }
+  
+  
+  function EnhancedTableHead(props: EnhancedTableProps) {
+    const {
+      onSelectAllClick,
+      order,
+      orderBy,
+      numSelected,
+      rowCount,
+      onRequestSort,
+    } = props;
+    const createSortHandler =
+      (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+        onRequestSort(event, property);
+      };
+  
+    return (
+      <TableHead>
+        <TableRow>
+          <TableCell padding="checkbox">
+            <Checkbox
+              color="primary"
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+              inputProps={{
+                "aria-label": "select all",
+              }}
+            />
+          </TableCell>
+          {headCells.map((headCell) => (
+            <TableCell
+              key={headCell.id}
+              align={headCell.numeric ? "right" : "left"}
+              padding={headCell.disablePadding ? "none" : "normal"}
+              sortDirection={orderBy === headCell.id ? order : false}
+            >
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <Box component="span" sx={visuallyHidden}>
+                    {order === "desc" ? "sorted descending" : "sorted ascending"}
+                  </Box>
+                ) : null}
+              </TableSortLabel>
+            </TableCell>
+          ))}
+        </TableRow>
+      </TableHead>
+    );
+  }
 
+  function TableReturn() {
     return (
       <div id="DataTable">
         <Box style={{ paddingLeft: 280 }}>
@@ -605,7 +496,7 @@ export default function Categories() {
                           >
                             {row.Name}
                           </TableCell>
-                          <TableCell align="center">{row.ParentID}</TableCell>
+                          <TableCell align="center">{row.ParentName}</TableCell>
                           <TableCell align="center">{row.Interval}</TableCell>
                           <TableCell align="left">
                             {row.Specification}
@@ -625,9 +516,6 @@ export default function Categories() {
             </TableContainer>
           </Paper>
         </Box>
-        {/* <div style={{paddingLeft: 500}}> */}
-        {/* <Form /> */}
-        {/* </div> */}
       </div>
     );
   }
@@ -640,38 +528,18 @@ export default function Categories() {
       };
 
       client.onmessage = (message: any) => {
-        //console.log(message.data);
-
         rows = [];
         CategoryList = [];
         ParentCategoryList = [];
         IntervalList = [];
         QualificationList = [];
         
-        console.log("MSG from server: " + message);
+        //console.log("MSG from server: " + message);
         var SplittedMessage = message.data.split("END_OF_ROW");
         SplittedMessage.splice(-1, 1);
 
         for (let Row in SplittedMessage) {
-          //console.log(SplittedMessage[Row]);
           var SplittedRow = SplittedMessage[Row].split(";");
-          /*for (let str in SplittedRow){
-              if (SplittedRow[str] === "None"){
-                SplittedRow[str] = "";
-              }
-            }
-            if (SplittedRow[2] != undefined){
-              let ParentID: string = SplittedRow[2].toString().slice(0, -3);
-              //console.log(ParentID);
-              if (ParentID == "catm"){
-                SplittedRow[1] = "---" + SplittedRow[1];
-                //console.log(SplittedRow[1]);
-              } 
-              else if (ParentID == "cats"){
-                SplittedRow[1] = "------" + SplittedRow[1];
-                //console.log(SplittedRow[1]);
-              }
-            } */
 
           if (CategoryList.indexOf(SplittedRow[1]) === -1) {
             CategoryList.push(SplittedRow[1]);
@@ -691,39 +559,53 @@ export default function Categories() {
               SplittedRow[3],
               SplittedRow[4],
               SplittedRow[5],
-              SplittedRow[6]
+              SplittedRow[6],
+              ""
             )
           );
+
           ParentCategoryList.push({
             ID: SplittedRow[0],
             Name: SplittedRow[1],
           });
         }
 
-        /* for (let entry of rows) {
-            console.log(entry); 
-            console.log("__________");
-          } */
-
-        // for (let r in rows) {
-        //   for (let i in ParentCategoryList) {
-        //     if (ParentCategoryList[i].ID === rows[r].ParentID) {
-        //       rows[r].ParentID = ParentCategoryList[i].Name;
-        //       console.log(rows[r].ParentID);
-        //     }
-        //   }
-        // }
+        for (let r in rows) {
+          for (let i in ParentCategoryList) {
+            if (ParentCategoryList[i].ID === rows[r].ParentID) {
+              rows[r].ParentName = ParentCategoryList[i].Name;
+              //console.log(rows[r].ParentID);
+            }
+          }
+        }
 
         AddParams = createAddDialogInput(
           ParentCategoryList,
           IntervalList,
-          QualificationList
+          QualificationList,
+          updateFunction
         );
 
         ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
       };
+      
     }
   );
+
+  React.useEffect(
+    // HA elso betoltes
+    () => {
+      FetchDataFromDB();
+    }, []
+  );
+
+  React.useLayoutEffect(
+    // HA kijeloles valtozas van
+    () => {
+      ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
+    }, [selected]
+  );
+
 
   return TableReturn();
 }

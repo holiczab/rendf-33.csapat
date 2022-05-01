@@ -1,56 +1,57 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
 import EditIcon from "@mui/icons-material/Edit";
-import AddIcon from "@mui/icons-material/Add";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import { MenuItem } from "@mui/material";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useForm } from "react-hook-form";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
-let devicesOptions: { value: string; label: string }[] = [];
-
 let ParentCategoryOptions: { value: string; label: string }[] = [];
 let IntervalOptions: { value: string; label: string }[] = [];
 let QualificationOptions: { value: string; label: string }[] = [];
 
-async function FetchDataFromDB() {
-  var mess = "scat";
-  console.log(mess);
-  client.send(mess);
-}
-
 export default function CategoryEditDialog(Data: any) {
-  FetchDataFromDB();
   
   ParentCategoryOptions = [];
   IntervalOptions = [];
   QualificationOptions = [];
 
   const [open, setOpen] = React.useState<boolean>(false);
-  const [name, setName] = React.useState<string>("");
-  const [parentID, setParentID] = React.useState<string>("");
-  const [interval, setSetInterval] = React.useState<string>("");
-  const [specification, setSpecification] = React.useState<string>("");
-  const [standardTime, setStandardTime] = React.useState<string>("");
-  const [reqQualification, setReqQualification] = React.useState<string>("");
+  let ID = Data.ID;
+  
+  for (let c in Data.ParentCategoryList) {
+    ParentCategoryOptions.push({
+      value: Data.ParentCategoryList[c].ID,
+      label: Data.ParentCategoryList[c].Name,
+    });
+  }
+
+  for (let i in Data.IntervalList) {
+    IntervalOptions.push({
+      value: Data.IntervalList[i],
+      label: Data.IntervalList[i],
+    });
+  }
+
+  for (let q in Data.QualificationList) {
+    QualificationOptions.push({
+      value: Data.QualificationList[q],
+      label: Data.QualificationList[q],
+    });
+  }
 
   const {
     register,
-    handleSubmit,
     getValues,
     reset,
-    setValue,
     formState: { errors },
     formState,
   } = useForm({
@@ -65,63 +66,17 @@ export default function CategoryEditDialog(Data: any) {
     },
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
-  };
-
-  let ID = Data.ID;
-  // setValue("name", Data.Name);
-  // setValue('parentID', { key: Data.ParentID });
-  // setValue("interval", Data.Interval);
-  // setValue("specification", Data.Specification);
-  // setValue("standardTime", Data.StandardTime);
-  // setValue("reqQualification", Data.RequredQualification);
-  // let nameInput = Data.Name;
-  // let parentInput = Data.ParentID;
-  // let intervalInput = Data.Interval;
-  // let specificationInput = Data.Specification;
-  // let standardTInput = Data.StandardTime;
-  // let qualificationInput = Data.RequredQualification;
-  for (let c in Data.ParentCategoryList) {
-    ParentCategoryOptions.push({
-      value: Data.ParentCategoryList[c].ID,
-      label: Data.ParentCategoryList[c].Name,
-    });
-  }
-  for (let i in Data.IntervalList) {
-    //console.log("IntervalsIndex: "+i);
-    IntervalOptions.push({
-      value: Data.IntervalList[i],
-      label: Data.IntervalList[i],
-    });
-  }
-  for (let q in Data.QualificationList) {
-    QualificationOptions.push({
-      value: Data.QualificationList[q],
-      label: Data.QualificationList[q],
-    });
-  }
-
-  const handleFailureDescChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setName(event.target.value);
-  };
-
   const handleClickOpen = () => {
     setOpen(true);
-    console.log("PARENTID: " + Data.ParentID);
-  console.log("NAME: " + Data.Name);
   };
 
   const handleClose = () => {
     setOpen(false);
-    console.log("cancelPopupDialog");
+    //console.log("cancelPopupDialog");
     reset();
   };
   const saveDataToDB = (params: any) => {
-    console.log("savePopupDialog");
-
+    //console.log("savePopupDialog");
     var mess =
       "ucat;" +
       ID +
@@ -138,18 +93,11 @@ export default function CategoryEditDialog(Data: any) {
       ";" +
       params.reqQualification;
 
-    console.log(mess);
+    //console.log(mess);
     client.send(mess);
     reset();
+    Data.updateFunction();
     setOpen(false);
-  };
-  const resetFormValues = () => {
-    setName("");
-    setParentID("");
-    setSetInterval("");
-    setSpecification("");
-    setStandardTime("");
-    setReqQualification("");
   };
 
   useEffect(() => {
@@ -174,15 +122,13 @@ export default function CategoryEditDialog(Data: any) {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
         <DialogTitle>Kategória módosítása</DialogTitle>
         <DialogContent>
-          <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+          <form noValidate autoComplete="off">
             <TextField
               label="Name"
               required
               margin="normal"
               fullWidth
               maxRows={1}
-              //value={name}
-              //onChange={handleFailureDescChange}
               {...register("name", {
                 required: true,
                 minLength: 3,
@@ -198,9 +144,6 @@ export default function CategoryEditDialog(Data: any) {
               label="Parent Category"
               fullWidth
               defaultValue={Data.ParentID}
-              // value={parentInput}
-              // defaultValue={{ label: parentInput, value: parentInput }}
-              // onChange={handleSelectedDeviceChange}
               {...register("parentID", {
                 required: true,
               })}
@@ -220,9 +163,6 @@ export default function CategoryEditDialog(Data: any) {
               required
               fullWidth
               defaultValue={Data.Interval}
-              // value={intervalInput}
-              // defaultValue={{ label: intervalInput, value: intervalInput }}
-              // onChange={handleSelectedDeviceChange}
               {...register("interval", {
                 required: true,
               })}
@@ -241,8 +181,6 @@ export default function CategoryEditDialog(Data: any) {
               margin="normal"
               required
               fullWidth
-              // value={specificationInput}
-              // onChange={handleFailureDescChange}
               {...register("specification", {
                 required: true,
                 minLength: 10,
@@ -257,8 +195,6 @@ export default function CategoryEditDialog(Data: any) {
               fullWidth
               required
               maxRows={1}
-              // value={standardTInput}
-              // onChange={handleFailureDescChange}
               {...register("standardTime", {
                 required: true,
                 minLength: 2,
@@ -273,9 +209,6 @@ export default function CategoryEditDialog(Data: any) {
               label="Required Qualification"
               fullWidth
               defaultValue={Data.RequredQualification}
-              // value={qualificationInput}
-              // defaultValue={{ label: qualificationInput, value: qualificationInput }}
-              // onChange={handleSelectedDeviceChange}
               {...register("reqQualification", {
                 required: true,
               })}
@@ -295,7 +228,6 @@ export default function CategoryEditDialog(Data: any) {
           <Button
             type="submit"
             disabled={!formState.isValid}
-            //onClick={saveDataToDB}
             onClick={() => saveDataToDB(getValues())}
           >
             Mentés
