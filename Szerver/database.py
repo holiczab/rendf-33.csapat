@@ -135,8 +135,8 @@ class DataBase:
         print ("Device Record created successfully")
         self.conn.close()
         
-    def delete_device(self,ID):
-        self.conn.execute("DELETE from Device where ID = '"+ID+"'")
+    def delete_device(self,IDs):
+        self.conn.execute("DELETE from Device where ID IN ("+IDs+")")
         self.conn.commit()
         print("Data deleted from Device!")
         self.conn.close()
@@ -228,8 +228,8 @@ class DataBase:
 	
     def update_device(self,ID,name,category,description,location):
         try:
-            print("UPDATE Category SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
-            self.conn.execute("UPDATE Category SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
+            print("UPDATE Device SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
+            self.conn.execute("UPDATE Device SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
             self.conn.commit()
         except Exception:
             print(tostring(Exception)) 
@@ -251,7 +251,7 @@ class DataBase:
         result = cursor.fetchall()
         msg=""
         for row in result:
-            msg+=str(row[1])+"END_OF_ROW"
+            msg+=str(row[0])+"END_OF_ROW"
         print("Select_location completed!")
         return msg
 
