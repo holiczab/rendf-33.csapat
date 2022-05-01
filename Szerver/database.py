@@ -151,10 +151,10 @@ class DataBase:
 
     def add_category(self,name,parent,interval,spec,standard,req):
         try:
-            if interval=="Null": interval=self.select_if_cat_empty(parent,"Interval")
-            if spec=="Null": spec=self.select_if_cat_empty(parent,"Specification")
-            if standard=="Null": standard=self.select_if_cat_empty(parent,"StandardTime")
-            if req=="Null": req=self.select_if_cat_empty(parent,"RequiredQualification")
+            if interval=="": interval=self.select_if_cat_empty(parent,"Interval")
+            if spec=="": spec=self.select_if_cat_empty(parent,"Specification")
+            if standard=="": standard=self.select_if_cat_empty(parent,"StandardTime")
+            if req=="": req=self.select_if_cat_empty(parent,"RequiredQualification")
             print("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
             self.conn.execute("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
             self.conn.commit()  

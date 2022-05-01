@@ -207,6 +207,7 @@ export default function CategoryEditDialog(Data : any) {
               id="outlined-multiline-flexible"
               label="Specification"
               required
+              multiline
               margin="normal"
               fullWidth
               value={specificationInput}

@@ -8,153 +8,87 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { MenuItem } from "@mui/material";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { useForm } from "react-hook-form";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
 let devicesOptions: { value: string; label: string }[] = [];
 
 
-//function Form() {
-  
-  //   const {
-  //     register,
-  //     handleSubmit,
-  //     reset,
-  //     getValues,
-  //     formState: { errors },
-  //     formState,
-  //   } = useForm({ mode: "onChange" });
-  
-  //   const onSubmit = (data: any) => {
-  //     console.log(data);
-  //     client.send("acat;"+data.Name+";"+data.ParentID+";"+data.Interval+";"+data.Specification+";"+data.StandardTime+";"+data.RequredQualification);
-  //     reset();
-  //     FetchDataFromDB();
-  //   };
-   
-  //   return (
-  //     <Styles>
-  //       <form onSubmit={handleSubmit(onSubmit)}>
-  //         <h3>Kategória hozzáadása</h3>        
-  //         <label>
-  //           Név:
-  //           <input type="text" {...register("Name", {
-  //               required: true
-  //             })}/>
-  //         </label>
-  //         <label>
-  //           ParentID:
-  //           <input type="text" {...register("ParentID", {
-  //               required: true
-  //             })}/>
-  //         </label>
-  //         <label>
-  //           Interval: 
-  //           <select {...register("Interval", {
-  //               required: true
-  //             })}>
-  //             <option value="1w">1 week</option>
-  //             <option value="1m">1 month</option>
-  //             <option value="3m">3 month</option>
-  //             <option value="6m">6 month</option>
-  //             <option value="12m">12 month</option>
-  //           </select>
-  //         </label>
-  //         <label>
-  //           Specification:
-  //           <input type="text" {...register("Specification", {
-  //               required: true
-  //             })}/>
-  //         </label>
-  //         <label>
-  //           StandardTime:
-  //           <input type="text" {...register("StandardTime", {
-  //               required: true
-  //             })}/>
-  //         </label>
-  //         <label>
-  //           RequredQualification:
-  //           <input type="text" {...register("RequredQualification", {
-  //               required: true
-  //             })}/>
-  //         </label>
-  //         <input type="submit" 
-  //           value="Kategória felvétele"
-  //           color="primary"
-  //           disabled={!formState.isValid}/>
-  //       </form>
-  //       </Styles>
-  //   );
-  
-  //   //  onClick={() => onSubmit(getValues())}
-  //  }
+let ParentCategoryOptions: { value: string; label: string }[] = [];
+let IntervalOptions: { value: string; label: string }[] = [];
+let QualificationOptions: { value: string; label: string }[] = [];
 
 async function FetchDataFromDB() {
-  var mess = "sdvc";
+  var mess = "scat";
+  console.log(mess);
   client.send(mess);
-
-  client.onmessage = (message: any) => {
-    devicesOptions = [];
-    var SplittedMessage = message.data.split("END_OF_ROW");
-    SplittedMessage.splice(-1, 1);
-
-    for (let Row in SplittedMessage) {
-      var SplittedRow: string = SplittedMessage[Row].split(";");
-      devicesOptions.push({
-        value: SplittedRow[0],
-        label: SplittedRow[1].concat(" [", SplittedRow[4], "]"),
-        //label: (SplittedRow[1] + "\t|\t" + SplittedRow[4])
-      });
-    }
-    console.log(devicesOptions);
-  };
 }
 
-export default function CategoryPopupDialog() {
-  const [open, setOpen] = React.useState(false);
-  const [description, setDescription] = React.useState("");
-  const [selectedDevice, setSelectedDevice] = React.useState("");
-  const [selectedDateTime, setSelectedDateTime] = React.useState(
-    formatDate(new Date())
-  );
 
-  function padTo2Digits(num: number) {
-    return num.toString().padStart(2, "0");
-  }
+export default function CategoryPopupDialog(Data : any) {
+    FetchDataFromDB();
+    console.log(Data);
+    ParentCategoryOptions = [];
+    IntervalOptions = [];
+    QualificationOptions = [];
 
-  function formatDate(date: Date) {
-    return (
-      [
-        date.getFullYear(),
-        padTo2Digits(date.getMonth() + 1),
-        padTo2Digits(date.getDate()),
-      ].join("-") +
-      "T" +
-      [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(":")
-    );
-  }
+    let idInput = Data.ID;
+    let nameInput = Data.Name; 
+    let parentInput = Data.ParentID;  
+    let intervalInput = Data.Interval; 
+    let specificationInput = Data.Specification; 
+    let standardTInput = Data.StandardTime; 
+    let qualificationInput = Data.RequredQualification; 
+    for(let c in Data.ParentCategoryList){
+      ParentCategoryOptions.push({
+        value: Data.ParentCategoryList[c].ID,
+        label: Data.ParentCategoryList[c].Name });
+    };
+    for(let i in Data.IntervalList){
+      console.log("IntervalsIndex: "+i);
+      IntervalOptions.push({
+        value: Data.IntervalList[i],
+        label: Data.IntervalList[i] });
+    };
+    for(let q in Data.QualificationList){
+      QualificationOptions.push({
+        value: Data.QualificationList[q],
+        label: Data.QualificationList[q] });
+    };
 
-  const handleSelectedDeviceChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSelectedDevice(event.target.value);
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [name, setName] = React.useState<string>("");
+  const [parentID, setParentID] = React.useState<string>("");
+  const [interval, setSetInterval] = React.useState<string>("");
+  const [specification, setSpecification] = React.useState<string>("");
+  const [standardTime, setStandardTime] = React.useState<string>("");
+  const [reqQualification, setReqQualification] = React.useState<string>("");
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { errors },
+    formState,
+  } = useForm({ mode: "onChange" });
+
+  const onSubmit = (data: any) => {
+    console.log(data);
   };
 
-  const handleSelectedDateTimeChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setSelectedDateTime(formatDate(new Date(event.target.value)));
-  };
 
   const handleFailureDescChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setDescription(event.target.value);
+    setName(event.target.value);
   };
 
   const handleClickOpen = () => {
@@ -164,19 +98,32 @@ export default function CategoryPopupDialog() {
   const handleClose = () => {
     setOpen(false);
     console.log("cancelPopupDialog");
+    reset();
   };
-  const saveDataToDB = () => {
+  const saveDataToDB = (params: any) => {
     console.log("savePopupDialog");
-    console.log(selectedDevice);
-    console.log(selectedDateTime);
-    console.log(description);
-
+    
+    var mess = "acat;" +
+      params.name + ";" +
+      params.parentID + ";" +
+      params.interval + ";" +
+      params.specification + ";" +
+      params.standardTime + ";" +
+      params.reqQualification;
+    
+    console.log(mess);
+    client.send(mess);
+    reset();
     setOpen(false);
-
-    setDescription("");
-    setSelectedDevice("");
-    setSelectedDateTime(formatDate(new Date()));
   };
+  const resetFormValues = () => {
+    setName("");
+    setParentID("");
+    setSetInterval("");
+    setSpecification("");
+    setStandardTime("");
+    setReqQualification("");
+  }
 
   useEffect(() => {
     //HA sikerese a kapcsolat, és HA üzenet érkezik a szervertől
@@ -184,7 +131,6 @@ export default function CategoryPopupDialog() {
       console.log("WebSocket Client Connected");
     };
 
-    FetchDataFromDB();
   }, []);
 
   return (
@@ -200,68 +146,133 @@ export default function CategoryPopupDialog() {
         Hozzáadás
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Új eszköz hozzáadása</DialogTitle>
+        <DialogTitle>Új kategória hozzáadása</DialogTitle>
         <DialogContent>
-          <div>
+        <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
             <TextField
-              id="outlined-multiline-flexible"
-              label="Név"
+              label="Name"
               required
               margin="normal"
               fullWidth
-              maxRows={4}
-              value={description}
-              onChange={handleFailureDescChange}
+              maxRows={1}
+              //value={name}
+              //onChange={handleFailureDescChange}
+              {...register("name", {
+                required: true,
+                minLength: 3
+              })}
+              error={errors.name}
+              helperText={
+                errors.name &&
+                "Minimum 3 character!"
+              }
+              type="text"
             />
             <TextField
-              id="outlined-select-currency"
               select
               required
               margin="normal"
-              label="Kategória"
+              label="Parent Category"
               fullWidth
-              value={selectedDevice}
-              onChange={handleSelectedDeviceChange}
+              // value={parentInput}
+              // defaultValue={{ label: parentInput, value: parentInput }}
+              // onChange={handleSelectedDeviceChange}
+              {...register("parentID", {
+                required: true,
+              })}
+              error={errors.parentID}
+              type="text"
             >
-              {devicesOptions.map((option) => (
+              {ParentCategoryOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}
             </TextField>
             <TextField
-              id="outlined-multiline-flexible"
-              label="Leírás"
-              required
+              select
               margin="normal"
+              label="Interval"
+              fullWidth
+              // value={intervalInput}
+              // defaultValue={{ label: intervalInput, value: intervalInput }}
+              // onChange={handleSelectedDeviceChange}
+              {...register("interval", {
+                required: false,
+              })}
+              error={errors.interval}
+              type="text"
+            >
+              {IntervalOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Specification"
               multiline
-              fullWidth
-              maxRows={4}
-              value={description}
-              onChange={handleFailureDescChange}
-            />
-
-            <TextField
-              id="outlined-select-currency"
-              select
-              required
               margin="normal"
-              label="Helyszín"
               fullWidth
-              value={selectedDevice}
-              onChange={handleSelectedDeviceChange}
+              // value={specificationInput}
+              // onChange={handleFailureDescChange}
+              {...register("specification", {
+                required: false,
+                minLength: 10
+              })}
+              error={errors.specification}
+              helperText={
+                errors.specification &&
+                "Minimum 10 character!"
+              }
+              type="text"
+            />
+            <TextField
+              label="StandardTime"
+              margin="normal"
+              fullWidth
+              maxRows={1}
+              // value={standardTInput}
+              // onChange={handleFailureDescChange}
+              {...register("standardTime", {
+                required: false,
+                minLength: 2
+              })}
+              error={errors.standardTime}
+              type="text"
+            />    
+            <TextField
+              select
+              margin="normal"
+              label="Required Qualification"
+              fullWidth
+              // value={qualificationInput}
+              // defaultValue={{ label: qualificationInput, value: qualificationInput }}
+              // onChange={handleSelectedDeviceChange}
+              {...register("reqQualification", {
+                required: false,
+              })}
+              error={errors.reqQualification}
+              type="text"
             >
-              {devicesOptions.map((option) => (
+              {QualificationOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
               ))}
             </TextField>
-          </div>
+          </form>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Mégse</Button>
-          <Button onClick={saveDataToDB}>Mentés</Button>
+          <Button
+            type="submit"
+            disabled={!formState.isValid}
+            //onClick={saveDataToDB}
+            onClick={() => saveDataToDB(getValues()) }
+          >
+            Mentés
+          </Button>
         </DialogActions>
       </Dialog>
     </div>
