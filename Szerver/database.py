@@ -1,3 +1,5 @@
+from cgitb import reset
+from dis import Instruction
 import re
 import sqlite3
 import os
@@ -40,6 +42,8 @@ class DataBase:
             self.ret_msg=self.delete_device(ID)
         elif type == "scat":
             self.ret_msg=self.select_categories()
+        elif type=="smaint":
+            self.ret_msg=self.select
         elif type == "acat":
             name =message.split(";")[1]
             parent =message.split(";")[2]
@@ -81,6 +85,19 @@ class DataBase:
         elif type == "gdevid":
             name=message.split(";")[1] 
             self.ret_msg=self.get_device_ID(name)
+        elif type=="smtt":
+            self.ret_msg=self.select_maintenancetask()
+        elif type=="dmtt":
+            ID=username=message.split(";")[1]
+            self.ret_msg=self.delete_maintenancetask(ID)
+        elif type=="amtt":
+            name=message.split(";")[1]
+            device=message.split(";")[2]
+            status=message.split(";")[3]
+            instruction=message.split(";")[4]
+            type=message.split(";")[5]
+            importance=message.split(";")[6]
+            self.ret_msg=self.add_maintenancetask(name,device,status,instruction,type,importance)
 
     def return_message(self):
         return self.ret_msg
@@ -149,24 +166,35 @@ class DataBase:
         result = cursor.fetchall()
         return str(result[0][0])
 		
-    def select_maintanancetask(self):
-        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks")
-        result=cursor.fetchall()
-        print (result)
-        msg=""
-        for row in result:
-            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
-        print("Select_MaintenanceTasks completed")
-        return msg
     
-    def delete_maintenancetask(self,taskid,taskname):
-        cursor=self.conn.execute("DELETE DEVICE where ID="+taskid+"AND Name="+taskname)
+    def delete_maintenancetask(self,taskid):
+        cursor=self.conn.execute("DELETE DEVICE where ID='"+taskid+"'")
         result=cursor.fetchall()
         print(result)
         print("Selected_MaintenanceTasks succesfully deleted !")
         msg=""
         return msg
-
+    
+    def select_maintenancetask(self):
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks")
+        result=cursor.fetchall()
+        'print(result)'
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
+        print("Selected_MaintenanceTasks completed!")
+        return msg
+    
+    def add_maintenancetask(self,name,device,status,instruction,type,importance):
+        try:
+            print("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUS('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
+            self.conn.execute("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUS('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
+            self.conn.commit()
+        except Exception:
+            print(tostring(Exception))
+        print("Maintenance Task successfully recorded")
+        self.conn.close()
+    
     def add_category(self,name,parent,interval,spec,standard,req):
         try:
             if interval=="": interval=self.select_if_cat_empty(parent,"Interval")
@@ -197,7 +225,7 @@ class DataBase:
             print(tostring(Exception)) 
         print ("Category Record changed successfully")
         self.conn.close()
-
+	
     def update_device(self,ID,name,category,description,location):
         try:
             print("UPDATE Category SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
