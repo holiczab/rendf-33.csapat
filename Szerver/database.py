@@ -148,6 +148,24 @@ class DataBase:
         cursor = self.conn.execute("SELECT "+em+" FROM Category WHERE ID = '"+ID+"'")
         result = cursor.fetchall()
         return str(result[0][0])
+		
+	def select_maintanancetask(self):
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks")
+        result=cursor.fetchall()
+        print (result)
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"\n"
+        print("Select_MaintenanceTasks completed")
+        return msg
+    
+    def delete_maintenancetask(self,taskid,taskname):
+        cursor=self.conn.execute("DELETE DEVICE where ID="+taskid+"AND Name="+taskname)
+        result=cursor.fetchall()
+        print(result)
+        print("Selected_MaintenanceTasks succesfully deleted !")
+        msg=""
+        return msg
 
     def add_category(self,name,parent,interval,spec,standard,req):
         try:
