@@ -2,7 +2,17 @@ import re
 import sqlite3
 import os
 from xml.etree.ElementTree import tostring
+"""
+-------- Feladatok: --------
+ZS:
+- Feladat törlés
+- Feladat lekérdezés
+- Feladat módosítás
+- Feladat beszúrás --> Log táblába is adott értékek beszúrása
+- Időszakos karbantartás automatán-> Ha a feladat kész, akkor beszúrja újra más időpontokkal
 
+----------------------------
+"""
 class DataBase:
     def __init__(self,message):
         self.message=message
@@ -40,7 +50,37 @@ class DataBase:
             self.ret_msg=self.add_category(name,parent,interval,spec,standard,req)
         elif type == "dcat":
             ID=username=message.split(";")[1]
-            self.ret_msg=self.delete_category(ID)   
+            self.ret_msg=self.delete_category(ID)
+        elif type == "sloc":
+            self.ret_msg=self.select_location()
+        elif type == "sdname":
+            self.ret_msg=self.select_devices_name()
+        elif type == "serqqual":
+            self.ret_msg=self.select_requiredQualifications()
+        elif type == "sparent":
+            self.ret_msg=self.select_parent_category_data()
+        elif type == "ucat":
+            ID=message.split(";")[1]
+            name =message.split(";")[2]
+            parent =message.split(";")[3]
+            interval =message.split(";")[4]
+            spec =message.split(";")[5]
+            standard =message.split(";")[6]
+            req =message.split(";")[7]
+            self.ret_msg=self.update_category(ID,name,parent,interval,spec,standard,req)
+        elif type == "udvc":
+            ID=message.split(";")[1]
+            name=message.split(";")[2]
+            category=message.split(";")[3]
+            description=message.split(";")[4]
+            location=message.split(";")[5]
+            self.ret_msg=self.update_device(ID,name,category,description,location)
+        elif type == "gcatid":
+            name=message.split(";")[1]
+            self.ret_msg=self.get_category_ID(name)
+        elif type == "gdevid":
+            name=message.split(";")[1] 
+            self.ret_msg=self.get_device_ID(name)
 
     def return_message(self):
         return self.ret_msg
@@ -73,7 +113,7 @@ class DataBase:
         ### Auto increment miatt nem kell a klienstol fogadni ID-t (SZERK: Bence)
         
         #self.conn.execute("INSERT INTO Device(ID,Name,Category,Description,Location) VALUES ('"+ID+"','"+name+"','"+category+"','"+description+"','"+location+"')");
-        self.conn.execute("INSERT INTO Device(Name,Category,Description,Location) VALUES ('"+name+"','"+category+"','"+description+"','"+location+"')");
+        self.conn.execute("INSERT INTO Device(Name,Category,Description,Location) VALUES ('"+name+"','"+category+"','"+description+"','"+location+"')")
         self.conn.commit()
         print ("Device Record created successfully")
         self.conn.close()
@@ -103,11 +143,20 @@ class DataBase:
             msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
         print("Select_categories completed!")
         return msg   
-        
+
+    def select_if_cat_empty(self,ID,em):
+        cursor = self.conn.execute("SELECT "+em+" FROM Category WHERE ID = '"+ID+"'")
+        result = cursor.fetchall()
+        return str(result[0][0])
+
     def add_category(self,name,parent,interval,spec,standard,req):
         try:
+            if interval=="Null": interval=self.select_if_cat_empty(parent,"Interval")
+            if spec=="Null": spec=self.select_if_cat_empty(parent,"Specification")
+            if standard=="Null": standard=self.select_if_cat_empty(parent,"StandardTime")
+            if req=="Null": req=self.select_if_cat_empty(parent,"RequiredQualification")
             print("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
-            self.conn.execute("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')");
+            self.conn.execute("INSERT INTO Category(Name,ParentID,Interval,Specification,StandardTime,RequiredQualification) VALUES ('"+name+"','"+parent+"','"+interval+"','"+spec+"','"+standard+"','"+req+"')")
             self.conn.commit()  
         except Exception:
             print(tostring(Exception)) 
@@ -121,6 +170,71 @@ class DataBase:
         print("Data deleted from Category!")
         self.conn.close()
 
+    def update_category(self,ID,name,parent,interval,spec,standard,req):
+        try:
+            print("UPDATE Category SET Name='"+name+"',ParentID='"+parent+"',Interval='"+interval+"',Specification='"+spec+"',StandardTime='"+standard+"',RequiredQualification='"+req+"' WHERE ID='"+ID+"'")
+            self.conn.execute("UPDATE Category SET Name='"+name+"',ParentID='"+parent+"',Interval='"+interval+"',Specification='"+spec+"',StandardTime='"+standard+"',RequiredQualification='"+req+"' WHERE ID='"+ID+"'")
+            self.conn.commit()
+        except Exception:
+            print(tostring(Exception)) 
+        print ("Category Record changed successfully")
+        self.conn.close()
+
+    def update_device(self,ID,name,category,description,location):
+        try:
+            print("UPDATE Category SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
+            self.conn.execute("UPDATE Category SET Name='"+name+"',Category='"+category+"',Description='"+description+"',Location='"+location+"' WHERE ID='"+ID+"'")
+            self.conn.commit()
+        except Exception:
+            print(tostring(Exception)) 
+        print ("Device Record changed successfully")
+        self.conn.close()
+
+    def get_category_ID(self,name):
+        cursor = self.conn.execute("SELECT ID FROM Category WHERE Name = '"+name+"'")
+        result = cursor.fetchall()
+        return str(result[0][0])
+    
+    def get_device_ID(self,name):
+        cursor = self.conn.execute("SELECT ID FROM Device WHERE Name = '"+name+"'")
+        result = cursor.fetchall()
+        return str(result[0][0])
+    
+    def select_location(self):
+        cursor = self.conn.execute("SELECT DISTINCT Location FROM Device ORDER BY Location")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[1])+"END_OF_ROW"
+        print("Select_location completed!")
+        return msg
+
+    def select_requiredQualifications(self):
+        cursor = self.conn.execute("SELECT DISTINCT RequiredQualification FROM Category ORDER BY RequiredQualification")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+"END_OF_ROW"
+        print("Select_requiredQualifications completed!")
+        return msg
+
+    def select_devices_name(self):
+        cursor = self.conn.execute("SELECT Name FROM Device ORDER BY Name")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+"END_OF_ROW"
+        print("Select_location completed!")
+        return msg
+
+    def select_parent_category_data(self):
+        cursor = self.conn.execute("SELECT ID,Name,StandardTime FROM Category ORDER BY Name")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+"END_OF_ROW"
+        print("Select_parent_category_data completed!")
+        return msg
 
 
 
