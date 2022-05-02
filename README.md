@@ -51,7 +51,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] Karbantartók felvétele a rendszerbe (adatbázis)
 - [x] Végzettségek karbantartóhoz rendelése (adatbázis)
 - [x] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
-- [ ] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján) (Ha lezárul a karbantartás, akkor már kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba)
+- [x] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján)
 - [ ] Feladatok listázása, állapotok megjelenítése
 > - [ ] SQL utasítás
 > - [x] Kliens
@@ -60,5 +60,5 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 ### 3. Mérföldkő
 - [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
 - [ ] Az adott karbantartóhoz rendelt feladatok listázása
-- [ ] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve)
+- [ ] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve) (Ha lezárul a karbantartás, akkor már kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba)
 - [ ] Megkezdve állapotban az instrukciók megjelenítése (2.b)
