@@ -251,15 +251,15 @@ export default function Categories() {
       case "1d":
         return "1 Day";
       case "2d":
-        return "2 Day";
+        return "2 Days";
       case "3d":
-        return "3 Day";
+        return "3 Days";
       case "4d":
-        return "4 Day";
+        return "4 Days";
       case "5d":
-        return "5 Day";
+        return "5 Days";
       case "6d":
-        return "6 Day";
+        return "6 Days";
       case "1w":
         return "1 Week";
 
