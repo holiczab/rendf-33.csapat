@@ -1,8 +1,10 @@
 from cgitb import reset
+from datetime import datetime, timedelta
 from dis import Instruction
 import re
 import sqlite3
 import os
+import time
 from xml.etree.ElementTree import tostring
 """
 -------- Feladatok: --------
@@ -98,6 +100,11 @@ class DataBase:
             type=message.split(";")[5]
             importance=message.split(";")[6]
             self.ret_msg=self.add_maintenancetask(name,device,status,instruction,type,importance)
+<<<<<<< Updated upstream
+=======
+        elif type=="check":
+            self.ret_msg=self.auto_task_generate()
+>>>>>>> Stashed changes
         elif type=="umtt":
             ID=message.split(";")[1]
             name=message.split(";")[2]
@@ -107,7 +114,54 @@ class DataBase:
             type=message.split(";")[6]
             importance=message.split(";")[7]
             self.ret_msg=self.update_category(ID,name,device,status,instruction,type,importance)
+<<<<<<< Updated upstream
+=======
+    
+    def time_to_int(self,dateobj):
+        total = int(dateobj.strftime('%S'))
+        total += int(dateobj.strftime('%M')) * 60
+        total += int(dateobj.strftime('%H')) * 60 * 60
+        total += (int(dateobj.strftime('%j')) - 1) * 60 * 60 * 24
+        total += (int(dateobj.strftime('%Y')) - 1970) * 60 * 60 * 24 * 365
+        return total
 
+    def get_interval_sec(self,name):
+        if name=="W": return 604800
+        elif name=="M": return 2629743
+        elif name=="Q": return 10518972
+        elif name=="H": return 15778458
+        elif name=="Y": return 31556926
+>>>>>>> Stashed changes
+
+    def int2date(argdate):
+        year = int(argdate / 10000)
+        month = int((argdate % 10000) / 100)
+        day = int(argdate % 100)
+        return month+"/"+day+"/"+year
+
+    def auto_task_generate(self): 
+        localtime = time.localtime()
+        date = time.strftime("%m/%d/%Y", localtime)
+        cursor = self.conn.execute("SELECT * FROM Log")
+        result = cursor.fetchall()
+        #05/02/2022 formátum!!
+        for row in result:
+            end=datetime(int(row[6].split("/")[2]),int(row[6].split("/")[0]),int(row[6].split("/")[1]))
+            today=datetime(int(date.split("/")[2]),int(date.split("/")[0]),int(date.split("/")[1]))
+            print(end,today)
+            if self.time_to_int(end) < self.time_to_int(today):
+                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[0])+"")
+                resultt = cursor.fetchall()
+                print(resultt)
+                print(self.time_to_int(today))
+                endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
+                end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
+                print(end)
+                self.conn.execute("UPDATE Log SET AssignedTo='"+str(row[1])+"',DeniedBy='"+str(row[2])+"',ApprovedBy='"+str(row[3])+"',Task='"+str(row[4])+"',Start='"+str(date)+"',End='"+str(end)+"' WHERE ID='"+str(row[0])+"'")
+                self.conn.commit()
+                self.conn.close()  
+        print("MaintenanceTasks have been refreshed!")
+        
     def return_message(self):
         return self.ret_msg
 
@@ -134,7 +188,7 @@ class DataBase:
             return f"Username-Password correct;{position};{name}"
         else:
             return "Username-Password incorrect"
-
+    
     def add_device(self,name,category,description,location):
         ### Auto increment miatt nem kell a klienstol fogadni ID-t (SZERK: Bence)
         
@@ -174,7 +228,16 @@ class DataBase:
         cursor = self.conn.execute("SELECT "+em+" FROM Category WHERE ID = '"+ID+"'")
         result = cursor.fetchall()
         return str(result[0][0])
-		
+
+    def update_maintenancetask(self,ID,name,device,status,instruction,type,importance):
+        try:
+            print("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
+            self.conn.execute("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
+            self.conn.commit()
+        except Exception:
+            print(tostring(Exception))
+        print("Maintenance Task successfully updated!")
+        self.conn.close()	
     
     def delete_maintenancetask(self,taskid):
         cursor=self.conn.execute("DELETE DEVICE where ID='"+taskid+"'")
