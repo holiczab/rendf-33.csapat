@@ -207,7 +207,7 @@ const headCells: readonly HeadCell[] = [
     id: "RequredQualification",
     numeric: false,
     disablePadding: false,
-    label: "RequredQualification",
+    label: "RequiredQualification",
   },
 ];
 
