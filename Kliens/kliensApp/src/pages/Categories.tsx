@@ -183,7 +183,7 @@ const headCells: readonly HeadCell[] = [
     id: "ParentID",
     numeric: false,
     disablePadding: false,
-    label: "ParentID",
+    label: "ParentCategory",
   },
   {
     id: "Interval",
