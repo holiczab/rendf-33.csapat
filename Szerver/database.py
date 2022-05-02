@@ -52,6 +52,8 @@ class DataBase:
             self.ret_msg=self.delete_category(ID)
         elif type == "sloc":
             self.ret_msg=self.select_location()
+        elif type == "sDev_id_name_instr":
+            self.ret_msg=self.select_Device_id_name_instruction()    
         elif type == "sdname":
             self.ret_msg=self.select_devices_name()
         elif type == "serqqual":
@@ -84,6 +86,7 @@ class DataBase:
             self.ret_msg=self.select_maintenancetask()
         elif type=="dmtt":
             ID=username=message.split(";")[1]
+            print(ID)
             self.ret_msg=self.delete_maintenancetask(ID)
         elif type=="amtt":
             name=message.split(";")[1]
@@ -99,11 +102,11 @@ class DataBase:
             ID=message.split(";")[1]
             name=message.split(";")[2]
             device=message.split(";")[3]
-            stantus=message.split(";")[4]
-            intstruction=message.split(";")[5]
+            status=message.split(";")[4]
+            instruction=message.split(";")[5]
             type=message.split(";")[6]
             importance=message.split(";")[7]
-            self.ret_msg=self.update_category(ID,name,device,status,instruction,type,importance)
+            self.ret_msg=self.update_maintenancetask(ID,name,device,status,instruction,type,importance)
     
     def time_to_int(self,dateobj):
         total = int(dateobj.strftime('%S'))
@@ -216,23 +219,13 @@ class DataBase:
         result = cursor.fetchall()
         return str(result[0][0])
 
-    def update_maintenancetask(self,ID,name,device,status,instruction,type,importance):
-        try:
-            print("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
-            self.conn.execute("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
-            self.conn.commit()
-        except Exception:
-            print(tostring(Exception))
-        print("Maintenance Task successfully updated!")
-        self.conn.close()	
     
     def delete_maintenancetask(self,taskid):
-        cursor=self.conn.execute("DELETE DEVICE where ID='"+taskid+"'")
-        result=cursor.fetchall()
-        print(result)
+        print("DELETE from MaintenanceTasks where ID IN ("+taskid+")")
+        self.conn.execute("DELETE from MaintenanceTasks where ID IN ("+taskid+")")
+        self.conn.commit()
         print("Selected_MaintenanceTasks succesfully deleted !")
-        msg=""
-        return msg
+        self.conn.close()
     
     def select_maintenancetask(self):
         cursor=self.conn.execute("SELECT * FROM MaintenanceTasks")
@@ -246,8 +239,8 @@ class DataBase:
     
     def update_maintenancetask(self,ID,name,device,status,instruction,type,importance):
         try:
-            print("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
-            self.conn.execute("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
+            print("Update MaintenanceTasks SET Name='"+name+"',Device='"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
+            self.conn.execute("Update MaintenanceTasks SET Name='"+name+"',Device='"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
             self.conn.commit()
         except Exception:
             print(tostring(Exception))
@@ -256,8 +249,8 @@ class DataBase:
     
     def add_maintenancetask(self,name,device,status,instruction,type,importance):
         try:
-            print("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUS('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
-            self.conn.execute("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUS('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
+            print("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUES('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
+            self.conn.execute("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUES('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
             self.conn.commit()
         except Exception:
             print(tostring(Exception))
@@ -351,7 +344,14 @@ class DataBase:
         print("Select_parent_category_data completed!")
         return msg
 
-
+    def select_Device_id_name_instruction(self):
+        cursor = self.conn.execute("SELECT Device.ID, Device.Name, Category.Specification FROM Device INNER JOIN Category ON Device.Category=Category.ID")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+"END_OF_ROW"
+        print("select_Device_id_name_instruction completed!")
+        return msg
 
 
 

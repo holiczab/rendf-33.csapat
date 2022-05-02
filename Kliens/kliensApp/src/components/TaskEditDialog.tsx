@@ -14,14 +14,21 @@ import { useForm } from "react-hook-form";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
-let DeviceOptions: { value: string; label: string }[] = [];
-let ImportanceOptions: { value: string; label: string }[] = [{ value:"High", label: "High" }, { value:"Medium", label: "Medium" }, { value:"Low", label: "Low" }];
+let DeviceOptions: { value: string, label: string }[] = [];
+let ImportanceOptions: { value: string, label: string }[] = [{ value:"High", label: "High" }, { value:"Medium", label: "Medium" }, { value:"Low", label: "Low" }];
+let StatusOptions: { value: string, label: string }[] = [
+    { value:"New", label: "New" }, 
+    { value:"Accepted", label: "Accepted" }, 
+    { value:"Denied", label: "Denied" },
+    { value:"Started", label: "Started" }, 
+    { value:"Finished", label: "Finished" }];
 
-export default function TaskAddDialog(Data: any) {
-  DeviceOptions = [];
+export default function TaskEditDialog(Data: any) {
+    DeviceOptions = [];
 
   const [open, setOpen] = React.useState(false);
   let ID = Data.ID;
+  let TaskType = Data.Type;
 
   for (let c in Data.DevDeviceList) {
     DeviceOptions.push({
@@ -31,13 +38,25 @@ export default function TaskAddDialog(Data: any) {
     //console.log("Instr.: "+Data.DevDeviceList[c].Instruction);
   } 
 
+  console.log("Device: "+Data.Device);
+
+  
   const {
     register,
     getValues,
     reset,
     formState: { errors },
     formState,
-  } = useForm({ mode: "onChange" });
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      name: Data.Name,
+      device: Data.Device,
+      status: Data.Status,
+      instruction: Data.Instruction,
+      importance: Data.Importance
+    },
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -45,26 +64,36 @@ export default function TaskAddDialog(Data: any) {
 
   const handleClose = () => {
     setOpen(false);
-    //console.log("cancelPopupDialog");
     reset();
   };
 
   const saveDataToDB = (params: any) => {
     //console.log("savePopupDialog");
+
     let customInstruction = "";
     for(let i in Data.DevDeviceList){
       if(Data.DevDeviceList[i].ID === params.device){
         customInstruction = Data.DevDeviceList[i].Instruction;
       }
     }
-    var mess = "amtt;" +
-      params.name + ";" +
-      params.device + ";" +
-      "New" + ";" + //params.status
-      params.instruction + "\n" + customInstruction + ";" +
-      "0" + ";" +  //params.type
+
+    var mess =
+      "umtt;" +
+      ID +
+      ";" +
+      params.name +
+      ";" +
+      params.device +
+      ";" +
+      params.status +
+      ";" +
+      params.instruction  + "\n" + customInstruction +
+      ";" +
+      TaskType +
+      ";" +
       params.importance;
-    //console.log(mess);
+
+    console.log(mess);  
     client.send(mess);
     reset();
     Data.updateFunction();
@@ -88,10 +117,10 @@ export default function TaskAddDialog(Data: any) {
         sx={{ m: 1 }}
       >
         <AddIcon sx={{ mr: 1 }} />
-        Add
+        Modify
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Add new Task</DialogTitle>
+        <DialogTitle>Modify Task</DialogTitle>
         <DialogContent>
           <form noValidate autoComplete="off">
             <TextField
@@ -110,13 +139,11 @@ export default function TaskAddDialog(Data: any) {
             />
             <TextField
               select
-              required
               margin="normal"
               label="Device"
               fullWidth
-              {...register("device", {
-                required: true,
-              })}
+              defaultValue={Data.Device}
+              {...register("device")}
               error={errors.device}
               type="text"
             >
@@ -127,14 +154,31 @@ export default function TaskAddDialog(Data: any) {
               ))}
             </TextField>
             <TextField
-              label="Instruction"
-              multiline
+              select
               margin="normal"
+              label="Status"
               required
               fullWidth
-              {...register("instruction", {
+              defaultValue={Data.Status}
+              {...register("status", {
+                required: true,
               })}
-              error={errors.instruction}
+              error={errors.status}
+              type="text"
+            >
+              {StatusOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Instruction"
+              required
+              margin="normal"
+              fullWidth
+              {...register("instruction")}
+              error={errors.name}
               type="text"
             />
             <TextField
@@ -143,6 +187,7 @@ export default function TaskAddDialog(Data: any) {
               label="Importance"
               required
               fullWidth
+              defaultValue={Data.Importance}
               {...register("importance", {
                 required: true,
               })}
