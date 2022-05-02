@@ -102,7 +102,7 @@ export default function MenuDrawer() {
             component="div"
             sx={{ flexGrow: 1 /*, ...(open && { display: 'none' })*/ }}
           >
-            {"Beosztás: " + (position != "" ? position : "---")}
+            {"Position: " + (position != "" ? position : "---")}
           </Typography>
           {isLoggedIn ? (
             <AccountMenu />
@@ -113,7 +113,7 @@ export default function MenuDrawer() {
               component={Link}
               to="/login"
             >
-              Belépés
+              Login
             </Button>
           )}
         </Toolbar>
@@ -139,7 +139,7 @@ export default function MenuDrawer() {
               component="div"
               sx={{ flexGrow: 1 }}
             >
-              Menü
+              Menu
             </Typography>
           }
           <IconButton
@@ -159,15 +159,15 @@ export default function MenuDrawer() {
               Operator: (
                 <>
                   <ListItem button component={Link} to="/home">
-                    <ListItemText primary="Kezdőoldal" />
+                    <ListItemText primary="Home Page" />
                   </ListItem>
 
                   <ListItem button component={Link} to="/degrees">
-                    <ListItemText primary="Végzettségek" />
+                    <ListItemText primary="Qualifications" />
                   </ListItem>
 
                   <ListItem button component={Link} to="/tasks">
-                    <ListItemText primary="Feladatok" />
+                    <ListItemText primary="Maintenance Tasks" />
                   </ListItem>
                 </>
               ),
@@ -175,11 +175,11 @@ export default function MenuDrawer() {
                 <>
                   <List>
                     <ListItem button component={Link} to="/home">
-                      <ListItemText primary="Kezdőoldal" />
+                      <ListItemText primary="Home Page" />
                     </ListItem>
 
                     <ListItem button component={Link} to="/tasks">
-                      <ListItemText primary="Feladatok" />
+                      <ListItemText primary="Maintenance Tasks" />
                     </ListItem>
                   </List>
                 </>
@@ -188,15 +188,15 @@ export default function MenuDrawer() {
                 <>
                   <List>
                     <ListItem button component={Link} to="/home">
-                      <ListItemText primary="Kezdőoldal" />
+                      <ListItemText primary="Home Page" />
                     </ListItem>
 
                     <ListItem button component={Link} to="/categories">
-                      <ListItemText primary="Kategóriák" />
+                      <ListItemText primary="Categories" />
                     </ListItem>
 
                     <ListItem button component={Link} to="/devices">
-                      <ListItemText primary="Eszközök" />
+                      <ListItemText primary="Devices" />
                     </ListItem>
                   </List>
                 </>

@@ -39,7 +39,7 @@ async function FetchDataFromDB() {
   };
 }
 
-export default function TaskPopupDialog() {
+export default function TaskAddDialog() {
   const [open, setOpen] = React.useState(false);
   const [description, setDescription] = React.useState("");
   const [selectedDevice, setSelectedDevice] = React.useState("");
@@ -120,10 +120,10 @@ export default function TaskPopupDialog() {
         onClick={handleClickOpen}
       >
         <AddIcon sx={{ mr: 1 }} />
-        Feladat felvétele
+        Add
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Karbantartási feladat felvétele</DialogTitle>
+        <DialogTitle>Add Maintenance Task</DialogTitle>
         <DialogContent>
           <div>
             <TextField
@@ -131,7 +131,7 @@ export default function TaskPopupDialog() {
               select
               required
               margin="normal"
-              label="Eszköz"
+              label="Device"
               fullWidth
               value={selectedDevice}
               onChange={handleSelectedDeviceChange}
@@ -145,7 +145,7 @@ export default function TaskPopupDialog() {
 
             <TextField
               id="datetime-local"
-              label="Időpont"
+              label="Date"
               type="datetime-local"
               value={selectedDateTime}
               onChange={handleSelectedDateTimeChange}
@@ -159,7 +159,7 @@ export default function TaskPopupDialog() {
 
             <TextField
               id="outlined-multiline-flexible"
-              label="Hiba leírása"
+              label="Failure description"
               required
               margin="normal"
               multiline
@@ -171,8 +171,8 @@ export default function TaskPopupDialog() {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Mégse</Button>
-          <Button onClick={saveDataToDB}>Mentés</Button>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={saveDataToDB}>Save</Button>
         </DialogActions>
       </Dialog>
     </div>

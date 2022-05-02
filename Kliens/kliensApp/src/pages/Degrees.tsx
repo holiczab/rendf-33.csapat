@@ -3,7 +3,7 @@ import React from "react";
 function Degrees() {
   return (
     <main style={{paddingLeft: 280}}>
-      <h2>Végzettségek</h2>
+      <h2>Qualifications</h2>
     </main>
   );
 }

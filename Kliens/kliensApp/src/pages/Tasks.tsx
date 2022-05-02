@@ -26,7 +26,7 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
-import TaskPopupDialog from "../components/TaskPopupDialog";
+import TaskAddDialog from "../components/TaskAddDialog";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
@@ -383,7 +383,7 @@ export default function Tasks() {
             id="tableTitle"
             component="div"
           >
-            Karbantartási feladatok
+            Maintenance Tasks
           </Typography>
           {selected.length === 1 ? (
             <Fab
@@ -394,12 +394,12 @@ export default function Tasks() {
               sx={{ m: 1 }}
             >
               <DeleteIcon sx={{ mr: 1 }} />
-              Törlés
+              Remove
             </Fab>
           ) : (
             <></>
           )}
-          <TaskPopupDialog />
+          <TaskAddDialog />
         </Toolbar>
       </>
     );

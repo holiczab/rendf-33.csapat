@@ -387,7 +387,7 @@ export default function Categories() {
           id="tableTitle"
           component="div"
         >
-          Kategóriák
+          Categories
         </Typography>
         {selected.length === 1 ? (
           <>
@@ -399,7 +399,7 @@ export default function Categories() {
               sx={{ m: 1 }}
             >
               <DeleteIcon sx={{ mr: 1 }} />
-              Törlés
+              Remove
             </Fab>
             <CategoryEditDialog {...EditParams} />
           </>
@@ -414,7 +414,7 @@ export default function Categories() {
             sx={{ m: 1 }}
           >
             <DeleteIcon sx={{ mr: 1 }} />
-            Törlés
+            Remove
           </Fab>
         )}
       </Toolbar>

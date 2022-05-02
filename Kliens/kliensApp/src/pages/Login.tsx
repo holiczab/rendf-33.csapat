@@ -58,7 +58,7 @@ function Login() {
           message.data.split(";")[0] === "Username-Password incorrect"
         ) {
           //TODO: Felugro ablak helye
-          setErrorMessage("Helytelen belépési adatok!");
+          setErrorMessage("Wrong login credentials!");
           console.log("Helytelen belepesi adatok!");
         }
       };
@@ -77,7 +77,7 @@ function Login() {
           textAlign: "center",
         }}
       >
-        <h1 className="title">Belépés</h1>
+        <h1 className="title">Login Page</h1>
 
         <form noValidate autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
           <TextField //Email
@@ -86,7 +86,7 @@ function Login() {
             className="Szoveg"
             id="outlined-basic"
             variant="outlined"
-            label="E-mail cím"
+            label="E-mail"
             {...register("email", {
               required: true,
               validate: (input) => isEmail(input),
@@ -94,7 +94,7 @@ function Login() {
             type="email"
             autoComplete="email"
             error={errors.email}
-            helperText={errors.email && "Helytelen e-mail cím formátum!"}
+            helperText={errors.email && "Wrong e-mail format!"}
             sx={{ width: 350 }}
           />
           <br></br>
@@ -106,7 +106,7 @@ function Login() {
             className="Szoveg"
             id="outlined-password-input"
             variant="outlined"
-            label="Jelszó"
+            label="Password"
             type="password"
             autoComplete="current-password"
             {...register("password", {
@@ -117,7 +117,7 @@ function Login() {
             error={errors.password}
             helperText={
               errors.password &&
-              "A jelszó minimum 6, maximum 20 karakter hosszú lehet!"
+              "Minimum 6, maximum 20 character!"
             }
             sx={{ width: 350 }}
           />
@@ -132,7 +132,7 @@ function Login() {
           disabled={!formState.isValid}
           onClick={() => SendLoginToServer(getValues())} //A függvény elküldi a szervernek
         >
-          Belépés
+          Login
         </Button>
         <br></br>
         <br></br>

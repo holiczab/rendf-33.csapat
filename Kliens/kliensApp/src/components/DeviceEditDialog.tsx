@@ -100,10 +100,10 @@ export default function DeviceEditDialog(Data: any) {
         sx={{ m: 1 }}
       >
         <AddIcon sx={{ mr: 1 }} />
-        Módosítás
+        Modify
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Eszköz módosítása</DialogTitle>
+        <DialogTitle>Modify Device</DialogTitle>
         <DialogContent>
           <form noValidate autoComplete="off">
             <TextField
@@ -175,13 +175,13 @@ export default function DeviceEditDialog(Data: any) {
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Mégse</Button>
+          <Button onClick={handleClose}>Cancel</Button>
           <Button
             type="submit"
             disabled={!formState.isValid}
             onClick={() => saveDataToDB(getValues())}
           >
-            Mentés
+            Save
           </Button>
         </DialogActions>
       </Dialog>

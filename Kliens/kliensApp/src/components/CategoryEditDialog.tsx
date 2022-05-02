@@ -125,10 +125,10 @@ export default function CategoryEditDialog(Data: any) {
         sx={{ m: 1 }}
       >
         <EditIcon sx={{ mr: 1 }} />
-        Módosítás
+        Modify
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Kategória módosítása</DialogTitle>
+        <DialogTitle>Modify Category</DialogTitle>
         <DialogContent>
           <form noValidate autoComplete="off">
             <TextField
@@ -237,13 +237,13 @@ export default function CategoryEditDialog(Data: any) {
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Mégse</Button>
+          <Button onClick={handleClose}>Cancel</Button>
           <Button
             type="submit"
             disabled={!formState.isValid}
             onClick={() => saveDataToDB(getValues())}
           >
-            Mentés
+            Save
           </Button>
         </DialogActions>
       </Dialog>

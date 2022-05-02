@@ -311,7 +311,7 @@ export default function Devices() {
           id="tableTitle"
           component="div"
         >
-          Eszközök
+          Devices
         </Typography>
         {selected.length === 1 ? (
           <>
@@ -323,7 +323,7 @@ export default function Devices() {
               sx={{ m: 1 }}
             >
               <DeleteIcon sx={{ mr: 1 }} />
-              Törlés
+              Remove
             </Fab>
             <DeviceEditDialog {...EditParams} />
           </>
@@ -338,7 +338,7 @@ export default function Devices() {
             sx={{ m: 1 }}
           >
             <DeleteIcon sx={{ mr: 1 }} />
-            Törlés
+            Remove
           </Fab>
         )}
       </Toolbar>
@@ -519,7 +519,6 @@ export default function Devices() {
               Name: SplittedRow[1],
             });
           }
-
         }
 
         for (let r in rows) {

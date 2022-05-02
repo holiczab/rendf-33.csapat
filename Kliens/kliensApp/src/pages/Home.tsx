@@ -6,8 +6,8 @@ function Home() {
 
   return (
     <main style={{ paddingLeft: 280 }}>
-      <h2>Kezdőoldal</h2>
-      <h4>Rendszerfejlesztés 33.csapat kliens alkalmazása</h4>
+      <h2>Home Page</h2>
+      <h3>Rendszerfejlesztés 33.csapat kliens alkalmazása</h3>
     </main>
   );
 }
