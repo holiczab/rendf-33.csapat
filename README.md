@@ -39,15 +39,15 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [x] Szerver sql műveletek, klienstől adatok fogadásának kezelése
 - [x] Végzettségek felvétele és eszköz kategóriákhoz rendelése [✳️](https://github.com/holiczab/rendf-33.csapat/blob/main/Readme%20K%C3%A9pek/kat-veg.jpg)
 ### 2. Mérföldkő
-- [ ] Eszköz kategóriához normaidők és karbantartási periódus rögzítése
+- [x] Eszköz kategóriához normaidők és karbantartási periódus rögzítése
 > - [x] Meglévőkhöz normaidők és karbantartási periódus rendelés 
 > - [x] Legyen lehetőség a kliensben felvenni ezeket
-> > - [ ] Módosítani, törölni
+> > - [x] Módosítani, törölni
 > - [x] Ha valami nincs megadva a kategóriánál, a hierarchia miatt meg kell kapja a felette lévő kategória értékeit (pl.: normaidők és karbantartási periódus)
-- [ ] Eszköz kategóriához a karbantartásra vonatkozó instrukciók rögzítése
+- [x] Eszköz kategóriához a karbantartásra vonatkozó instrukciók rögzítése
 > - [x] Meglévőkhöz instrukciók rendelés 
 > - [x] Legyen lehetőség a kliensben felvenni ezeket
-> >- [ ] Módosítani, törölni
+> >- [x] Módosítani, törölni
 - [x] Karbantartók felvétele a rendszerbe (adatbázis)
 - [x] Végzettségek karbantartóhoz rendelése (adatbázis)
 - [x] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
@@ -56,7 +56,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [ ] SQL utasítás
 > - [x] Kliens
 - [x] *ID-k átírása Auto Incrementre*
-- [ ] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
+- [x] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
 ### 3. Mérföldkő
 - [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
 - [ ] Az adott karbantartóhoz rendelt feladatok listázása
