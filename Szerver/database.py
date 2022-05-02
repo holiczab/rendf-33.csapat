@@ -7,15 +7,8 @@ import os
 import time
 from xml.etree.ElementTree import tostring
 """
--------- Feladatok: --------
 ZS:
-- Feladat törlés
-- Feladat lekérdezés
-- Feladat módosítás
 - Feladat beszúrás --> Log táblába is adott értékek beszúrása
-- Időszakos karbantartás automatán-> Ha a feladat kész, akkor beszúrja újra más időpontokkal
-
-----------------------------
 """
 class DataBase:
     def __init__(self,message):
