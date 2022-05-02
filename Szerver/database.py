@@ -98,6 +98,15 @@ class DataBase:
             type=message.split(";")[5]
             importance=message.split(";")[6]
             self.ret_msg=self.add_maintenancetask(name,device,status,instruction,type,importance)
+        elif type=="umtt":
+            ID=message.split(";")[1]
+            name=message.split(";")[2]
+            device=message.split(";")[3]
+            stantus=message.split(";")[4]
+            intstruction=message.split(";")[5]
+            type=message.split(";")[6]
+            importance=message.split(";")[7]
+            self.ret_msg=self.update_category(ID,name,device,status,instruction,type,importance)
 
     def return_message(self):
         return self.ret_msg
@@ -184,6 +193,16 @@ class DataBase:
             msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
         print("Selected_MaintenanceTasks completed!")
         return msg
+    
+    def update_maintenancetask(self,ID,name,device,status,instruction,type,importance):
+        try:
+            print("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
+            self.conn.execute("Update MaintenanceTasks SET Name='"+name+"',Device'"+device+"',Status='"+status+"',Instruction='"+instruction+"',Type='"+type+"',Importance='"+importance+"' WHERE ID='"+ID+"'")
+            self.conn.commit()
+        except Exception:
+            print(tostring(Exception))
+        print("Maintenance Task successfully updated!")
+        self.conn.close()
     
     def add_maintenancetask(self,name,device,status,instruction,type,importance):
         try:
