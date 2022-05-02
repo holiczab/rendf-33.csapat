@@ -7,7 +7,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Fab from "@mui/material/Fab";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import { MenuItem } from "@mui/material";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useForm } from "react-hook-form";
@@ -17,28 +17,41 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 let ParentCategoryOptions: { value: string; label: string }[] = [];
 let IntervalOptions: { value: string; label: string }[] = [];
 let QualificationOptions: { value: string; label: string }[] = [];
+let StandardTimeOptions: { value: string; label: string }[] = [];
 
+export default function CategoryAddDialog(Data: any) {
+  ParentCategoryOptions = [];
+  IntervalOptions = [];
+  QualificationOptions = [];
+  StandardTimeOptions = [];
 
-export default function CategoryAddDialog(Data : any) {
-    ParentCategoryOptions = [];
-    IntervalOptions = [];
-    QualificationOptions = [];
+  for (let c in Data.ParentCategoryList) {
+    ParentCategoryOptions.push({
+      value: Data.ParentCategoryList[c].ID,
+      label: Data.ParentCategoryList[c].Name,
+    });
+  }
 
-    for(let c in Data.ParentCategoryList){
-      ParentCategoryOptions.push({
-        value: Data.ParentCategoryList[c].ID,
-        label: Data.ParentCategoryList[c].Name });
-    };
-    for(let i in Data.IntervalList){
-      IntervalOptions.push({
-        value: Data.IntervalList[i],
-        label: Data.IntervalList[i] });
-    };
-    for(let q in Data.QualificationList){
-      QualificationOptions.push({
-        value: Data.QualificationList[q],
-        label: Data.QualificationList[q] });
-    };
+  for (let i in Data.IntervalList) {
+    IntervalOptions.push({
+      value: Data.IntervalList[i].ID,
+      label: Data.IntervalList[i].Name,
+    });
+  }
+
+  for (let q in Data.QualificationList) {
+    QualificationOptions.push({
+      value: Data.QualificationList[q],
+      label: Data.QualificationList[q],
+    });
+  }
+
+  for (let i in Data.StandardTimeList) {
+    StandardTimeOptions.push({
+      value: Data.StandardTimeList[i].ID,
+      label: Data.StandardTimeList[i].Name,
+    });
+  }
 
   const [open, setOpen] = React.useState<boolean>(false);
 
@@ -62,14 +75,20 @@ export default function CategoryAddDialog(Data : any) {
 
   const saveDataToDB = (params: any) => {
     //console.log("savePopupDialog");
-    var mess = "acat;" +
-      params.name + ";" +
-      params.parentID + ";" +
-      params.interval + ";" +
-      params.specification + ";" +
-      params.standardTime + ";" +
+    var mess =
+      "acat;" +
+      params.name +
+      ";" +
+      params.parentID +
+      ";" +
+      params.interval +
+      ";" +
+      params.specification +
+      ";" +
+      params.standardTime +
+      ";" +
       params.reqQualification;
-    
+
     //console.log(mess);
     client.send(mess);
     reset();
@@ -82,7 +101,6 @@ export default function CategoryAddDialog(Data : any) {
     client.onopen = () => {
       console.log("WebSocket Client Connected");
     };
-
   }, []);
 
   return (
@@ -100,7 +118,7 @@ export default function CategoryAddDialog(Data : any) {
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
         <DialogTitle>Új kategória hozzáadása</DialogTitle>
         <DialogContent>
-        <form noValidate autoComplete="off">
+          <form noValidate autoComplete="off">
             <TextField
               label="Name"
               required
@@ -109,13 +127,10 @@ export default function CategoryAddDialog(Data : any) {
               maxRows={1}
               {...register("name", {
                 required: true,
-                minLength: 3
+                minLength: 3,
               })}
               error={errors.name}
-              helperText={
-                errors.name &&
-                "Minimum 3 character!"
-              }
+              helperText={errors.name && "Minimum 3 character!"}
               type="text"
             />
             <TextField
@@ -160,27 +175,29 @@ export default function CategoryAddDialog(Data : any) {
               fullWidth
               {...register("specification", {
                 required: false,
-                minLength: 10
+                minLength: 10,
               })}
               error={errors.specification}
-              helperText={
-                errors.specification &&
-                "Minimum 10 character!"
-              }
+              helperText={errors.specification && "Minimum 10 character!"}
               type="text"
             />
             <TextField
-              label="StandardTime"
+              select
               margin="normal"
+              label="Standard Time"
               fullWidth
-              maxRows={1}
               {...register("standardTime", {
                 required: false,
-                minLength: 2
               })}
               error={errors.standardTime}
               type="text"
-            />    
+            >
+              {StandardTimeOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               select
               margin="normal"
@@ -205,7 +222,7 @@ export default function CategoryAddDialog(Data : any) {
           <Button
             type="submit"
             disabled={!formState.isValid}
-            onClick={() => saveDataToDB(getValues()) }
+            onClick={() => saveDataToDB(getValues())}
           >
             Mentés
           </Button>

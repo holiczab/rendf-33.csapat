@@ -17,16 +17,17 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 let ParentCategoryOptions: { value: string; label: string }[] = [];
 let IntervalOptions: { value: string; label: string }[] = [];
 let QualificationOptions: { value: string; label: string }[] = [];
+let StandardTimeOptions: { value: string; label: string }[] = [];
 
 export default function CategoryEditDialog(Data: any) {
-  
   ParentCategoryOptions = [];
   IntervalOptions = [];
   QualificationOptions = [];
+  StandardTimeOptions = [];
 
   const [open, setOpen] = React.useState<boolean>(false);
   let ID = Data.ID;
-  
+
   for (let c in Data.ParentCategoryList) {
     ParentCategoryOptions.push({
       value: Data.ParentCategoryList[c].ID,
@@ -36,8 +37,8 @@ export default function CategoryEditDialog(Data: any) {
 
   for (let i in Data.IntervalList) {
     IntervalOptions.push({
-      value: Data.IntervalList[i],
-      label: Data.IntervalList[i],
+      value: Data.IntervalList[i].ID,
+      label: Data.IntervalList[i].Name,
     });
   }
 
@@ -45,6 +46,13 @@ export default function CategoryEditDialog(Data: any) {
     QualificationOptions.push({
       value: Data.QualificationList[q],
       label: Data.QualificationList[q],
+    });
+  }
+
+  for (let i in Data.StandardTimeList) {
+    StandardTimeOptions.push({
+      value: Data.StandardTimeList[i].ID,
+      label: Data.StandardTimeList[i].Name,
     });
   }
 
@@ -190,18 +198,23 @@ export default function CategoryEditDialog(Data: any) {
               type="text"
             />
             <TextField
-              label="StandardTime"
+              select
               margin="normal"
+              label="Standard Time"
               fullWidth
-              required
-              maxRows={1}
+              defaultValue={Data.StandardTime}
               {...register("standardTime", {
-                required: true,
-                minLength: 2,
+                required: false,
               })}
               error={errors.standardTime}
               type="text"
-            />
+            >
+              {StandardTimeOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               select
               required

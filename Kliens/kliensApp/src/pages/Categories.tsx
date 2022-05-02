@@ -25,7 +25,8 @@ const client = new W3CWebSocket("ws://127.0.0.1:5050");
 let rows: Data[];
 let SelectedIndexes: string[] = [];
 let CategoryList: string[] = [];
-let IntervalList: string[] = [];
+let IntervalList: { ID: string; Name: string }[] = [];
+let StandardTimeList: { ID: string; Name: string }[] = [];
 let QualificationList: string[] = [];
 let ParentCategoryList: { ID: string; Name: string }[] = [];
 let EditParams: Data;
@@ -38,7 +39,7 @@ async function FetchDataFromDB() {
   var mess = "scat";
   client.send(mess);
   //console.log(mess);
-  console.log("Category SELECT query executed")
+  console.log("Category SELECT query executed");
 }
 
 interface Data {
@@ -70,7 +71,7 @@ function createData(
     Specification,
     StandardTime,
     RequredQualification,
-    ParentName
+    ParentName,
   };
 }
 
@@ -84,9 +85,10 @@ interface EditDialogInput {
   RequredQualification: string;
   ParentName: string;
   ParentCategoryList: { ID: string; Name: string }[];
-  IntervalList: string[];
+  IntervalList: { ID: string; Name: string }[];
   QualificationList: string[];
-  updateFunction: ()=> any;
+  StandardTimeList: { ID: string; Name: string }[];
+  updateFunction: () => any;
 }
 
 function createEditDialogInput(
@@ -99,9 +101,10 @@ function createEditDialogInput(
   RequredQualification: string,
   ParentName: string,
   ParentCategoryList: { ID: string; Name: string }[],
-  IntervalList: string[],
+  IntervalList: { ID: string; Name: string }[],
   QualificationList: string[],
-  updateFunction: ()=> any
+  StandardTimeList: { ID: string; Name: string }[],
+  updateFunction: () => any
 ): EditDialogInput {
   return {
     ID,
@@ -115,28 +118,32 @@ function createEditDialogInput(
     ParentCategoryList,
     IntervalList,
     QualificationList,
-    updateFunction
+    StandardTimeList,
+    updateFunction,
   };
 }
 
 interface AddDialogInput {
   ParentCategoryList: { ID: string; Name: string }[];
-  IntervalList: string[];
+  IntervalList: { ID: string; Name: string }[];
   QualificationList: string[];
-  updateFunction: ()=> any;
+  StandardTimeList: { ID: string; Name: string }[];
+  updateFunction: () => any;
 }
 
 function createAddDialogInput(
   ParentCategoryList: { ID: string; Name: string }[],
-  IntervalList: string[],
+  IntervalList: { ID: string; Name: string }[],
   QualificationList: string[],
-  updateFunction: ()=> any
+  StandardTimeList: { ID: string; Name: string }[],
+  updateFunction: () => any
 ): AddDialogInput {
   return {
     ParentCategoryList,
     IntervalList,
     QualificationList,
-    updateFunction
+    StandardTimeList,
+    updateFunction,
   };
 }
 
@@ -206,8 +213,6 @@ const headCells: readonly HeadCell[] = [
 
 
 export default function Categories() {
-  
-
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("Name");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -215,7 +220,7 @@ export default function Categories() {
   const deleteCategory = () => {
     let msg = "";
     msg = SelectedIndexes.join();
-    client.send("dcat;"+msg);
+    client.send("dcat;" + msg);
     setSelected([]);
     FetchDataFromDB();
   };
@@ -223,7 +228,76 @@ export default function Categories() {
   const updateFunction = () => {
     FetchDataFromDB();
     setSelected([]);
-  }
+  };
+
+  const getIntervalName = (ID: string): string => {
+    switch (ID) {
+      case "H":
+        return "Half-yearly";
+      case "Q":
+        return "Quarterly";
+      case "M":
+        return "Monthly";
+      case "W":
+        return "Weekly";
+
+      default:
+        return "Undefined";
+    }
+  };
+
+  const getStandardTimeName = (ID: string): string => {
+    switch (ID) {
+      case "1d":
+        return "1 Day";
+      case "2d":
+        return "2 Day";
+      case "3d":
+        return "3 Day";
+      case "4d":
+        return "4 Day";
+      case "5d":
+        return "5 Day";
+      case "6d":
+        return "6 Day";
+      case "1w":
+        return "1 Week";
+
+      default:
+        return "Undefined";
+    }
+  };
+
+  StandardTimeList = [
+    {
+      ID: "1d",
+      Name: getStandardTimeName("1d"),
+    },
+    {
+      ID: "2d",
+      Name: getStandardTimeName("2d"),
+    },
+    {
+      ID: "3d",
+      Name: getStandardTimeName("3d"),
+    },
+    {
+      ID: "4d",
+      Name: getStandardTimeName("4d"),
+    },
+    {
+      ID: "5d",
+      Name: getStandardTimeName("5d"),
+    },
+    {
+      ID: "6d",
+      Name: getStandardTimeName("6d"),
+    },
+    {
+      ID: "1w",
+      Name: getStandardTimeName("1w"),
+    },
+  ];
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -279,6 +353,7 @@ export default function Categories() {
             ParentCategoryList,
             IntervalList,
             QualificationList,
+            StandardTimeList,
             updateFunction
           );
         }
@@ -332,15 +407,15 @@ export default function Categories() {
           <CategoryAddDialog {...AddParams} />
         ) : (
           <Fab
-              variant="extended"
-              color="error"
-              aria-label="add"
-              onClick={deleteCategory}
-              sx={{ m: 1 }}
-            >
-              <DeleteIcon sx={{ mr: 1 }} />
-              Törlés
-            </Fab>
+            variant="extended"
+            color="error"
+            aria-label="add"
+            onClick={deleteCategory}
+            sx={{ m: 1 }}
+          >
+            <DeleteIcon sx={{ mr: 1 }} />
+            Törlés
+          </Fab>
         )}
       </Toolbar>
     );
@@ -355,7 +430,7 @@ export default function Categories() {
     }
     return 0;
   }
-  
+
   function getComparator<Key extends keyof any>(
     order: Order,
     orderBy: Key
@@ -367,7 +442,7 @@ export default function Categories() {
       ? (a, b) => descendingComparator(a, b, orderBy)
       : (a, b) => -descendingComparator(a, b, orderBy);
   }
-  
+
   // This method is created for cross-browser compatibility, if you don't
   // need to support IE11, you can use Array.prototype.sort() directly
   function stableSort<T>(
@@ -384,8 +459,7 @@ export default function Categories() {
     });
     return stabilizedThis.map((el) => el[0]);
   }
-  
-  
+
   function EnhancedTableHead(props: EnhancedTableProps) {
     const {
       onSelectAllClick,
@@ -399,7 +473,7 @@ export default function Categories() {
       (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
         onRequestSort(event, property);
       };
-  
+
     return (
       <TableHead>
         <TableRow>
@@ -429,7 +503,9 @@ export default function Categories() {
                 {headCell.label}
                 {orderBy === headCell.id ? (
                   <Box component="span" sx={visuallyHidden}>
-                    {order === "desc" ? "sorted descending" : "sorted ascending"}
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
                   </Box>
                 ) : null}
               </TableSortLabel>
@@ -492,12 +568,14 @@ export default function Categories() {
                             {row.Name}
                           </TableCell>
                           <TableCell align="center">{row.ParentName}</TableCell>
-                          <TableCell align="center">{row.Interval}</TableCell>
+                          <TableCell align="center">
+                            {getIntervalName(row.Interval)}
+                          </TableCell>
                           <TableCell align="left">
                             {row.Specification}
                           </TableCell>
                           <TableCell align="center">
-                            {row.StandardTime}
+                            {getStandardTimeName(row.StandardTime)}
                           </TableCell>
                           <TableCell align="center">
                             {row.RequredQualification}
@@ -528,7 +606,7 @@ export default function Categories() {
         ParentCategoryList = [];
         IntervalList = [];
         QualificationList = [];
-        
+
         //console.log("MSG from server: " + message);
         var SplittedMessage = message.data.split("END_OF_ROW");
         SplittedMessage.splice(-1, 1);
@@ -537,13 +615,24 @@ export default function Categories() {
           var SplittedRow = SplittedMessage[Row].split(";");
 
           if (CategoryList.indexOf(SplittedRow[1]) === -1) {
-            CategoryList.push(SplittedRow[1]);
+            if (!CategoryList.some((e) => e === SplittedRow[1])) {
+              CategoryList.push(SplittedRow[1]);
+            }
           }
+
           if (IntervalList.indexOf(SplittedRow[3]) === -1) {
-            IntervalList.push(SplittedRow[3]);
+            if (!IntervalList.some((e) => e.ID === SplittedRow[3])) {
+              IntervalList.push({
+                ID: SplittedRow[3],
+                Name: getIntervalName(SplittedRow[3]),
+              });
+            }
           }
+
           if (QualificationList.indexOf(SplittedRow[6]) === -1) {
-            QualificationList.push(SplittedRow[6]);
+            if (!QualificationList.some((e) => e === SplittedRow[6])) {
+              QualificationList.push(SplittedRow[6]);
+            }
           }
 
           rows.push(
@@ -578,12 +667,12 @@ export default function Categories() {
           ParentCategoryList,
           IntervalList,
           QualificationList,
+          StandardTimeList,
           updateFunction
         );
 
         ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
       };
-      
     }
   );
 
@@ -591,14 +680,16 @@ export default function Categories() {
     // HA elso betoltes
     () => {
       FetchDataFromDB();
-    }, []
+    },
+    []
   );
 
   React.useEffect(
     // HA kijeloles valtozas van
     () => {
       ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
-    }, [selected]
+    },
+    [selected]
   );
 
   return TableReturn();
