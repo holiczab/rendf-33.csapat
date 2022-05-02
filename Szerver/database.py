@@ -100,11 +100,8 @@ class DataBase:
             type=message.split(";")[5]
             importance=message.split(";")[6]
             self.ret_msg=self.add_maintenancetask(name,device,status,instruction,type,importance)
-<<<<<<< Updated upstream
-=======
         elif type=="check":
             self.ret_msg=self.auto_task_generate()
->>>>>>> Stashed changes
         elif type=="umtt":
             ID=message.split(";")[1]
             name=message.split(";")[2]
@@ -114,8 +111,6 @@ class DataBase:
             type=message.split(";")[6]
             importance=message.split(";")[7]
             self.ret_msg=self.update_category(ID,name,device,status,instruction,type,importance)
-<<<<<<< Updated upstream
-=======
     
     def time_to_int(self,dateobj):
         total = int(dateobj.strftime('%S'))
@@ -131,7 +126,6 @@ class DataBase:
         elif name=="Q": return 10518972
         elif name=="H": return 15778458
         elif name=="Y": return 31556926
->>>>>>> Stashed changes
 
     def int2date(argdate):
         year = int(argdate / 10000)
