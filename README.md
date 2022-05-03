@@ -52,8 +52,8 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] Végzettségek karbantartóhoz rendelése (adatbázis)
 - [x] Rendkívüli karbantartási feladatok rögzítése a rendszerbe (eszköz, időpont, hiba leírása) (kliens)
 - [x] Időszakos karbantartási feladatok automatikus generálása (utolsó karbantartás és karbantartási periódus alapján)
-- [ ] Feladatok listázása, állapotok megjelenítése
-> - [ ] SQL utasítás
+- [x] Feladatok listázása, állapotok megjelenítése
+> - [x] SQL utasítás
 > - [x] Kliens
 - [x] *ID-k átírása Auto Incrementre*
 - [x] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
