@@ -51,7 +51,7 @@ export default function TaskEditDialog(Data: any) {
     mode: "onChange",
     defaultValues: {
       name: Data.Name,
-      device: Data.Device,
+      device: Data.DeviceID,
       status: Data.Status,
       instruction: Data.Instruction,
       importance: Data.Importance
@@ -142,7 +142,7 @@ export default function TaskEditDialog(Data: any) {
               margin="normal"
               label="Device"
               fullWidth
-              defaultValue={Data.Device}
+              defaultValue={Data.DeviceID}
               {...register("device")}
               error={errors.device}
               type="text"
@@ -175,6 +175,7 @@ export default function TaskEditDialog(Data: any) {
             <TextField
               label="Instruction"
               required
+              multiline
               margin="normal"
               fullWidth
               {...register("instruction")}

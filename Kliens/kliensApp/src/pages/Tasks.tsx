@@ -48,29 +48,31 @@ async function GetDevice_id_name_instr() {
 interface Data {
   ID: string;
   Name: string;
-  Device: string;
+  DeviceID: string;
   Status: string;
   Instruction: string;
   Type: string;
   Importance: string;
+  DeviceName: string;
 }
 
 function createData(
   ID: string,
   Name: string,
-  Device: string,
+  DeviceID: string,
   Status: string,
   Instruction: string,
   Type: string,
-  Importance: string
+  Importance: string,
+  DeviceName: string
 ): Data {
-  return { ID, Name, Device, Status, Instruction, Type, Importance };
+  return { ID, Name, DeviceID, Status, Instruction, Type, Importance, DeviceName };
 }
 
 interface EditDialogInput {
   ID: string;
   Name: string;
-  Device: string;
+  DeviceID: string;
   Status: string;
   Instruction: string;
   Type: string;
@@ -82,7 +84,7 @@ interface EditDialogInput {
 function createEditDialogInput(
   ID: string,
   Name: string,
-  Device: string,
+  DeviceID: string,
   Status: string,
   Instruction: string,
   Type: string,
@@ -93,7 +95,7 @@ function createEditDialogInput(
   return {
     ID,
     Name,
-    Device,
+    DeviceID,
     Status,
     Instruction,
     Type,
@@ -149,7 +151,7 @@ const headCells: readonly HeadCell[] = [
     label: "Name",
   },
   {
-    id: "Device",
+    id: "DeviceID",
     numeric: false,
     disablePadding: false,
     label: "Device",
@@ -166,12 +168,12 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "Instruction",
   },
-  {
-    id: "Type",
-    numeric: false,
-    disablePadding: false,
-    label: "Type",
-  },
+  // {
+  //   id: "Type",
+  //   numeric: false,
+  //   disablePadding: false,
+  //   label: "Type",
+  // },
   {
     id: "Importance",
     numeric: false,
@@ -400,7 +402,7 @@ export default function Tasks() {
           EditParams = createEditDialogInput(
             rows[r].ID,
             rows[r].Name,
-            rows[r].Device,
+            rows[r].DeviceID,
             rows[r].Status,
             rows[r].Instruction,
             rows[r].Type,
@@ -467,11 +469,11 @@ export default function Tasks() {
                             {row.Name}
                           </TableCell>
                           <TableCell align="center">
-                            {row.Device}
+                            {row.DeviceName}
                           </TableCell>
                           <TableCell align="left">{row.Status}</TableCell>
                           <TableCell align="center">{row.Instruction}</TableCell>
-                          <TableCell align="left">{row.Type}</TableCell>
+                          {/* <TableCell align="left">{row.Type}</TableCell> */}
                           <TableCell align="center">{row.Importance}</TableCell>
                         </TableRow>
                       );
@@ -514,7 +516,8 @@ export default function Tasks() {
                 SplittedRow[3],
                 SplittedRow[4],
                 SplittedRow[5],
-                SplittedRow[6]
+                SplittedRow[6],
+                ""
               )
             );
             /* console.log(
@@ -557,8 +560,8 @@ export default function Tasks() {
 
         for(let r in rows){
           for(let d in DevDeviceList){
-              if(rows[r].Device === DevDeviceList[d].ID){
-                rows[r].Device = DevDeviceList[d].Name;
+              if(rows[r].DeviceID === DevDeviceList[d].ID){
+                rows[r].DeviceName = DevDeviceList[d].Name;
               }
           }
         }
