@@ -24,7 +24,6 @@ class DataBase:
             password=message.split(";")[2]
             self.ret_msg=self.password_check(username,password)
         elif type == "advc":
-            #ID=message.split(";")[1]   <---Auto increment miatt nem kell a klienstol fogadni ID-t (SZERK: Bence)
             name=message.split(";")[1]
             category=message.split(";")[2]
             description=message.split(";")[3]
@@ -180,9 +179,6 @@ class DataBase:
             return "Username-Password incorrect"
     
     def add_device(self,name,category,description,location):
-        ### Auto increment miatt nem kell a klienstol fogadni ID-t (SZERK: Bence)
-        
-        #self.conn.execute("INSERT INTO Device(ID,Name,Category,Description,Location) VALUES ('"+ID+"','"+name+"','"+category+"','"+description+"','"+location+"')");
         self.conn.execute("INSERT INTO Device(Name,Category,Description,Location) VALUES ('"+name+"','"+category+"','"+description+"','"+location+"')")
         self.conn.commit()
         print ("Device Record created successfully")
