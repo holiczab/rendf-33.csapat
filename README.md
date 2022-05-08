@@ -59,6 +59,16 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
 ### 3. Mérföldkő
 - [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
+> - [ ] Kliens - Operator - Feladatoknál kijelöli az elérhető karbantartók közül valamelyiket (Végzettséget figyelve!)
+> - [ ] SQL - Log táblába feladat mentés
 - [ ] Az adott karbantartóhoz rendelt feladatok listázása
-- [ ] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve) (Ha lezárul a karbantartás, akkor már kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba)
+> - [ ] Kliens - Listázás
+> - [ ] SQL - SELECT Név alapján
+- [ ] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve) 
+> - [ ] Elfogadva -> ApprovedBy, Status frissítés
+> - [ ] Elutasítva -> DeniedBy, Status frissítés
+> - [ ] Megkezdve -> Start frissítés
+> - [ ] Befejezve -> Kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba; Status, End frissítés
 - [ ] Megkezdve állapotban az instrukciók megjelenítése (2.b)
+> - [ ] Kliens - Ha a karbantartó megkezdi a feladatot (állapot váltás), akkor utána egy felugró ablakban megjelennek az utasítások
+> - [ ] SQL - ID/Név alapján instrukció lekérése
