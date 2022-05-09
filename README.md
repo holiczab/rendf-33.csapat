@@ -69,7 +69,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [ ] Elfogadva -> ApprovedBy, Status frissítés
 > - [ ] Elutasítva -> DeniedBy, Status frissítés
 > - [ ] Megkezdve -> Start frissítés
-> - [ ] Befejezve -> Kiszámítja a következő időpontot a periódus alapján, és felveszi az adatbázisba; Status, End frissítés
+> - [ ] Befejezve -> Status, End frissítés
 - [ ] Megkezdve állapotban az instrukciók megjelenítése (2.b)
 > - [ ] Kliens - Ha a karbantartó megkezdi a feladatot (állapot váltás), akkor utána egy felugró ablakban megjelennek az utasítások
 > - [ ] SQL - ID/Név alapján instrukció lekérése
