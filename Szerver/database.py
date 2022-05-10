@@ -106,7 +106,52 @@ class DataBase:
             type=message.split(";")[6]
             importance=message.split(";")[7]
             self.ret_msg=self.update_maintenancetask(ID,name,device,status,instruction,type,importance)
+        elif type=="sspectasks":
+            name=message.split(";")[1]
+            self.ret_msg=self.select_specialist_tasks(name)
+        elif type=="sinst":
+            name=message.split(";")[1]
+            self.ret_msg=self.select_instruction(name)
+        elif type=="ustatus":
+            utype=message.split(";")[1]
+            TaskID=message.split(";")[2]
+            name=message.split(";")[3]
+            self.ret_msg=self.update_approve(utype,TaskID,name)
+
+    def update_approve(self,utype,ID,name):
+        try:
+            #self.conn.execute("UPDATE Log SET AssignedTo='"+str(row[1])+"',DeniedBy='"+str(row[2])+"',ApprovedBy='"+str(row[3])+"',Task='"+str(row[4])+"',Start='"+str(date)+"',End='"+str(end)+"' WHERE ID='"+str(row[0])+"'")
+            if utype=="as":
+                self.conn.execute("UPDATE Log SET AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
+                self.conn.commit()
+            elif utype=='a':
+                self.conn.execute("UPDATE Log SET ApprovedBy=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
+                self.conn.commit()
+                self.conn.execute("UPDATE MaintenanceTasks SET Status='Approved' WHERE ID='"+ID+"'")
+                self.conn.commit()
+            elif utype=='d':
+                self.conn.execute("UPDATE Log SET DeniedBy=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
+                self.conn.commit()
+                self.conn.execute("UPDATE MaintenanceTasks SET Status='Denied' WHERE ID='"+ID+"'")
+                self.conn.commit()
+            elif utype=='s':
+                date = time.strftime("%m/%d/%Y", time.localtime())
+                self.conn.execute("UPDATE Log SET Start='"+str(date)+"' WHERE Task='"+ID+"'")
+                self.conn.commit()
+                self.conn.execute("UPDATE MaintenanceTasks SET Status='Started' WHERE ID='"+ID+"'")
+                self.conn.commit()
+            elif utype=='e':
+                date = time.strftime("%m/%d/%Y", time.localtime())
+                self.conn.execute("UPDATE Log SET End='"+str(date)+"' WHERE Task='"+ID+"'")
+                self.conn.commit()
+                self.conn.execute("UPDATE MaintenanceTasks SET Status='Ended' WHERE ID='"+ID+"'")
+                self.conn.commit()
+        except Exception:
+            print(tostring(Exception))
+        print("Status and Log successfully updated!")
+        self.conn.close()
     
+
     def time_to_int(self,dateobj):
         total = int(dateobj.strftime('%S'))
         total += int(dateobj.strftime('%M')) * 60
@@ -190,6 +235,11 @@ class DataBase:
         print("Data deleted from Device!")
         self.conn.close()
 
+    def select_instruction(self,name):
+        cursor = self.conn.execute("SELECT Instruction FROM MaintenanceTasks WHERE Name='"+name+"'")
+        result = cursor.fetchall()
+        return str(result[0][0])
+
     def select_devices(self):
         cursor = self.conn.execute("SELECT * FROM Device")
         result = cursor.fetchall()
@@ -215,6 +265,14 @@ class DataBase:
         result = cursor.fetchall()
         return str(result[0][0])
 
+    def select_specialist_tasks(self,name):
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"')")
+        result=cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
+        print("Select_Specialist_tasks completed!")
+        return msg
     
     def delete_maintenancetask(self,taskid):
         print("DELETE from MaintenanceTasks where ID IN ("+taskid+")")
