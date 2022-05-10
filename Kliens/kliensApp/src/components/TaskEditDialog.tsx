@@ -21,13 +21,7 @@ let ImportanceOptions: { value: string; label: string }[] = [
   { value: "Medium", label: "Medium" },
   { value: "Low", label: "Low" },
 ];
-let StatusOptions: { value: string; label: string }[] = [
-  { value: "New", label: "New" },
-  { value: "Accepted", label: "Accepted" },
-  { value: "Denied", label: "Denied" },
-  { value: "Started", label: "Started" },
-  { value: "Finished", label: "Finished" },
-];
+let StatusOptions: { value: string; label: string }[];
 
 export default function TaskEditDialog(Data: any) {
   DeviceOptions = [];
@@ -41,6 +35,44 @@ export default function TaskEditDialog(Data: any) {
       label: Data.DevDeviceList[c].Name,
     });
     //console.log("Instr.: "+Data.DevDeviceList[c].Instruction);
+  }
+
+  //Statusz Legordulo lista opciok statusztol es beosztastol fuggoen 
+  if (Data.isOperator()) {
+    StatusOptions = [
+      { value: "New", label: "New" },
+      { value: "Accepted", label: "Accepted" },
+      { value: "Denied", label: "Denied" },
+      { value: "Started", label: "Started" },
+      { value: "Finished", label: "Finished" },
+    ];
+  } else {
+    switch (Data.Status) {
+      case "New":
+        StatusOptions = [
+          { value: "Accepted", label: "Accepted" },
+          { value: "Denied", label: "Denied" },
+        ];
+        break;
+
+      case "Accepted":
+        StatusOptions = [
+          { value: "Started", label: "Started" },
+          { value: "Denied", label: "Denied" },
+        ];
+        break;
+
+      case "Denied":
+        StatusOptions = [{ value: "Accepted", label: "Accepted" }];
+        break;
+
+      case "Started":
+        StatusOptions = [{ value: "Finished", label: "Finished" }];
+        break;
+
+      default:
+        break;
+    }
   }
 
   console.log("Device: " + Data.Device);
@@ -124,128 +156,126 @@ export default function TaskEditDialog(Data: any) {
         sx={{ m: 1 }}
       >
         <AddIcon sx={{ mr: 1 }} />
-        {Data.isOperator() ? 'Modify' : 'Change Status'}
+        {Data.isOperator() ? "Modify" : "Change Status"}
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
         {Data.isOperator() ? (
           <>
             <DialogTitle>Modify Task</DialogTitle>
             <DialogContent>
-          <form noValidate autoComplete="off">
-            <TextField
-              label="Name"
-              required
-              margin="normal"
-              fullWidth
-              maxRows={1}
-              disabled={!Data.isOperator()}
-              {...register("name", {
-                required: true,
-                minLength: 3,
-              })}
-              error={errors.name}
-              helperText={errors.name && "Minimum 3 character!"}
-              type="text"
-            />
-            <TextField
-              select
-              margin="normal"
-              label="Device"
-              fullWidth
-              defaultValue={Data.DeviceID}
-              disabled={!Data.isOperator()}
-              {...register("device")}
-              error={errors.device}
-              type="text"
-            >
-              {DeviceOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              select
-              margin="normal"
-              label="Status"
-              required
-              fullWidth
-              defaultValue={Data.Status}
-              {...register("status", {
-                required: true,
-              })}
-              error={errors.status}
-              type="text"
-            >
-              {StatusOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label="Instruction"
-              required
-              multiline
-              margin="normal"
-              fullWidth
-              disabled={!Data.isOperator()}
-              {...register("instruction")}
-              error={errors.name}
-              type="text"
-            />
-            <TextField
-              select
-              margin="normal"
-              label="Importance"
-              required
-              fullWidth
-              defaultValue={Data.Importance}
-              disabled={!Data.isOperator()}
-              {...register("importance", {
-                required: true,
-              })}
-              error={errors.importance}
-              type="text"
-            >
-              {ImportanceOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </form>
-        </DialogContent>
-            </>
+              <form noValidate autoComplete="off">
+                <TextField
+                  label="Name"
+                  required
+                  margin="normal"
+                  fullWidth
+                  maxRows={1}
+                  disabled={!Data.isOperator()}
+                  {...register("name", {
+                    required: true,
+                    minLength: 3,
+                  })}
+                  error={errors.name}
+                  helperText={errors.name && "Minimum 3 character!"}
+                  type="text"
+                />
+                <TextField
+                  select
+                  margin="normal"
+                  label="Device"
+                  fullWidth
+                  defaultValue={Data.DeviceID}
+                  disabled={!Data.isOperator()}
+                  {...register("device")}
+                  error={errors.device}
+                  type="text"
+                >
+                  {DeviceOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  select
+                  margin="normal"
+                  label="Status"
+                  required
+                  fullWidth
+                  defaultValue={Data.Status}
+                  {...register("status", {
+                    required: true,
+                  })}
+                  error={errors.status}
+                  type="text"
+                >
+                  {StatusOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  label="Instruction"
+                  required
+                  multiline
+                  margin="normal"
+                  fullWidth
+                  disabled={!Data.isOperator()}
+                  {...register("instruction")}
+                  error={errors.name}
+                  type="text"
+                />
+                <TextField
+                  select
+                  margin="normal"
+                  label="Importance"
+                  required
+                  fullWidth
+                  defaultValue={Data.Importance}
+                  disabled={!Data.isOperator()}
+                  {...register("importance", {
+                    required: true,
+                  })}
+                  error={errors.importance}
+                  type="text"
+                >
+                  {ImportanceOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </form>
+            </DialogContent>
+          </>
         ) : (
           <>
-              <DialogTitle>Change Status</DialogTitle>
-              <DialogContent>
-          <TextField
-              select
-              margin="normal"
-              label="Status"
-              required
-              fullWidth
-              defaultValue={Data.Status}
-              {...register("status", {
-                required: true,
-              })}
-              error={errors.status}
-              type="text"
-            >
-              {StatusOptions.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
+            <DialogTitle>Change Status</DialogTitle>
+            <DialogContent>
+              <TextField
+                select
+                margin="normal"
+                label="Status"
+                required
+                fullWidth
+                defaultValue={Data.Status}
+                {...register("status", {
+                  required: true,
+                })}
+                error={errors.status}
+                type="text"
+              >
+                {StatusOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
               </TextField>
-              </DialogContent>
+            </DialogContent>
           </>
-            
         )}
 
-        
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button
