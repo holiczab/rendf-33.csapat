@@ -62,9 +62,9 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
 > - [ ] Kliens - Operator - Feladatoknál kijelöli az elérhető karbantartók közül valamelyiket (Végzettséget figyelve!)
 > - [ ] SQL - Log táblába feladat mentés
-- [ ] Az adott karbantartóhoz rendelt feladatok listázása
-> - [ ] Kliens - Listázás
-> - [ ] SQL - SELECT Név alapján
+- [x] Az adott karbantartóhoz rendelt feladatok listázása
+> - [x] Kliens - Listázás
+> - [x] SQL - SELECT Név alapján
 - [ ] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve) 
 > - [ ] Elfogadva -> ApprovedBy, Status frissítés
 > - [ ] Elutasítva -> DeniedBy, Status frissítés
