@@ -322,6 +322,10 @@ class DataBase:
             print("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUES('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
             self.conn.execute("INSERT INTO MaintenanceTasks(Name,Device,Status,Instruction,Type,Importance) VALUES('"+name+"','"+device+"','"+status+"','"+instruction+"','"+type+"','"+importance+"')")
             self.conn.commit()
+            cursor = self.conn.execute("SELECT ID FROM MaintenanceTasks WHERE Name='"+name+"'")
+            result = cursor.fetchall()
+            self.conn.execute("INSERT INTO Log(Task) VALUES (ID='"+str(result[0][0])+"')")
+            self.conn.commit()
         except Exception:
             print(tostring(Exception))
         print("Maintenance Task successfully recorded")

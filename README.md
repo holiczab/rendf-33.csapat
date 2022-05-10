@@ -61,7 +61,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [ ] Időszakos karbantartási feladatok hozzáadása az adatbázishoz
 - [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
 > - [ ] Kliens - Operator - Feladatoknál kijelöli az elérhető karbantartók közül valamelyiket (Végzettséget figyelve!)
-> - [ ] SQL - Log táblába feladat mentés
+> - [x] SQL - Log táblába feladat mentés
 - [x] Az adott karbantartóhoz rendelt feladatok listázása
 > - [x] Kliens - Listázás
 > - [x] SQL - SELECT Név alapján
