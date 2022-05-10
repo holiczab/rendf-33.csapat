@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -19,6 +19,7 @@ import TaskAddDialog from "../components/TaskAddDialog";
 import TaskEditDialog from "../components/TaskEditDialog";
 import Fab from "@mui/material/Fab";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LoggedInContext from "../utils/context";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -26,16 +27,30 @@ var rows: Data[];
 let SelectedIndexes: string[] = [];
 let EditParams: EditDialogInput;
 let AddParams: AddDialogInput;
-let DevDeviceList: { ID: string, Name: string, Instruction: string }[] = [];
+let DevDeviceList: { ID: string; Name: string; Instruction: string }[] = [];
 
 rows = [];
 
+async function FetchDataFromDB(position: string | undefined, username: string | undefined) {
+  switch (position) {
+    case "Operator": //lekeri az osszes feladatot
+      var mess = "smtt";
+      client.send(mess);
+      console.log("Task SELECT query executed");
+      break;
+    
+    case "Repairer": //lekeri a bejelentkezett karbantartohoz tartozo feladatokat
+      var mess = "sspectasks;" + username;
+      client.send(mess);
+      console.log("Task SELECT by username query executed");
+      break;
 
-async function FetchDataFromDB() {
+    default:
+      console.log("Invalid position!");
+      break;
+  }
+
   //rows = [];amtt
-  var mess = "smtt";
-  client.send(mess);
-  console.log("Task SELECT query executed");
 }
 
 async function GetDevice_id_name_instr() {
@@ -66,7 +81,16 @@ function createData(
   Importance: string,
   DeviceName: string
 ): Data {
-  return { ID, Name, DeviceID, Status, Instruction, Type, Importance, DeviceName };
+  return {
+    ID,
+    Name,
+    DeviceID,
+    Status,
+    Instruction,
+    Type,
+    Importance,
+    DeviceName,
+  };
 }
 
 interface EditDialogInput {
@@ -77,7 +101,7 @@ interface EditDialogInput {
   Instruction: string;
   Type: string;
   Importance: string;
-  DevDeviceList: { ID: string, Name: string }[];
+  DevDeviceList: { ID: string; Name: string }[];
   updateFunction: () => any;
 }
 
@@ -89,7 +113,7 @@ function createEditDialogInput(
   Instruction: string,
   Type: string,
   Importance: string,
-  DevDeviceList: { ID: string, Name: string }[],
+  DevDeviceList: { ID: string; Name: string }[],
   updateFunction: () => any
 ): EditDialogInput {
   return {
@@ -106,12 +130,12 @@ function createEditDialogInput(
 }
 
 interface AddDialogInput {
-  DevDeviceList: { ID: string, Name: string, Instruction: string }[];
+  DevDeviceList: { ID: string; Name: string; Instruction: string }[];
   updateFunction: () => any;
 }
 
 function createAddDialogInput(
-  DevDeviceList: { ID: string, Name: string, Instruction: string }[],
+  DevDeviceList: { ID: string; Name: string; Instruction: string }[],
   updateFunction: () => any
 ): AddDialogInput {
   return {
@@ -179,13 +203,14 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Importance",
-  }
+  },
 ];
-
 
 type Order = "asc" | "desc";
 
 export default function Tasks() {
+  const { position, setPosition } = useContext(LoggedInContext); //beosztast megkapja Context-bol
+  const { username, setUsername } = useContext(LoggedInContext); //nevet megkapja Context-bol
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("Name");
   const [selected, setSelected] = React.useState<readonly string[]>([]);
@@ -196,12 +221,12 @@ export default function Tasks() {
     console.log("dmtt;" + msg);
     client.send("dmtt;" + msg);
     setSelected([]);
-    FetchDataFromDB();
+    FetchDataFromDB(position, username);
     GetDevice_id_name_instr();
   };
 
   const updateFunction = () => {
-    FetchDataFromDB();
+    FetchDataFromDB(position, username);
     GetDevice_id_name_instr();
     setSelected([]);
   };
@@ -468,11 +493,11 @@ export default function Tasks() {
                           >
                             {row.Name}
                           </TableCell>
-                          <TableCell align="center">
-                            {row.DeviceName}
-                          </TableCell>
+                          <TableCell align="center">{row.DeviceName}</TableCell>
                           <TableCell align="left">{row.Status}</TableCell>
-                          <TableCell align="center">{row.Instruction}</TableCell>
+                          <TableCell align="center">
+                            {row.Instruction}
+                          </TableCell>
                           {/* <TableCell align="left">{row.Type}</TableCell> */}
                           <TableCell align="center">{row.Importance}</TableCell>
                         </TableRow>
@@ -500,7 +525,7 @@ export default function Tasks() {
         let SplittedMessage = message.data.split("END_OF_ROW");
         SplittedMessage.splice(-1, 1);
 
-        console.log("Splitted Length: "+SplittedMessage[0].split(";").length);
+        console.log("Splitted Length: " + SplittedMessage[0].split(";").length);
 
         if (SplittedMessage[0].split(";").length === 7) {
           rows = [];
@@ -540,7 +565,7 @@ export default function Tasks() {
             DevDeviceList.push({
               ID: SplittedRow[0],
               Name: SplittedRow[1],
-              Instruction: SplittedRow[2]
+              Instruction: SplittedRow[2],
             });
           }
         }
@@ -553,16 +578,13 @@ export default function Tasks() {
           }
         } */
 
-        AddParams = createAddDialogInput(
-          DevDeviceList,
-          updateFunction
-        );
+        AddParams = createAddDialogInput(DevDeviceList, updateFunction);
 
-        for(let r in rows){
-          for(let d in DevDeviceList){
-              if(rows[r].DeviceID === DevDeviceList[d].ID){
-                rows[r].DeviceName = DevDeviceList[d].Name;
-              }
+        for (let r in rows) {
+          for (let d in DevDeviceList) {
+            if (rows[r].DeviceID === DevDeviceList[d].ID) {
+              rows[r].DeviceName = DevDeviceList[d].Name;
+            }
           }
         }
 
@@ -573,18 +595,20 @@ export default function Tasks() {
 
   React.useEffect(
     // HA elso betoltes
-    () => {      
-      FetchDataFromDB();
+    () => {
+      FetchDataFromDB(position, username);
       GetDevice_id_name_instr();
       //GetLocationsFromDB()
-    },[]
+    },
+    []
   );
 
   React.useEffect(
     // HA kijeloles valtozas van
     () => {
       ReactDOM.render(TableReturn(), document.getElementById("DataTable"));
-    }, [selected]
+    },
+    [selected]
   );
 
   return TableReturn();
