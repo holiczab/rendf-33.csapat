@@ -20,6 +20,7 @@ import TaskEditDialog from "../components/TaskEditDialog";
 import Fab from "@mui/material/Fab";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoggedInContext from "../utils/context";
+import TaskInstructionsDialog from "../components/TaskInstructionsDialog";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -103,6 +104,7 @@ interface EditDialogInput {
   Importance: string;
   DevDeviceList: { ID: string; Name: string }[];
   updateFunction: () => any;
+  resetSelection: () => any;
 }
 
 function createEditDialogInput(
@@ -114,7 +116,8 @@ function createEditDialogInput(
   Type: string,
   Importance: string,
   DevDeviceList: { ID: string; Name: string }[],
-  updateFunction: () => any
+  updateFunction: () => any,
+  resetSelection: () => any
 ): EditDialogInput {
   return {
     ID,
@@ -126,6 +129,7 @@ function createEditDialogInput(
     Importance,
     DevDeviceList,
     updateFunction,
+    resetSelection
   };
 }
 
@@ -228,6 +232,10 @@ export default function Tasks() {
   const updateFunction = () => {
     FetchDataFromDB(position, username);
     GetDevice_id_name_instr();
+    setSelected([]);
+  };
+
+  const resetSelection = () => {
     setSelected([]);
   };
 
@@ -353,6 +361,7 @@ export default function Tasks() {
         </Typography>
         {selected.length === 1 ? (
           <>
+            <TaskInstructionsDialog {...EditParams}/>
             <Fab
               variant="extended"
               color="error"
@@ -366,7 +375,10 @@ export default function Tasks() {
             <TaskEditDialog {...EditParams} />
           </>
         ) : selected.length === 0 ? (
-          <TaskAddDialog {...AddParams} />
+            <>
+              
+              <TaskAddDialog {...AddParams} />
+              </>
         ) : (
           <Fab
             variant="extended"
@@ -433,7 +445,8 @@ export default function Tasks() {
             rows[r].Type,
             rows[r].Importance,
             DevDeviceList,
-            updateFunction
+            updateFunction,
+            resetSelection
           );
         }
       }
