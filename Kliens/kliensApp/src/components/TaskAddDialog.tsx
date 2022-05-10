@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useEffect } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -18,8 +18,8 @@ let DeviceOptions: { value: string; label: string }[] = [];
 let ImportanceOptions: { value: string; label: string }[] = [{ value:"High", label: "High" }, { value:"Medium", label: "Medium" }, { value:"Low", label: "Low" }];
 
 export default function TaskAddDialog(Data: any) {
+  
   DeviceOptions = [];
-
   const [open, setOpen] = React.useState(false);
   let ID = Data.ID;
 
@@ -85,7 +85,7 @@ export default function TaskAddDialog(Data: any) {
         color="primary"
         aria-label="add"
         onClick={handleClickOpen}
-        sx={{ m: 1 }}
+        sx={{ m: 1, display:  Data.isOperator ? "" : "none"  }}
       >
         <AddIcon sx={{ mr: 1 }} />
         Add

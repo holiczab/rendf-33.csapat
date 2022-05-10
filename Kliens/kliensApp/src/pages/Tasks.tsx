@@ -32,14 +32,14 @@ let DevDeviceList: { ID: string; Name: string; Instruction: string }[] = [];
 
 rows = [];
 
-async function FetchDataFromDB(position: string | undefined, username: string | undefined) {
+async function FetchDataFromDB(position: string, username: string) {
   switch (position) {
     case "Operator": //lekeri az osszes feladatot
       var mess = "smtt";
       client.send(mess);
       console.log("Task SELECT query executed");
       break;
-    
+
     case "Repairer": //lekeri a bejelentkezett karbantartohoz tartozo feladatokat
       var mess = "sspectasks;" + username;
       client.send(mess);
@@ -105,6 +105,8 @@ interface EditDialogInput {
   DevDeviceList: { ID: string; Name: string }[];
   updateFunction: () => any;
   resetSelection: () => any;
+  isOperator: () => any;
+  isRepairer: () => any;
 }
 
 function createEditDialogInput(
@@ -117,7 +119,9 @@ function createEditDialogInput(
   Importance: string,
   DevDeviceList: { ID: string; Name: string }[],
   updateFunction: () => any,
-  resetSelection: () => any
+  resetSelection: () => any,
+  isOperator: () => any,
+  isRepairer: () => any
 ): EditDialogInput {
   return {
     ID,
@@ -129,22 +133,27 @@ function createEditDialogInput(
     Importance,
     DevDeviceList,
     updateFunction,
-    resetSelection
+    resetSelection,
+    isOperator,
+    isRepairer,
   };
 }
 
 interface AddDialogInput {
   DevDeviceList: { ID: string; Name: string; Instruction: string }[];
   updateFunction: () => any;
+  isOperator: boolean;
 }
 
 function createAddDialogInput(
   DevDeviceList: { ID: string; Name: string; Instruction: string }[],
-  updateFunction: () => any
+  updateFunction: () => any,
+  isOperator: boolean
 ): AddDialogInput {
   return {
     DevDeviceList,
     updateFunction,
+    isOperator
   };
 }
 
@@ -237,6 +246,16 @@ export default function Tasks() {
 
   const resetSelection = () => {
     setSelected([]);
+  };
+
+  const isOperator = (): boolean => {
+    if (position === "Operator") return true;
+    else return false;
+  };
+
+  const isRepairer = (): boolean => {
+    if (position === "Repairer") return true;
+    else return false;
   };
 
   function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -361,13 +380,13 @@ export default function Tasks() {
         </Typography>
         {selected.length === 1 ? (
           <>
-            <TaskInstructionsDialog {...EditParams}/>
+            <TaskInstructionsDialog {...EditParams} />
             <Fab
               variant="extended"
               color="error"
               aria-label="add"
               onClick={deleteTask}
-              sx={{ m: 1 }}
+              sx={{ m: 1, display: isOperator() ? "" : "none" }}
             >
               <DeleteIcon sx={{ mr: 1 }} />
               Remove
@@ -375,17 +394,16 @@ export default function Tasks() {
             <TaskEditDialog {...EditParams} />
           </>
         ) : selected.length === 0 ? (
-            <>
-              
-              <TaskAddDialog {...AddParams} />
-              </>
+          <>
+            <TaskAddDialog {...AddParams} />
+          </>
         ) : (
           <Fab
             variant="extended"
             color="error"
             aria-label="add"
             onClick={deleteTask}
-            sx={{ m: 1 }}
+            sx={{ m: 1, display: isOperator() ? "" : "none" }}
           >
             <DeleteIcon sx={{ mr: 1 }} />
             Remove
@@ -446,7 +464,9 @@ export default function Tasks() {
             rows[r].Importance,
             DevDeviceList,
             updateFunction,
-            resetSelection
+            resetSelection,
+            isOperator,
+            isRepairer
           );
         }
       }
@@ -591,7 +611,11 @@ export default function Tasks() {
           }
         } */
 
-        AddParams = createAddDialogInput(DevDeviceList, updateFunction);
+        AddParams = createAddDialogInput(
+          DevDeviceList,
+          updateFunction,
+          isOperator()
+        );
 
         for (let r in rows) {
           for (let d in DevDeviceList) {

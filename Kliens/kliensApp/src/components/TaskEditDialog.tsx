@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext, useState } from "react";
 import { useEffect } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -11,21 +11,26 @@ import AddIcon from "@mui/icons-material/Add";
 import { MenuItem } from "@mui/material";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useForm } from "react-hook-form";
+import LoggedInContext from "../utils/context";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
-let DeviceOptions: { value: string, label: string }[] = [];
-let ImportanceOptions: { value: string, label: string }[] = [{ value:"High", label: "High" }, { value:"Medium", label: "Medium" }, { value:"Low", label: "Low" }];
-let StatusOptions: { value: string, label: string }[] = [
-    { value:"New", label: "New" }, 
-    { value:"Accepted", label: "Accepted" }, 
-    { value:"Denied", label: "Denied" },
-    { value:"Started", label: "Started" }, 
-    { value:"Finished", label: "Finished" }];
+let DeviceOptions: { value: string; label: string }[] = [];
+let ImportanceOptions: { value: string; label: string }[] = [
+  { value: "High", label: "High" },
+  { value: "Medium", label: "Medium" },
+  { value: "Low", label: "Low" },
+];
+let StatusOptions: { value: string; label: string }[] = [
+  { value: "New", label: "New" },
+  { value: "Accepted", label: "Accepted" },
+  { value: "Denied", label: "Denied" },
+  { value: "Started", label: "Started" },
+  { value: "Finished", label: "Finished" },
+];
 
 export default function TaskEditDialog(Data: any) {
-    DeviceOptions = [];
-
+  DeviceOptions = [];
   const [open, setOpen] = React.useState(false);
   let ID = Data.ID;
   let TaskType = Data.Type;
@@ -36,11 +41,10 @@ export default function TaskEditDialog(Data: any) {
       label: Data.DevDeviceList[c].Name,
     });
     //console.log("Instr.: "+Data.DevDeviceList[c].Instruction);
-  } 
+  }
 
-  console.log("Device: "+Data.Device);
+  console.log("Device: " + Data.Device);
 
-  
   const {
     register,
     getValues,
@@ -54,7 +58,7 @@ export default function TaskEditDialog(Data: any) {
       device: Data.DeviceID,
       status: Data.Status,
       instruction: Data.Instruction,
-      importance: Data.Importance
+      importance: Data.Importance,
     },
   });
 
@@ -65,14 +69,15 @@ export default function TaskEditDialog(Data: any) {
   const handleClose = () => {
     setOpen(false);
     reset();
+    Data.resetSelection();
   };
 
   const saveDataToDB = (params: any) => {
     //console.log("savePopupDialog");
 
     let customInstruction = "";
-    for(let i in Data.DevDeviceList){
-      if(Data.DevDeviceList[i].ID === params.device){
+    for (let i in Data.DevDeviceList) {
+      if (Data.DevDeviceList[i].ID === params.device) {
         customInstruction = Data.DevDeviceList[i].Instruction;
       }
     }
@@ -87,13 +92,15 @@ export default function TaskEditDialog(Data: any) {
       ";" +
       params.status +
       ";" +
-      params.instruction  + "\n" + customInstruction +
+      params.instruction +
+      "\n" +
+      customInstruction +
       ";" +
       TaskType +
       ";" +
       params.importance;
 
-    console.log(mess);  
+    console.log(mess);
     client.send(mess);
     reset();
     Data.updateFunction();
@@ -117,11 +124,13 @@ export default function TaskEditDialog(Data: any) {
         sx={{ m: 1 }}
       >
         <AddIcon sx={{ mr: 1 }} />
-        Modify
+        {Data.isOperator() ? 'Modify' : 'Change Status'}
       </Fab>
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth={true}>
-        <DialogTitle>Modify Task</DialogTitle>
-        <DialogContent>
+        {Data.isOperator() ? (
+          <>
+            <DialogTitle>Modify Task</DialogTitle>
+            <DialogContent>
           <form noValidate autoComplete="off">
             <TextField
               label="Name"
@@ -129,6 +138,7 @@ export default function TaskEditDialog(Data: any) {
               margin="normal"
               fullWidth
               maxRows={1}
+              disabled={!Data.isOperator()}
               {...register("name", {
                 required: true,
                 minLength: 3,
@@ -143,6 +153,7 @@ export default function TaskEditDialog(Data: any) {
               label="Device"
               fullWidth
               defaultValue={Data.DeviceID}
+              disabled={!Data.isOperator()}
               {...register("device")}
               error={errors.device}
               type="text"
@@ -178,6 +189,7 @@ export default function TaskEditDialog(Data: any) {
               multiline
               margin="normal"
               fullWidth
+              disabled={!Data.isOperator()}
               {...register("instruction")}
               error={errors.name}
               type="text"
@@ -189,6 +201,7 @@ export default function TaskEditDialog(Data: any) {
               required
               fullWidth
               defaultValue={Data.Importance}
+              disabled={!Data.isOperator()}
               {...register("importance", {
                 required: true,
               })}
@@ -203,6 +216,36 @@ export default function TaskEditDialog(Data: any) {
             </TextField>
           </form>
         </DialogContent>
+            </>
+        ) : (
+          <>
+              <DialogTitle>Change Status</DialogTitle>
+              <DialogContent>
+          <TextField
+              select
+              margin="normal"
+              label="Status"
+              required
+              fullWidth
+              defaultValue={Data.Status}
+              {...register("status", {
+                required: true,
+              })}
+              error={errors.status}
+              type="text"
+            >
+              {StatusOptions.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+              </TextField>
+              </DialogContent>
+          </>
+            
+        )}
+
+        
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
           <Button
