@@ -117,6 +117,20 @@ class DataBase:
             TaskID=message.split(";")[2]
             name=message.split(";")[3]
             self.ret_msg=self.update_approve(utype,TaskID,name)
+        elif type=="sspecwithqual":
+            name=message.split(";")[1]
+            self.ret_msg=self.select_specialists_with_qual(name)
+
+
+    def select_specialists_with_qual(self,name):
+        cursor = self.conn.execute("SELECT Name FROM Specialist WHERE Qualification='"+name+"' AND ID NOT IN (SELECT AssignedTo FROM Log INNER JOIN MaintenanceTasks ON MaintenanceTasks.ID=Log.Task WHERE Status='Started')")
+        result = cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+"END_OF_ROW"
+        print("Select_specialists (Q) completed!")
+        return msg
+
 
     def update_approve(self,utype,ID,name):
         try:
@@ -146,6 +160,7 @@ class DataBase:
                 self.conn.commit()
                 self.conn.execute("UPDATE MaintenanceTasks SET Status='Ended' WHERE ID='"+ID+"'")
                 self.conn.commit()
+               
         except Exception:
             print(tostring(Exception))
         print("Status and Log successfully updated!")
@@ -184,7 +199,8 @@ class DataBase:
             today=datetime(int(date.split("/")[2]),int(date.split("/")[0]),int(date.split("/")[1]))
             print(end,today)
             if self.time_to_int(end) < self.time_to_int(today):
-                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[0])+"")
+                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[0])+" AND MaintenanceTasks.Type=0")
+                #0 auto, 1 manual
                 resultt = cursor.fetchall()
                 print(resultt)
                 print(self.time_to_int(today))
