@@ -37,7 +37,7 @@ export default function TaskEditDialog(Data: any) {
     //console.log("Instr.: "+Data.DevDeviceList[c].Instruction);
   }
 
-  //Statusz Legordulo lista opciok statusztol es beosztastol fuggoen 
+  //Statusz Legordulo lista opciok statusztol es beosztastol fuggoen
   if (Data.isOperator()) {
     StatusOptions = [
       { value: "New", label: "New" },
@@ -75,7 +75,7 @@ export default function TaskEditDialog(Data: any) {
     }
   }
 
-  console.log("Device: " + Data.Device);
+  //console.log("Device: " + Data.Device);
 
   const {
     register,
@@ -133,6 +133,39 @@ export default function TaskEditDialog(Data: any) {
       params.importance;
 
     console.log(mess);
+    client.send(mess);
+    reset();
+    Data.updateFunction();
+    setOpen(false);
+  };
+
+  const updateTaskStatusInDB = (params: any) => {
+    //MSG order: ustatus;UTYPE;TASKID;NAME
+    //UTYPE: Accepted -> "a", Denied -> "d", Started -> "s", Finished -> "e"
+    var mess = "ustatus;";
+
+    switch (params.status) {
+      case "Accepted":
+        mess += "a;" + Data.ID + ";" + Data.Username;
+        break;
+
+      case "Denied":
+        mess += "d;" + Data.ID + ";" + Data.Username;
+        break;
+
+      case "Started":
+        mess += "s;" + Data.ID + ";" + Data.Username;
+        break;
+
+      case "Finished":
+        mess += "e;" + Data.ID + ";" + Data.Username;
+        break;
+
+      default:
+        break;
+    }
+
+    console.log("NON_OPERATOR_MSG: " + mess);
     client.send(mess);
     reset();
     Data.updateFunction();
@@ -281,7 +314,11 @@ export default function TaskEditDialog(Data: any) {
           <Button
             type="submit"
             disabled={!formState.isValid}
-            onClick={() => saveDataToDB(getValues())}
+            onClick={() => {
+              if (Data.isOperator()) {
+                saveDataToDB(getValues());
+              } else updateTaskStatusInDB(getValues());
+            }}
           >
             Save
           </Button>
