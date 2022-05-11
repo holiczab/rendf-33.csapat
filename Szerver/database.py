@@ -141,7 +141,7 @@ class DataBase:
             elif utype=='a':
                 self.conn.execute("UPDATE Log SET ApprovedBy=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
                 self.conn.commit()
-                self.conn.execute("UPDATE MaintenanceTasks SET Status='Approved' WHERE ID='"+ID+"'")
+                self.conn.execute("UPDATE MaintenanceTasks SET Status='Accepted' WHERE ID='"+ID+"'")
                 self.conn.commit()
             elif utype=='d':
                 self.conn.execute("UPDATE Log SET DeniedBy=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
