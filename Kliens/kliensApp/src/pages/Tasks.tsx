@@ -103,6 +103,7 @@ interface EditDialogInput {
   Type: string;
   Importance: string;
   DevDeviceList: { ID: string; Name: string }[];
+  Username: string;
   updateFunction: () => any;
   resetSelection: () => any;
   isOperator: () => any;
@@ -118,6 +119,7 @@ function createEditDialogInput(
   Type: string,
   Importance: string,
   DevDeviceList: { ID: string; Name: string }[],
+  Username: string,
   updateFunction: () => any,
   resetSelection: () => any,
   isOperator: () => any,
@@ -132,6 +134,7 @@ function createEditDialogInput(
     Type,
     Importance,
     DevDeviceList,
+    Username,
     updateFunction,
     resetSelection,
     isOperator,
@@ -463,6 +466,7 @@ export default function Tasks() {
             rows[r].Type,
             rows[r].Importance,
             DevDeviceList,
+            username,
             updateFunction,
             resetSelection,
             isOperator,
