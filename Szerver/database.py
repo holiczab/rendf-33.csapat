@@ -158,7 +158,7 @@ class DataBase:
                 date = time.strftime("%m/%d/%Y", time.localtime())
                 self.conn.execute("UPDATE Log SET End='"+str(date)+"' WHERE Task='"+ID+"'")
                 self.conn.commit()
-                self.conn.execute("UPDATE MaintenanceTasks SET Status='Ended' WHERE ID='"+ID+"'")
+                self.conn.execute("UPDATE MaintenanceTasks SET Status='Finished' WHERE ID='"+ID+"'")
                 self.conn.commit()
                
         except Exception:
@@ -324,7 +324,7 @@ class DataBase:
             self.conn.commit()
             cursor = self.conn.execute("SELECT ID FROM MaintenanceTasks WHERE Name='"+name+"'")
             result = cursor.fetchall()
-            self.conn.execute("INSERT INTO Log(Task) VALUES (ID='"+str(result[0][0])+"')")
+            self.conn.execute("INSERT INTO Log (Task) VALUES ('"+str(result[0][0])+"')")
             self.conn.commit()
         except Exception:
             print(tostring(Exception))
