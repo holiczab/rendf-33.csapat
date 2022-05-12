@@ -6,10 +6,7 @@ import sqlite3
 import os
 import time
 from xml.etree.ElementTree import tostring
-"""
-ZS:
-- Feladat beszúrás --> Log táblába is adott értékek beszúrása
-"""
+
 class DataBase:
     def __init__(self,message):
         self.message=message
@@ -188,7 +185,10 @@ class DataBase:
         day = int(argdate % 100)
         return month+"/"+day+"/"+year
 
-    def auto_task_generate(self): 
+    def auto_task_generate(self):
+        """
+            Ugy lenne jo szerintem, hogy a megujulo taskoknal nem frissiti a log recordot, hanem ujat csinal amiben csak a Task ID van kitoltve. Es akkor a log tablaban benne lenne minden karbantartas. A maintenance tablaban meg a finished statuszt atallitana New-ra, emiatt ujra megjelenne a feluleten. A rendkivuliek meg siman nem jelennek meg ha mar keszen vannak, az jo igy.
+        """
         localtime = time.localtime()
         date = time.strftime("%m/%d/%Y", localtime)
         cursor = self.conn.execute("SELECT * FROM Log WHERE End IS NOT NULL")
@@ -282,7 +282,7 @@ class DataBase:
         return str(result[0][0])
 
     def select_specialist_tasks(self,name):
-        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"')")
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"') AND Status!='Finished'")
         result=cursor.fetchall()
         msg=""
         for row in result:
@@ -298,7 +298,7 @@ class DataBase:
         self.conn.close()
     
     def select_maintenancetask(self):
-        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks")
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks WHERE Status!='Finished'")
         result=cursor.fetchall()
         'print(result)'
         msg=""
