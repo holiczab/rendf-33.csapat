@@ -300,12 +300,11 @@ class DataBase:
         self.conn.close()
     
     def select_maintenancetask(self):
-
-        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE Status!='Finished'")
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE Status != 'Finished' ")
         result=cursor.fetchall()
         msg=""
         for row in result:
-            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+";"+str(row[8])+";"+str(row[10])+";"+str(row[12])+"END_OF_ROW"
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+";"+self.get_ID_SpecName(str(row[8]))+";"+self.get_ID_SpecName(str(row[10]))+";"+str(row[12])+"END_OF_ROW"
         print("Selected_MaintenanceTasks completed!")
         return msg
 
@@ -384,6 +383,15 @@ class DataBase:
             print(tostring(Exception)) 
         print ("Device Record changed successfully")
         self.conn.close()
+
+    def get_ID_SpecName(self,ID):
+        if ID=='None':
+            return '-'
+        else:
+            cursor = self.conn.execute("SELECT Name FROM Specialist WHERE ID = "+ID+"")
+            result = cursor.fetchall()
+            print(str(result[0][0])) 
+            return str(result[0][0])
 
     def get_category_ID(self,name):
         cursor = self.conn.execute("SELECT ID FROM Category WHERE Name = '"+name+"'")
