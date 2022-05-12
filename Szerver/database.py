@@ -186,30 +186,32 @@ class DataBase:
         return month+"/"+day+"/"+year
 
     def auto_task_generate(self):
-        """
-            Ugy lenne jo szerintem, hogy a megujulo taskoknal nem frissiti a log recordot, hanem ujat csinal amiben csak a Task ID van kitoltve. Es akkor a log tablaban benne lenne minden karbantartas. A maintenance tablaban meg a finished statuszt atallitana New-ra, emiatt ujra megjelenne a feluleten. A rendkivuliek meg siman nem jelennek meg ha mar keszen vannak, az jo igy.
-        """
         localtime = time.localtime()
         date = time.strftime("%m/%d/%Y", localtime)
-        cursor = self.conn.execute("SELECT * FROM Log WHERE End IS NOT NULL")
+        cursor = self.conn.execute("SELECT * FROM Log WHERE End IS NOT NULL OR Start IS NOT NULL")
         result = cursor.fetchall()
         #05/02/2022 formátum!!
         for row in result:
             end=datetime(int(row[6].split("/")[2]),int(row[6].split("/")[0]),int(row[6].split("/")[1]))
             today=datetime(int(date.split("/")[2]),int(date.split("/")[0]),int(date.split("/")[1]))
             print(end,today)
+            print(self.time_to_int(end),self.time_to_int(today))
             if self.time_to_int(end) < self.time_to_int(today):
-                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[0])+" AND MaintenanceTasks.Type=0")
+                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[4])+" AND MaintenanceTasks.Type=0 AND MaintenanceTasks.Status='Finished'")
                 #0 auto, 1 manual
                 resultt = cursor.fetchall()
                 print(resultt)
                 print(self.time_to_int(today))
-                endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
-                end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
-                print(end)
-                self.conn.execute("UPDATE Log SET AssignedTo='"+str(row[1])+"',DeniedBy='"+str(row[2])+"',ApprovedBy='"+str(row[3])+"',Task='"+str(row[4])+"',Start='"+str(date)+"',End='"+str(end)+"' WHERE ID='"+str(row[0])+"'")
-                self.conn.commit()
-                self.conn.close()  
+                print('----------')
+                if resultt:
+                    endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
+                    end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
+                    print(end)
+                    self.conn.execute("INSERT INTO Log(Task,Start,End) VALUES('"+str(row[4])+"','"+str(date)+"','"+str(end)+"')")
+                    self.conn.commit()
+                    self.conn.execute("UPDATE MaintenanceTasks SET Status='New' WHERE ID='"+str(row[4])+"'")
+                    self.conn.commit()
+                    self.conn.close()  
         print("MaintenanceTasks have been refreshed!")
         
     def return_message(self):
@@ -298,12 +300,11 @@ class DataBase:
         self.conn.close()
     
     def select_maintenancetask(self):
-
-        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE Status!='Finished'")
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE Status != 'Finished' ")
         result=cursor.fetchall()
         msg=""
         for row in result:
-            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+";"+str(row[8])+";"+str(row[10])+";"+str(row[12])+"END_OF_ROW"
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+";"+self.get_ID_SpecName(str(row[8]))+";"+self.get_ID_SpecName(str(row[10]))+";"+str(row[12])+"END_OF_ROW"
         print("Selected_MaintenanceTasks completed!")
         return msg
 
@@ -382,6 +383,15 @@ class DataBase:
             print(tostring(Exception)) 
         print ("Device Record changed successfully")
         self.conn.close()
+
+    def get_ID_SpecName(self,ID):
+        if ID=='None':
+            return '-'
+        else:
+            cursor = self.conn.execute("SELECT Name FROM Specialist WHERE ID = "+ID+"")
+            result = cursor.fetchall()
+            print(str(result[0][0])) 
+            return str(result[0][0])
 
     def get_category_ID(self,name):
         cursor = self.conn.execute("SELECT ID FROM Category WHERE Name = '"+name+"'")
