@@ -12,6 +12,8 @@ import { MenuItem } from "@mui/material";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import { useForm } from "react-hook-form";
 import LoggedInContext from "../utils/context";
+import AutoTaskInstructionsDialog from "./AutoTaskInstructionsDialog";
+import ReactDOM from "react-dom";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -169,7 +171,10 @@ export default function TaskEditDialog(Data: any) {
     client.send(mess);
     reset();
     Data.updateFunction();
-    setOpen(false);
+    if (params.status === "Started") {
+      ReactDOM.render(<AutoTaskInstructionsDialog {...Data} />, document.getElementById("editDialog"))
+      console.log("TEST");
+    }
   };
 
   useEffect(() => {
@@ -180,7 +185,7 @@ export default function TaskEditDialog(Data: any) {
   }, []);
 
   return (
-    <div>
+    <div id="editDialog">
       <Fab
         variant="extended"
         color="primary"
