@@ -191,7 +191,7 @@ class DataBase:
     def auto_task_generate(self): 
         localtime = time.localtime()
         date = time.strftime("%m/%d/%Y", localtime)
-        cursor = self.conn.execute("SELECT * FROM Log")
+        cursor = self.conn.execute("SELECT * FROM Log WHERE End IS NOT NULL")
         result = cursor.fetchall()
         #05/02/2022 formátum!!
         for row in result:
