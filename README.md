@@ -70,7 +70,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 > - [x] Elutasítva -> DeniedBy, Status frissítés
 > - [x] Megkezdve -> Start frissítés
 > - [x] Befejezve -> Status, End frissítés
-- [ ] Megkezdve állapotban az instrukciók megjelenítése (2.b)
+- [x] Megkezdve állapotban az instrukciók megjelenítése (2.b)
 > - [x] Kliens - Az instrukciok legyenek barmikor megtekinthetoek felugro ablakban
 > - [x] Kliens - Ha a karbantartó megkezdi a feladatot (állapot váltás), akkor utána egy felugró ablakban megjelennek az utasítások
 > - [x] SQL - ID/Név alapján instrukció lekérése
