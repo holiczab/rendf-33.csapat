@@ -298,6 +298,16 @@ class DataBase:
         self.conn.close()
     
     def select_maintenancetask(self):
+
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE Status!='Finished'")
+        result=cursor.fetchall()
+        msg=""
+        for row in result:
+            msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+";"+str(row[8])+";"+str(row[10])+";"+str(row[12])+"END_OF_ROW"
+        print("Selected_MaintenanceTasks completed!")
+        return msg
+
+        """
         cursor=self.conn.execute("SELECT * FROM MaintenanceTasks WHERE Status!='Finished'")
         result=cursor.fetchall()
         'print(result)'
@@ -306,6 +316,7 @@ class DataBase:
             msg+=str(row[0])+";"+str(row[1])+";"+str(row[2])+";"+str(row[3])+";"+str(row[4])+";"+str(row[5])+";"+str(row[6])+"END_OF_ROW"
         print("Selected_MaintenanceTasks completed!")
         return msg
+        """
     
     def update_maintenancetask(self,ID,name,device,status,instruction,type,importance):
         try:
