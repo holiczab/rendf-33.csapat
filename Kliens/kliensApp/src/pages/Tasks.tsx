@@ -69,6 +69,9 @@ interface Data {
   Instruction: string;
   Type: string;
   Importance: string;
+  AssignedTo: string;
+  AcceptedBy: string;
+  Started: string;
   DeviceName: string;
 }
 
@@ -80,6 +83,9 @@ function createData(
   Instruction: string,
   Type: string,
   Importance: string,
+  AssignedTo: string,
+  AcceptedBy: string,
+  Started: string,
   DeviceName: string
 ): Data {
   return {
@@ -90,6 +96,9 @@ function createData(
     Instruction,
     Type,
     Importance,
+    AssignedTo,
+    AcceptedBy,
+    Started,
     DeviceName,
   };
 }
@@ -156,7 +165,7 @@ function createAddDialogInput(
   return {
     DevDeviceList,
     updateFunction,
-    isOperator
+    isOperator,
   };
 }
 
@@ -202,23 +211,80 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "Status",
   },
-  {
-    id: "Instruction",
-    numeric: false,
-    disablePadding: false,
-    label: "Instruction",
-  },
   // {
-  //   id: "Type",
+  //   id: "Instruction",
   //   numeric: false,
   //   disablePadding: false,
-  //   label: "Type",
+  //   label: "Instruction",
   // },
+  {
+    id: "Type",
+    numeric: false,
+    disablePadding: false,
+    label: "Type",
+  },
   {
     id: "Importance",
     numeric: false,
     disablePadding: false,
     label: "Importance",
+  },
+  {
+    id: "AssignedTo",
+    numeric: false,
+    disablePadding: false,
+    label: "AssignedTo",
+  },
+  {
+    id: "AcceptedBy",
+    numeric: false,
+    disablePadding: false,
+    label: "AcceptedBy",
+  },
+  {
+    id: "Started",
+    numeric: false,
+    disablePadding: false,
+    label: "Started",
+  },
+];
+
+const headCellsForRepairer: readonly HeadCell[] = [
+  {
+    id: "Name",
+    numeric: false,
+    disablePadding: false,
+    label: "Name",
+  },
+  {
+    id: "DeviceID",
+    numeric: false,
+    disablePadding: false,
+    label: "Device",
+  },
+  {
+    id: "Status",
+    numeric: false,
+    disablePadding: false,
+    label: "Status",
+  },
+  {
+    id: "Type",
+    numeric: false,
+    disablePadding: false,
+    label: "Type",
+  },
+  {
+    id: "Importance",
+    numeric: false,
+    disablePadding: false,
+    label: "Importance",
+  },
+  {
+    id: "Instruction",
+    numeric: false,
+    disablePadding: false,
+    label: "Instruction",
   },
 ];
 
@@ -259,6 +325,28 @@ export default function Tasks() {
   const isRepairer = (): boolean => {
     if (position === "Repairer") return true;
     else return false;
+  };
+
+  const getType = (type: string): string => {
+    switch (type) {
+      case "0":
+        return "Periodic";
+      case "1":
+        return "Exceptional";
+
+      default:
+        return "Unknown";
+    }
+  };
+
+  const getDash = (param: string): string => {
+    switch (param) {
+      case "None":
+        return "---";
+
+      default:
+        return param;
+    }
   };
 
   function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -328,29 +416,55 @@ export default function Tasks() {
               }}
             />
           </TableCell>
-          {headCells.map((headCell) => (
-            <TableCell
-              key={headCell.id}
-              align={headCell.numeric ? "right" : "left"}
-              padding={headCell.disablePadding ? "none" : "normal"}
-              sortDirection={orderBy === headCell.id ? order : false}
-            >
-              <TableSortLabel
-                active={orderBy === headCell.id}
-                direction={orderBy === headCell.id ? order : "asc"}
-                onClick={createSortHandler(headCell.id)}
+          {isOperator() &&
+            headCells.map((headCell) => (
+              <TableCell
+                key={headCell.id}
+                align={headCell.numeric ? "right" : "left"}
+                padding={headCell.disablePadding ? "none" : "normal"}
+                sortDirection={orderBy === headCell.id ? order : false}
               >
-                {headCell.label}
-                {orderBy === headCell.id ? (
-                  <Box component="span" sx={visuallyHidden}>
-                    {order === "desc"
-                      ? "sorted descending"
-                      : "sorted ascending"}
-                  </Box>
-                ) : null}
-              </TableSortLabel>
-            </TableCell>
-          ))}
+                <TableSortLabel
+                  active={orderBy === headCell.id}
+                  direction={orderBy === headCell.id ? order : "asc"}
+                  onClick={createSortHandler(headCell.id)}
+                >
+                  {headCell.label}
+                  {orderBy === headCell.id ? (
+                    <Box component="span" sx={visuallyHidden}>
+                      {order === "desc"
+                        ? "sorted descending"
+                        : "sorted ascending"}
+                    </Box>
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
+            ))}
+
+          {!isOperator() &&
+            headCellsForRepairer.map((headCell) => (
+              <TableCell
+                key={headCell.id}
+                align={headCell.numeric ? "right" : "left"}
+                padding={headCell.disablePadding ? "none" : "normal"}
+                sortDirection={orderBy === headCell.id ? order : false}
+              >
+                <TableSortLabel
+                  active={orderBy === headCell.id}
+                  direction={orderBy === headCell.id ? order : "asc"}
+                  onClick={createSortHandler(headCell.id)}
+                >
+                  {headCell.label}
+                  {orderBy === headCell.id ? (
+                    <Box component="span" sx={visuallyHidden}>
+                      {order === "desc"
+                        ? "sorted descending"
+                        : "sorted ascending"}
+                    </Box>
+                  ) : null}
+                </TableSortLabel>
+              </TableCell>
+            ))}
         </TableRow>
       </TableHead>
     );
@@ -530,13 +644,32 @@ export default function Tasks() {
                           >
                             {row.Name}
                           </TableCell>
-                          <TableCell align="center">{row.DeviceName}</TableCell>
+                          <TableCell align="left">{row.DeviceName}</TableCell>
                           <TableCell align="left">{row.Status}</TableCell>
-                          <TableCell align="center">
-                            {row.Instruction}
+                          <TableCell align="left">
+                            {getType(row.Type)}
                           </TableCell>
-                          {/* <TableCell align="left">{row.Type}</TableCell> */}
-                          <TableCell align="center">{row.Importance}</TableCell>
+                          <TableCell align="left">{row.Importance}</TableCell>
+                          {!isOperator() ? (
+                            <TableCell align="center">
+                              {row.Instruction}
+                            </TableCell>
+                          ) : (
+                            <>
+                              <TableCell align="left">
+                                {getDash(row.AssignedTo)}
+                              </TableCell>
+                              <TableCell align="left">
+                                {getDash(row.AcceptedBy)}
+                              </TableCell>
+                              <TableCell align="center">
+                                {getDash(row.Started)}
+                              </TableCell>
+                            </>
+                          )}
+                          {/* <TableCell align="center">
+                            {row.Instruction}
+                          </TableCell> */}
                         </TableRow>
                       );
                     }
@@ -564,7 +697,7 @@ export default function Tasks() {
 
         console.log("Splitted Length: " + SplittedMessage[0].split(";").length);
 
-        if (SplittedMessage[0].split(";").length === 7) {
+        if (SplittedMessage[0].split(";").length === 10) {
           rows = [];
 
           for (let Row in SplittedMessage) {
@@ -579,6 +712,40 @@ export default function Tasks() {
                 SplittedRow[4],
                 SplittedRow[5],
                 SplittedRow[6],
+                SplittedRow[7],
+                SplittedRow[8],
+                SplittedRow[9],
+                ""
+              )
+            );
+            /* console.log(
+                SplittedRow[0],
+                SplittedRow[1],
+                SplittedRow[2],
+                SplittedRow[3],
+                SplittedRow[4],
+                SplittedRow[5],
+                SplittedRow[6]
+            ); */
+          }
+        } else if (SplittedMessage[0].split(";").length === 7) {
+          rows = [];
+
+          for (let Row in SplittedMessage) {
+            let SplittedRow = SplittedMessage[Row].split(";");
+
+            rows.push(
+              createData(
+                SplittedRow[0],
+                SplittedRow[1],
+                SplittedRow[2],
+                SplittedRow[3],
+                SplittedRow[4],
+                SplittedRow[5],
+                SplittedRow[6],
+                "",
+                "",
+                "",
                 ""
               )
             );
