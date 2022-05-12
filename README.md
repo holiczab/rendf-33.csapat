@@ -65,11 +65,11 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] Az adott karbantartóhoz rendelt feladatok listázása
 > - [x] Kliens - Listázás
 > - [x] SQL - SELECT Név alapján
-- [ ] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve) 
-> - [ ] Elfogadva -> ApprovedBy, Status frissítés
-> - [ ] Elutasítva -> DeniedBy, Status frissítés
-> - [ ] Megkezdve -> Start frissítés
-> - [ ] Befejezve -> Status, End frissítés
+- [x] Állapotok beállításának lehetősége (Elfogadva, Elutasítva, Megkezdve, Befejezve) 
+> - [x] Elfogadva -> ApprovedBy, Status frissítés
+> - [x] Elutasítva -> DeniedBy, Status frissítés
+> - [x] Megkezdve -> Start frissítés
+> - [x] Befejezve -> Status, End frissítés
 - [ ] Megkezdve állapotban az instrukciók megjelenítése (2.b)
 > - [x] Kliens - Az instrukciok legyenek barmikor megtekinthetoek felugro ablakban
 > - [ ] Kliens - Ha a karbantartó megkezdi a feladatot (állapot váltás), akkor utána egy felugró ablakban megjelennek az utasítások
