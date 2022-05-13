@@ -58,7 +58,7 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] *ID-k átírása Auto Incrementre*
 - [x] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
 ### 3. Mérföldkő
-- [ ] Időszakos karbantartási feladatok hozzáadása az adatbázishoz
+- [X] Időszakos karbantartási feladatok hozzáadása az adatbázishoz
 - [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
 > - [ ] Kliens - Operator - Feladatoknál kijelöli az elérhető karbantartók közül valamelyiket (Végzettséget figyelve!)
 > - [x] SQL - Log táblába feladat mentés
