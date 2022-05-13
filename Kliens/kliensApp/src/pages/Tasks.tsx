@@ -21,6 +21,7 @@ import Fab from "@mui/material/Fab";
 import DeleteIcon from "@mui/icons-material/Delete";
 import LoggedInContext from "../utils/context";
 import TaskInstructionsDialog from "../components/TaskInstructionsDialog";
+import TaskAssignTo from "../components/TaskAssignTo";
 
 const client = new W3CWebSocket("ws://127.0.0.1:5050");
 
@@ -29,6 +30,8 @@ let SelectedIndexes: string[] = [];
 let EditParams: EditDialogInput;
 let AddParams: AddDialogInput;
 let DevDeviceList: { ID: string; Name: string; Instruction: string }[] = [];
+let DeviceIdForAssigning: string;
+
 
 rows = [];
 
@@ -420,6 +423,8 @@ export default function Tasks() {
     // }
   };
 
+
+
   function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
       return -1;
@@ -566,7 +571,25 @@ export default function Tasks() {
         >
           Tasks
         </Typography>
-        {selected.length === 1 ? (
+        {selected.length === 1 && DeviceIdForAssigning != "-1" ? (
+          <>
+            <TaskInstructionsDialog {...EditParams} />
+            <Fab
+              variant="extended"
+              color="error"
+              aria-label="add"
+              onClick={deleteTask}
+              sx={{ m: 1, display: isOperator() ? "" : "none" }}
+            >
+              <DeleteIcon sx={{ mr: 1 }} />
+              Remove
+            </Fab>
+
+            <TaskAssignTo {...EditParams} />
+
+            <TaskEditDialog {...EditParams} />
+          </>
+        ) : selected.length === 1 && DeviceIdForAssigning == "-1" ? (
           <>
             <TaskInstructionsDialog {...EditParams} />
             <Fab
@@ -657,10 +680,17 @@ export default function Tasks() {
             isOperator,
             isRepairer
           );
+          if(rows[r].Status != "Started"){
+            DeviceIdForAssigning = rows[r].DeviceID;
+          }
+          else{
+            DeviceIdForAssigning = "-1";
+          }
         }
       }
     }
     console.log(EditParams);
+    console.log("DeviceIdForAssigning: " + EditParams.DeviceID);
     setSelected(newSelected);
   };
 

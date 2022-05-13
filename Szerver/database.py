@@ -120,11 +120,11 @@ class DataBase:
 
 
     def select_specialists_with_qual(self,name):
-        cursor = self.conn.execute("SELECT Name FROM Specialist WHERE Qualification='"+name+"' AND ID NOT IN (SELECT AssignedTo FROM Log INNER JOIN MaintenanceTasks ON MaintenanceTasks.ID=Log.Task WHERE Status='Started')")
+        cursor = self.conn.execute("SELECT ID,Name FROM Specialist WHERE Qualification=(SELECT Category.RequiredQualification FROM Device INNER JOIN Category ON Device.Category=Category.ID AND Device.ID='"+name+"') AND ID NOT IN (SELECT AssignedTo FROM Log INNER JOIN MaintenanceTasks ON MaintenanceTasks.ID=Log.Task WHERE Status='Started')")
         result = cursor.fetchall()
         msg=""
         for row in result:
-            msg+=str(row[0])+"END_OF_ROW"
+            msg+=str(row[0])+";"+str(row[1])+"END_OF_ROW"
         print("Select_specialists (Q) completed!")
         return msg
 
@@ -133,7 +133,8 @@ class DataBase:
         try:
             #self.conn.execute("UPDATE Log SET AssignedTo='"+str(row[1])+"',DeniedBy='"+str(row[2])+"',ApprovedBy='"+str(row[3])+"',Task='"+str(row[4])+"',Start='"+str(date)+"',End='"+str(end)+"' WHERE ID='"+str(row[0])+"'")
             if utype=="as":
-                self.conn.execute("UPDATE Log SET AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
+                self.conn.execute("UPDATE Log SET AssignedTo='"+name+"' WHERE Task='"+ID+"'")
+                print("UPDATE Log SET AssignedTo='"+name+"' WHERE Task='"+ID+"'")
                 self.conn.commit()
             elif utype=='a':
                 self.conn.execute("UPDATE Log SET ApprovedBy=(SELECT ID FROM Specialist WHERE Name='"+name+"') WHERE Task='"+ID+"'")
