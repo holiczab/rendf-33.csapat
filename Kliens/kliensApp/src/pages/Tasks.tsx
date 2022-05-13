@@ -45,6 +45,7 @@ async function FetchDataFromDB(position: string, username: string) {
 
     case "Repairer": //lekeri a bejelentkezett karbantartohoz tartozo feladatokat
       var mess = "sspectasks;" + username;
+      console.log(mess);
       client.send(mess);
       console.log("Task SELECT by username query executed");
       break;
@@ -585,7 +586,11 @@ export default function Tasks() {
               Remove
             </Fab>
 
-            <TaskAssignTo {...EditParams} />
+            <Fab
+              variant="extended"
+              sx={{ m: 1, display: isOperator() ? "" : "none" }}
+            ><TaskAssignTo {...EditParams} /></Fab>
+            
 
             <TaskEditDialog {...EditParams} />
           </>
