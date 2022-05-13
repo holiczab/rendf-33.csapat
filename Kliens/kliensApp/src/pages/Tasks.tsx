@@ -349,6 +349,77 @@ export default function Tasks() {
     }
   };
 
+  const ColorizedImportance = (props: Data) => {
+    if (props.Importance === "Low") {
+      return (
+        <Typography
+          sx={{
+            color: "green",
+          }}
+        >
+          Low
+        </Typography>
+      );
+    } else if (props.Importance === "Medium") {
+      return (
+        <Typography
+          sx={{
+            color: "orange",
+          }}
+        >
+          Medium
+        </Typography>
+      );
+    } else if (props.Importance === "High") {
+      return (
+        <Typography
+          sx={{
+            color: "red",
+          }}
+        >
+          High
+        </Typography>
+      );
+    } else {
+      return <Typography>Unknown</Typography>;
+    }
+    // switch (props) {
+    //   case "Low":
+    //     return (
+    //       <Typography
+    //         sx={{
+    //           color: "green",
+    //         }}
+    //       >
+    //         Low
+    //       </Typography>
+    //     );
+    //   case "Medium":
+    //     return (
+    //       <Typography
+    //         sx={{
+    //           color: "orange",
+    //         }}
+    //       >
+    //         Medium
+    //       </Typography>
+    //     );
+    //   case "High":
+    //     return (
+    //       <Typography
+    //         sx={{
+    //           color: "red",
+    //         }}
+    //       >
+    //         High
+    //       </Typography>
+    //     );
+
+    //   default:
+    //     <Typography>Unknown</Typography>;
+    // }
+  };
+
   function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
     if (b[orderBy] < a[orderBy]) {
       return -1;
@@ -649,7 +720,9 @@ export default function Tasks() {
                           <TableCell align="left">
                             {getType(row.Type)}
                           </TableCell>
-                          <TableCell align="left">{row.Importance}</TableCell>
+                          <TableCell align="left">
+                            <ColorizedImportance {...row} />
+                          </TableCell>
                           {!isOperator() ? (
                             <TableCell align="center">
                               {row.Instruction}
