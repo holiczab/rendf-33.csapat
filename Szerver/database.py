@@ -192,26 +192,27 @@ class DataBase:
         result = cursor.fetchall()
         #05/02/2022 formátum!!
         for row in result:
-            end=datetime(int(row[6].split("/")[2]),int(row[6].split("/")[0]),int(row[6].split("/")[1]))
-            today=datetime(int(date.split("/")[2]),int(date.split("/")[0]),int(date.split("/")[1]))
-            print(end,today)
-            print(self.time_to_int(end),self.time_to_int(today))
-            if self.time_to_int(end) < self.time_to_int(today):
-                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[4])+" AND MaintenanceTasks.Type=0 AND MaintenanceTasks.Status='Finished'")
-                #0 auto, 1 manual
-                resultt = cursor.fetchall()
-                print(resultt)
-                print(self.time_to_int(today))
-                print('----------')
-                if resultt:
-                    endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
-                    end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
-                    print(end)
-                    self.conn.execute("INSERT INTO Log(Task,Start,End) VALUES('"+str(row[4])+"','"+str(date)+"','"+str(end)+"')")
-                    self.conn.commit()
-                    self.conn.execute("UPDATE MaintenanceTasks SET Status='New' WHERE ID='"+str(row[4])+"'")
-                    self.conn.commit()
-                    self.conn.close()  
+            if row[6] is not None:
+                end=datetime(int(row[6].split("/")[2]),int(row[6].split("/")[0]),int(row[6].split("/")[1]))
+                today=datetime(int(date.split("/")[2]),int(date.split("/")[0]),int(date.split("/")[1]))
+                print(end,today)
+                print(self.time_to_int(end),self.time_to_int(today))
+                if self.time_to_int(end) < self.time_to_int(today):
+                    cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[4])+" AND MaintenanceTasks.Type=0 AND MaintenanceTasks.Status='Finished'")
+                    #0 auto, 1 manual
+                    resultt = cursor.fetchall()
+                    print(resultt)
+                    print(self.time_to_int(today))
+                    print('----------')
+                    if resultt:
+                        endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
+                        end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
+                        print(end)
+                        self.conn.execute("INSERT INTO Log(Task,Start,End) VALUES('"+str(row[4])+"','"+str(date)+"','"+str(end)+"')")
+                        self.conn.commit()
+                        self.conn.execute("UPDATE MaintenanceTasks SET Status='New' WHERE ID='"+str(row[4])+"'")
+                        self.conn.commit()
+                        self.conn.close()  
         print("MaintenanceTasks have been refreshed!")
         
     def return_message(self):
