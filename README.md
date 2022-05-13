@@ -59,8 +59,8 @@ A rendszerfejlesztés korszerű módszerei tárgy 33. csapatának github reposit
 - [x] *Adatbevitelnél inkább lenyíló menü szerverről lekérve, törlésnél checkboxos kijelölés az eszközöknél és a kategóriáknál*
 ### 3. Mérföldkő
 - [X] Időszakos karbantartási feladatok hozzáadása az adatbázishoz
-- [ ] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
-> - [ ] Kliens - Operator - Feladatoknál kijelöli az elérhető karbantartók közül valamelyiket (Végzettséget figyelve!)
+- [x] Feladatok kiosztása karbantartók számára (manuális hozzárendelés a végzettség egyeztetésével, automatikus megvalósítás opcionális)
+> - [x] Kliens - Operator - Feladatoknál kijelöli az elérhető karbantartók közül valamelyiket (Végzettséget figyelve!)
 > - [x] SQL - Log táblába feladat mentés
 - [x] Az adott karbantartóhoz rendelt feladatok listázása
 > - [x] Kliens - Listázás
