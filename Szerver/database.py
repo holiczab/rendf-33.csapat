@@ -207,7 +207,7 @@ class DataBase:
                 print(resultt)
                 print(self.time_to_int(today))
                 print('----------')
-                if resultt and self.time_to_int(end) < self.time_to_int(today):
+                if resultt and self.time_to_int(end) <= self.time_to_int(today):
                     endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
                     end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
                     print(end)
