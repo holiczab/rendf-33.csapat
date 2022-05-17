@@ -158,6 +158,7 @@ class DataBase:
                 self.conn.commit()
                 self.conn.execute("UPDATE MaintenanceTasks SET Status='Finished' WHERE ID='"+ID+"'")
                 self.conn.commit()
+                self.auto_task_generate()
                
         except Exception:
             print(tostring(Exception))
@@ -189,31 +190,34 @@ class DataBase:
     def auto_task_generate(self):
         localtime = time.localtime()
         date = time.strftime("%m/%d/%Y", localtime)
-        cursor = self.conn.execute("SELECT * FROM Log WHERE End IS NOT NULL OR Start IS NOT NULL")
+        #cursor = self.conn.execute("SELECT * FROM Log WHERE End IS NOT NULL OR Start IS NOT NULL")
+        cursor = self.conn.execute("SELECT * FROM Log INNER JOIN MaintenanceTasks ON MaintenanceTasks.ID=Log.Task WHERE MaintenanceTasks.Type=0 AND MaintenanceTasks.Status LIKE 'Finished' GROUP BY Task")
         result = cursor.fetchall()
         #05/02/2022 formátum!!
         for row in result:
+            print(row)
             if row[6] is not None:
                 end=datetime(int(row[6].split("/")[2]),int(row[6].split("/")[0]),int(row[6].split("/")[1]))
                 today=datetime(int(date.split("/")[2]),int(date.split("/")[0]),int(date.split("/")[1]))
                 print(end,today)
                 print(self.time_to_int(end),self.time_to_int(today))
-                if self.time_to_int(end) < self.time_to_int(today):
-                    cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[4])+" AND MaintenanceTasks.Type=0 AND MaintenanceTasks.Status='Finished'")
-                    #0 auto, 1 manual
-                    resultt = cursor.fetchall()
-                    print(resultt)
-                    print(self.time_to_int(today))
-                    print('----------')
-                    if resultt:
-                        endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
-                        end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
-                        print(end)
-                        self.conn.execute("INSERT INTO Log(Task,Start,End) VALUES('"+str(row[4])+"','"+str(date)+"','"+str(end)+"')")
-                        self.conn.commit()
-                        self.conn.execute("UPDATE MaintenanceTasks SET Status='New' WHERE ID='"+str(row[4])+"'")
-                        self.conn.commit()
-                        self.conn.close()  
+                cursor = self.conn.execute("SELECT Interval FROM Category INNER JOIN Device ON Device.Category=Category.ID INNER JOIN MaintenanceTasks ON MaintenanceTasks.Device=Device.ID INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE MaintenanceTasks.ID= "+str(row[4])+" AND MaintenanceTasks.Type=0 AND MaintenanceTasks.Status='Finished'")
+                #0 auto, 1 manual
+                resultt = cursor.fetchall()
+                print(resultt)
+                print(self.time_to_int(today))
+                print('----------')
+                if resultt and self.time_to_int(end) < self.time_to_int(today):
+                    endArray=str(datetime.now() + timedelta(seconds=self.get_interval_sec(str(resultt[0][0]))+100000)).split(" ")[0].split("-")
+                    end=endArray[1]+"/"+endArray[2]+"/"+endArray[0]
+                    print(end)
+                    print("Insert")
+                    self.conn.execute("INSERT INTO Log(Task,Start,End) VALUES('"+str(row[4])+"','"+str(date)+"','"+str(end)+"')")
+                    self.conn.commit()
+                    print("Update")
+                    self.conn.execute("UPDATE MaintenanceTasks SET Status='New' WHERE ID='"+str(row[4])+"'")
+                    self.conn.commit()
+                        
         print("MaintenanceTasks have been refreshed!")
         
     def return_message(self):
@@ -286,7 +290,7 @@ class DataBase:
         return str(result[0][0])
 
     def select_specialist_tasks(self,name):
-        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"') AND Status!='Finished'")
+        cursor=self.conn.execute("SELECT * FROM MaintenanceTasks INNER JOIN Log ON Log.Task=MaintenanceTasks.ID WHERE AssignedTo=(SELECT ID FROM Specialist WHERE Name='"+name+"') AND Status!='Finished' GROUP BY MaintenanceTasks.ID")
         result=cursor.fetchall()
         msg=""
         for row in result:
