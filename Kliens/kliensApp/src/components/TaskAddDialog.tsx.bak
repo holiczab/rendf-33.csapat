@@ -62,7 +62,7 @@ export default function TaskAddDialog(Data: any) {
       params.device + ";" +
       "New" + ";" + //params.status
       params.instruction + "\n" + customInstruction + ";" +
-      "1" + ";" +  //params.type
+      "0" + ";" +  //params.type
       params.importance;
     //console.log(mess);
     client.send(mess);
